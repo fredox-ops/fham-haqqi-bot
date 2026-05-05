@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft, Mic, Send, Scale, Loader2, Plus, Briefcase, Home, FileSignature,
-  Users, FileText, UserSearch, Sparkles, AlertTriangle,
+  Users, FileText, UserSearch, Sparkles, AlertTriangle, Menu,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import LetterGenerator from "@/components/LetterGenerator";
+import MobileNav from "@/components/MobileNav";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Conversation = { id: string; title: string; category: Category };
@@ -119,12 +120,36 @@ const Chat = () => {
   const [detectedCategory, setDetectedCategory] = useState<Category | null>(null);
   const [urgent, setUrgent] = useState(false);
   const [letterOpen, setLetterOpen] = useState(false);
+  const [mobileSidebar, setMobileSidebar] = useState(false);
+  const touchStartX = useRef<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
+
+  // Swipe gestures (mobile): swipe right from left edge → open; swipe left → close
+  useEffect(() => {
+    const onStart = (e: TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+    };
+    const onEnd = (e: TouchEvent) => {
+      const start = touchStartX.current;
+      if (start == null) return;
+      const end = e.changedTouches[0].clientX;
+      const dx = end - start;
+      if (dx > 60 && start < 40 && !mobileSidebar) setMobileSidebar(true);
+      else if (dx < -60 && mobileSidebar) setMobileSidebar(false);
+      touchStartX.current = null;
+    };
+    window.addEventListener("touchstart", onStart, { passive: true });
+    window.addEventListener("touchend", onEnd, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", onStart);
+      window.removeEventListener("touchend", onEnd);
+    };
+  }, [mobileSidebar]);
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
@@ -226,8 +251,19 @@ const Chat = () => {
 
   return (
     <div className="h-screen w-full flex bg-background text-foreground overflow-hidden">
+      {/* Mobile sidebar overlay */}
+      {mobileSidebar && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm animate-fade-in"
+          onClick={() => setMobileSidebar(false)}
+        />
+      )}
       {/* Sidebar (30%) */}
-      <aside className="hidden md:flex flex-col w-[30%] max-w-[360px] border-r border-border/50 bg-card/30">
+      <aside
+        className={`flex flex-col w-[82%] max-w-[340px] md:w-[30%] md:max-w-[360px] border-r border-border/50 bg-card/95 md:bg-card/30 backdrop-blur-xl
+          fixed md:relative inset-y-0 left-0 z-50 md:z-auto transition-transform duration-300
+          ${mobileSidebar ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+      >
         {/* Brand */}
         <div className="p-5 border-b border-border/50">
           <Link to="/" className="flex items-center gap-2.5 group">
@@ -326,9 +362,13 @@ const Chat = () => {
       <main className="flex-1 flex flex-col min-w-0">
         {/* Top bar (mobile shows brand) */}
         <header className="h-14 border-b border-border/50 px-5 flex items-center gap-3 bg-card/20 backdrop-blur-md">
-          <Link to="/" className="md:hidden flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
+          <button
+            onClick={() => setMobileSidebar(true)}
+            className="md:hidden flex items-center justify-center h-9 w-9 rounded-xl border border-border bg-muted/40 hover:bg-muted/70 transition-colors"
+            aria-label="Ouvrir la navigation"
+          >
+            <Menu className="h-4 w-4" />
+          </button>
           <AgentAvatar />
           <div className="flex-1 min-w-0">
             <div className="font-semibold text-sm leading-tight">DarjaLex</div>
