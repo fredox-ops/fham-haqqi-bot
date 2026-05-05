@@ -251,8 +251,19 @@ const Chat = () => {
 
   return (
     <div className="h-screen w-full flex bg-background text-foreground overflow-hidden">
+      {/* Mobile sidebar overlay */}
+      {mobileSidebar && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm animate-fade-in"
+          onClick={() => setMobileSidebar(false)}
+        />
+      )}
       {/* Sidebar (30%) */}
-      <aside className="hidden md:flex flex-col w-[30%] max-w-[360px] border-r border-border/50 bg-card/30">
+      <aside
+        className={`flex flex-col w-[82%] max-w-[340px] md:w-[30%] md:max-w-[360px] border-r border-border/50 bg-card/95 md:bg-card/30 backdrop-blur-xl
+          fixed md:relative inset-y-0 left-0 z-50 md:z-auto transition-transform duration-300
+          ${mobileSidebar ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+      >
         {/* Brand */}
         <div className="p-5 border-b border-border/50">
           <Link to="/" className="flex items-center gap-2.5 group">
