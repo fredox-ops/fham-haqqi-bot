@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft, Mic, Send, Scale, Loader2, Plus, Briefcase, Home, FileSignature,
-  Users, FileText, UserSearch, Sparkles, AlertTriangle,
+  Users, FileText, UserSearch, Sparkles, AlertTriangle, Menu,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -362,9 +362,13 @@ const Chat = () => {
       <main className="flex-1 flex flex-col min-w-0">
         {/* Top bar (mobile shows brand) */}
         <header className="h-14 border-b border-border/50 px-5 flex items-center gap-3 bg-card/20 backdrop-blur-md">
-          <Link to="/" className="md:hidden flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
+          <button
+            onClick={() => setMobileSidebar(true)}
+            className="md:hidden flex items-center justify-center h-9 w-9 rounded-xl border border-border bg-muted/40 hover:bg-muted/70 transition-colors"
+            aria-label="Ouvrir la navigation"
+          >
+            <Menu className="h-4 w-4" />
+          </button>
           <AgentAvatar />
           <div className="flex-1 min-w-0">
             <div className="font-semibold text-sm leading-tight">DarjaLex</div>
