@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft, Mic, Send, Scale, Loader2, Plus, Briefcase, Home, FileSignature,
-  Users, FileText, UserSearch, Sparkles,
+  Users, FileText, UserSearch, Sparkles, AlertTriangle,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -11,6 +11,58 @@ import { Button } from "@/components/ui/button";
 type Msg = { role: "user" | "assistant"; content: string };
 type Conversation = { id: string; title: string; category: Category };
 type Category = "Travail" | "Logement" | "Famille" | "Contrats";
+
+/* ----------- Auto-detection helpers ----------- */
+const CATEGORY_KEYWORDS: Record<Category, string[]> = {
+  Travail: [
+    "travail", "employeur", "salaire", "licenci", "préavis", "cnss", "smig",
+    "contrat de travail", "patron", "indemnit", "heures suppl", "khdma", "patron",
+    "mol khdma", "ajr", "raj3a",
+  ],
+  Logement: [
+    "loyer", "logement", "propriétaire", "bail", "caution", "expuls",
+    "appartement", "maison", "kira", "mol dar", "sakan",
+  ],
+  Famille: [
+    "divorce", "mariage", "pension", "garde", "enfant", "héritage", "famille",
+    "moudawana", "talaq", "zwaj", "wraat", "nafaqa",
+  ],
+  Contrats: [
+    "contrat", "résiliation", "clause", "engagement", "signature", "obligation",
+    "résilier", "3a9d", "ittifa9",
+  ],
+};
+
+const URGENCY_KEYWORDS = [
+  "urgent", "urgence", "immédiat", "tout de suite", "demain au tribunal",
+  "expulsion", "arrestation", "garde à vue", "menacé", "violence",
+  "agression", "frappe", "frappé", "battu", "violé",
+  "dab7", "darb", "9bdou", "tanqodu", "khouf", "msta3jel", "msta3jal",
+];
+
+function detectCategory(text: string): Category | null {
+  const t = text.toLowerCase();
+  let best: { cat: Category; score: number } | null = null;
+  (Object.keys(CATEGORY_KEYWORDS) as Category[]).forEach((cat) => {
+    const score = CATEGORY_KEYWORDS[cat].reduce(
+      (s, kw) => (t.includes(kw) ? s + 1 : s), 0,
+    );
+    if (score > 0 && (!best || score > best.score)) best = { cat, score };
+  });
+  return best?.cat ?? null;
+}
+
+function detectUrgency(text: string): boolean {
+  const t = text.toLowerCase();
+  return URGENCY_KEYWORDS.some((kw) => t.includes(kw));
+}
+
+const CATEGORY_META: Record<Category, { icon: typeof Briefcase; arabic: string; color: string }> = {
+  Travail: { icon: Briefcase, arabic: "الشغل", color: "text-primary" },
+  Logement: { icon: Home, arabic: "السكن", color: "text-secondary" },
+  Famille: { icon: Users, arabic: "الأسرة", color: "text-secondary" },
+  Contrats: { icon: FileSignature, arabic: "العقود", color: "text-primary" },
+};
 
 const CATEGORIES: { name: Category; icon: typeof Briefcase; arabic: string }[] = [
   { name: "Travail", icon: Briefcase, arabic: "الشغل" },
@@ -63,6 +115,8 @@ const Chat = () => {
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState<Category | "all">("all");
   const [activeConv, setActiveConv] = useState<string | null>(null);
+  const [detectedCategory, setDetectedCategory] = useState<Category | null>(null);
+  const [urgent, setUrgent] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -72,11 +126,18 @@ const Chat = () => {
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
-    const userMsg: Msg = { role: "user", content: text.trim() };
+    const trimmed = text.trim();
+    const userMsg: Msg = { role: "user", content: trimmed };
     const next = [...messages, userMsg];
     setMessages(next);
     setInput("");
     setLoading(true);
+
+    // Auto-detect category & urgency from full conversation context
+    const fullText = next.map((m) => m.content).join(" ");
+    const cat = detectCategory(fullText);
+    if (cat) setDetectedCategory(cat);
+    if (detectUrgency(trimmed)) setUrgent(true);
 
     try {
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`, {
@@ -146,6 +207,8 @@ const Chat = () => {
   const newChat = () => {
     setMessages([]);
     setActiveConv(null);
+    setDetectedCategory(null);
+    setUrgent(false);
     inputRef.current?.focus();
   };
 
@@ -265,14 +328,54 @@ const Chat = () => {
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <AgentAvatar />
-          <div>
+          <div className="flex-1 min-w-0">
             <div className="font-semibold text-sm leading-tight">DarjaLex</div>
             <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-secondary animate-pulse" />
               En ligne — répond en quelques secondes
             </div>
           </div>
+          {detectedCategory && (
+            <div className="hidden sm:flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full glass border border-secondary/40 text-secondary animate-fade-in">
+              {(() => {
+                const Icon = CATEGORY_META[detectedCategory].icon;
+                return <Icon className="h-3.5 w-3.5" />;
+              })()}
+              <span className="font-medium">{detectedCategory}</span>
+              <span className="text-muted-foreground">détecté</span>
+            </div>
+          )}
         </header>
+
+        {/* Urgency banner */}
+        {urgent && (
+          <div className="px-4 md:px-10 pt-3 animate-fade-in">
+            <div
+              role="alert"
+              className="max-w-3xl mx-auto flex items-start gap-3 rounded-2xl border border-destructive/50 bg-destructive/15 backdrop-blur-md px-4 py-3 shadow-[0_0_30px_-10px_hsl(var(--destructive)/0.6)]"
+            >
+              <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-destructive/30">
+                <span className="absolute inset-0 rounded-xl bg-destructive/40 animate-ping" />
+                <AlertTriangle className="relative h-4 w-4 text-destructive-foreground" />
+              </div>
+              <div className="flex-1 text-sm">
+                <div className="font-semibold text-destructive-foreground">
+                  Situation urgente détectée — consultez un avocat immédiatement
+                </div>
+                <div className="text-xs text-destructive-foreground/80 mt-0.5">
+                  Pour une assistance légale rapide, contactez le Barreau du Maroc ou un avocat agréé.
+                </div>
+              </div>
+              <button
+                onClick={() => setUrgent(false)}
+                className="text-xs text-destructive-foreground/70 hover:text-destructive-foreground px-2"
+                aria-label="Ignorer l'alerte"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Messages */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 md:px-10 py-8">
