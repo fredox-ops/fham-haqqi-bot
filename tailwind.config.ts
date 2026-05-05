@@ -63,6 +63,21 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      fontFamily: {
+        sans: ['Tajawal', 'system-ui', 'sans-serif'],
+        display: ['Tajawal', 'system-ui', 'sans-serif'],
+      },
+      backgroundImage: {
+        'gradient-gold': 'var(--gradient-gold)',
+        'gradient-emerald': 'var(--gradient-emerald)',
+        'gradient-mixed': 'var(--gradient-mixed)',
+        'gradient-hero': 'var(--gradient-hero)',
+      },
+      boxShadow: {
+        'gold': 'var(--shadow-gold)',
+        'emerald': 'var(--shadow-emerald)',
+        'glass': 'var(--shadow-glass)',
+      },
       keyframes: {
         "accordion-down": {
           from: {
@@ -80,10 +95,40 @@ export default {
             height: "0",
           },
         },
+        "fade-in": {
+          "0%": { opacity: "0", transform: "translateY(12px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "scale-in": {
+          "0%": { opacity: "0", transform: "scale(0.95)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        "float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 20px hsl(36 91% 55% / 0.4), 0 0 40px hsl(36 91% 55% / 0.2)" },
+          "50%": { boxShadow: "0 0 30px hsl(36 91% 55% / 0.7), 0 0 60px hsl(36 91% 55% / 0.4)" },
+        },
+        "pattern-drift": {
+          "0%": { backgroundPosition: "0 0" },
+          "100%": { backgroundPosition: "220px 220px" },
+        },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fade-in 0.7s cubic-bezier(0.22,1,0.36,1) both",
+        "scale-in": "scale-in 0.4s cubic-bezier(0.22,1,0.36,1) both",
+        "float": "float 6s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+        "pattern-drift": "pattern-drift 60s linear infinite",
+        "shimmer": "shimmer 3s linear infinite",
       },
     },
   },
