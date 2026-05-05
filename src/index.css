@@ -8,35 +8,56 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* DarjaLex – Deep navy base, gold + emerald accents */
+    --background: 225 56% 7%;          /* #0A0F1E */
+    --foreground: 40 30% 96%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 225 45% 11%;
+    --card-foreground: 40 30% 96%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 225 45% 11%;
+    --popover-foreground: 40 30% 96%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 36 91% 55%;             /* electric gold #F5A623 */
+    --primary-foreground: 225 56% 8%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 167 100% 42%;         /* emerald #00D4A1 */
+    --secondary-foreground: 225 56% 8%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 225 35% 15%;
+    --muted-foreground: 220 15% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 167 100% 42%;
+    --accent-foreground: 225 56% 8%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 40 30% 96%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 225 30% 20%;
+    --input: 225 30% 18%;
+    --ring: 36 91% 55%;
 
-    --radius: 0.5rem;
+    --gold: 36 91% 55%;
+    --gold-glow: 42 100% 65%;
+    --emerald: 167 100% 42%;
+    --navy-deep: 225 56% 7%;
+    --navy-mid: 225 50% 11%;
+
+    --gradient-hero: radial-gradient(ellipse at top, hsl(225 60% 15%) 0%, hsl(var(--navy-deep)) 60%);
+    --gradient-gold: linear-gradient(135deg, hsl(36 91% 55%), hsl(42 100% 65%));
+    --gradient-emerald: linear-gradient(135deg, hsl(167 100% 42%), hsl(160 100% 35%));
+    --gradient-mixed: linear-gradient(135deg, hsl(36 91% 55%) 0%, hsl(167 100% 42%) 100%);
+
+    --shadow-gold: 0 10px 40px -10px hsl(36 91% 55% / 0.5);
+    --shadow-emerald: 0 10px 40px -10px hsl(167 100% 42% / 0.4);
+    --shadow-glass: 0 8px 32px 0 hsl(225 60% 3% / 0.6);
+
+    --glass-bg: hsl(225 45% 14% / 0.55);
+    --glass-border: hsl(40 30% 96% / 0.08);
+
+    --transition-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+
+    --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,33 +77,26 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    /* App is dark by default; .dark mirrors :root */
+    --background: 225 56% 7%;
+    --foreground: 40 30% 96%;
+    --card: 225 45% 11%;
+    --card-foreground: 40 30% 96%;
+    --popover: 225 45% 11%;
+    --popover-foreground: 40 30% 96%;
+    --primary: 36 91% 55%;
+    --primary-foreground: 225 56% 8%;
+    --secondary: 167 100% 42%;
+    --secondary-foreground: 225 56% 8%;
+    --muted: 225 35% 15%;
+    --muted-foreground: 220 15% 65%;
+    --accent: 167 100% 42%;
+    --accent-foreground: 225 56% 8%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 40 30% 96%;
+    --border: 225 30% 20%;
+    --input: 225 30% 18%;
+    --ring: 36 91% 55%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,6 +114,39 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
+    font-feature-settings: "ss01", "cv01";
+  }
+}
+
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass);
+  }
+
+  .text-gradient-gold {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .text-gradient-mixed {
+    background: var(--gradient-mixed);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .arabic-pattern {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g fill='none' stroke='%23F5A623' stroke-width='0.6' opacity='0.18'><path d='M60 5 L115 60 L60 115 L5 60 Z'/><path d='M60 25 L95 60 L60 95 L25 60 Z'/><circle cx='60' cy='60' r='18'/><path d='M60 42 L78 60 L60 78 L42 60 Z'/><path d='M0 60 H120 M60 0 V120'/></g></svg>");
+    background-size: 220px 220px;
   }
 }
