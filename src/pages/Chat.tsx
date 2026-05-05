@@ -7,6 +7,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import LetterGenerator from "@/components/LetterGenerator";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Conversation = { id: string; title: string; category: Category };
@@ -117,6 +118,7 @@ const Chat = () => {
   const [activeConv, setActiveConv] = useState<string | null>(null);
   const [detectedCategory, setDetectedCategory] = useState<Category | null>(null);
   const [urgent, setUrgent] = useState(false);
+  const [letterOpen, setLetterOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -412,6 +414,7 @@ const Chat = () => {
                 msg={m}
                 isLast={i === messages.length - 1}
                 loading={loading}
+                onGenerateLetter={() => setLetterOpen(true)}
               />
             ))}
 
@@ -474,11 +477,22 @@ const Chat = () => {
           </div>
         </div>
       </main>
+
+      <LetterGenerator
+        open={letterOpen}
+        onOpenChange={setLetterOpen}
+        conversation={messages}
+        category={detectedCategory}
+      />
     </div>
   );
 };
 
-const MessageBubble = ({ msg, isLast, loading }: { msg: Msg; isLast: boolean; loading: boolean }) => {
+const MessageBubble = ({
+  msg, isLast, loading, onGenerateLetter,
+}: {
+  msg: Msg; isLast: boolean; loading: boolean; onGenerateLetter: () => void;
+}) => {
   if (msg.role === "user") {
     return (
       <div className="flex justify-end animate-fade-in">
@@ -503,7 +517,12 @@ const MessageBubble = ({ msg, isLast, loading }: { msg: Msg; isLast: boolean; lo
 
         {showActions && (
           <div className="flex flex-wrap gap-2 pl-1">
-            <ActionButton icon={FileText} label="Générer une lettre officielle" emoji="📄" />
+            <ActionButton
+              icon={FileText}
+              label="Générer une lettre officielle"
+              emoji="📄"
+              onClick={onGenerateLetter}
+            />
             <ActionButton icon={UserSearch} label="Trouver un avocat" emoji="👨‍⚖️" />
           </div>
         )}
@@ -513,10 +532,10 @@ const MessageBubble = ({ msg, isLast, loading }: { msg: Msg; isLast: boolean; lo
 };
 
 const ActionButton = ({
-  icon: Icon, label, emoji,
-}: { icon: typeof FileText; label: string; emoji: string }) => (
+  icon: Icon, label, emoji, onClick,
+}: { icon: typeof FileText; label: string; emoji: string; onClick?: () => void }) => (
   <button
-    onClick={() => toast.info(`"${label}" — bientôt disponible.`)}
+    onClick={onClick ?? (() => toast.info(`"${label}" — bientôt disponible.`))}
     className="text-xs flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/40 hover:bg-muted/70 border border-border hover:border-secondary/40 hover:text-secondary text-muted-foreground transition-all"
   >
     <span className="text-sm leading-none" aria-hidden>{emoji}</span>
