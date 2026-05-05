@@ -254,11 +254,14 @@ function downloadPdf(f: LetterFields, lang: Lang) {
   doc.setTextColor(245, 166, 35);
   doc.setFontSize(60);
   doc.setFont("helvetica", "bold");
-  // @ts-expect-error – jsPDF supports GState
-  doc.setGState && doc.setGState(new (jsPDF as any).GState({ opacity: 0.07 }));
+  const anyDoc = doc as any;
+  if (anyDoc.GState && anyDoc.setGState) {
+    anyDoc.setGState(new anyDoc.GState({ opacity: 0.07 }));
+  }
   doc.text("ROYAUME DU MAROC", pageW / 2, 160, { align: "center", angle: 25 });
-  // @ts-expect-error
-  doc.setGState && doc.setGState(new (jsPDF as any).GState({ opacity: 1 }));
+  if (anyDoc.GState && anyDoc.setGState) {
+    anyDoc.setGState(new anyDoc.GState({ opacity: 1 }));
+  }
 
   doc.setTextColor(20, 20, 30);
   doc.setFont("helvetica", "normal");
