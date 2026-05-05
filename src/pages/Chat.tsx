@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft, Mic, Send, Scale, Loader2, Plus, Briefcase, Home, FileSignature,
-  Users, FileText, UserSearch, Sparkles,
+  Users, FileText, UserSearch, Sparkles, AlertTriangle,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -11,6 +11,58 @@ import { Button } from "@/components/ui/button";
 type Msg = { role: "user" | "assistant"; content: string };
 type Conversation = { id: string; title: string; category: Category };
 type Category = "Travail" | "Logement" | "Famille" | "Contrats";
+
+/* ----------- Auto-detection helpers ----------- */
+const CATEGORY_KEYWORDS: Record<Category, string[]> = {
+  Travail: [
+    "travail", "employeur", "salaire", "licenci", "préavis", "cnss", "smig",
+    "contrat de travail", "patron", "indemnit", "heures suppl", "khdma", "patron",
+    "mol khdma", "ajr", "raj3a",
+  ],
+  Logement: [
+    "loyer", "logement", "propriétaire", "bail", "caution", "expuls",
+    "appartement", "maison", "kira", "mol dar", "sakan",
+  ],
+  Famille: [
+    "divorce", "mariage", "pension", "garde", "enfant", "héritage", "famille",
+    "moudawana", "talaq", "zwaj", "wraat", "nafaqa",
+  ],
+  Contrats: [
+    "contrat", "résiliation", "clause", "engagement", "signature", "obligation",
+    "résilier", "3a9d", "ittifa9",
+  ],
+};
+
+const URGENCY_KEYWORDS = [
+  "urgent", "urgence", "immédiat", "tout de suite", "demain au tribunal",
+  "expulsion", "arrestation", "garde à vue", "menacé", "violence",
+  "agression", "frappe", "frappé", "battu", "violé",
+  "dab7", "darb", "9bdou", "tanqodu", "khouf", "msta3jel", "msta3jal",
+];
+
+function detectCategory(text: string): Category | null {
+  const t = text.toLowerCase();
+  let best: { cat: Category; score: number } | null = null;
+  (Object.keys(CATEGORY_KEYWORDS) as Category[]).forEach((cat) => {
+    const score = CATEGORY_KEYWORDS[cat].reduce(
+      (s, kw) => (t.includes(kw) ? s + 1 : s), 0,
+    );
+    if (score > 0 && (!best || score > best.score)) best = { cat, score };
+  });
+  return best?.cat ?? null;
+}
+
+function detectUrgency(text: string): boolean {
+  const t = text.toLowerCase();
+  return URGENCY_KEYWORDS.some((kw) => t.includes(kw));
+}
+
+const CATEGORY_META: Record<Category, { icon: typeof Briefcase; arabic: string; color: string }> = {
+  Travail: { icon: Briefcase, arabic: "الشغل", color: "text-primary" },
+  Logement: { icon: Home, arabic: "السكن", color: "text-secondary" },
+  Famille: { icon: Users, arabic: "الأسرة", color: "text-secondary" },
+  Contrats: { icon: FileSignature, arabic: "العقود", color: "text-primary" },
+};
 
 const CATEGORIES: { name: Category; icon: typeof Briefcase; arabic: string }[] = [
   { name: "Travail", icon: Briefcase, arabic: "الشغل" },
@@ -63,6 +115,8 @@ const Chat = () => {
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState<Category | "all">("all");
   const [activeConv, setActiveConv] = useState<string | null>(null);
+  const [detectedCategory, setDetectedCategory] = useState<Category | null>(null);
+  const [urgent, setUrgent] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -72,11 +126,18 @@ const Chat = () => {
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
-    const userMsg: Msg = { role: "user", content: text.trim() };
+    const trimmed = text.trim();
+    const userMsg: Msg = { role: "user", content: trimmed };
     const next = [...messages, userMsg];
     setMessages(next);
     setInput("");
     setLoading(true);
+
+    // Auto-detect category & urgency from full conversation context
+    const fullText = next.map((m) => m.content).join(" ");
+    const cat = detectCategory(fullText);
+    if (cat) setDetectedCategory(cat);
+    if (detectUrgency(trimmed)) setUrgent(true);
 
     try {
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`, {
