@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import LetterGenerator from "@/components/LetterGenerator";
+import MobileNav from "@/components/MobileNav";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Conversation = { id: string; title: string; category: Category };
@@ -119,12 +120,36 @@ const Chat = () => {
   const [detectedCategory, setDetectedCategory] = useState<Category | null>(null);
   const [urgent, setUrgent] = useState(false);
   const [letterOpen, setLetterOpen] = useState(false);
+  const [mobileSidebar, setMobileSidebar] = useState(false);
+  const touchStartX = useRef<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
+
+  // Swipe gestures (mobile): swipe right from left edge → open; swipe left → close
+  useEffect(() => {
+    const onStart = (e: TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+    };
+    const onEnd = (e: TouchEvent) => {
+      const start = touchStartX.current;
+      if (start == null) return;
+      const end = e.changedTouches[0].clientX;
+      const dx = end - start;
+      if (dx > 60 && start < 40 && !mobileSidebar) setMobileSidebar(true);
+      else if (dx < -60 && mobileSidebar) setMobileSidebar(false);
+      touchStartX.current = null;
+    };
+    window.addEventListener("touchstart", onStart, { passive: true });
+    window.addEventListener("touchend", onEnd, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", onStart);
+      window.removeEventListener("touchend", onEnd);
+    };
+  }, [mobileSidebar]);
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
