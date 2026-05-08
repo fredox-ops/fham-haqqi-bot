@@ -23,7 +23,7 @@ const ThemeToggle = () => {
       aria-label="Basculer thème"
     >
       <span
-        className="absolute h-7 w-7 rounded-full flex items-center justify-center transition-transform duration-500 cubic-bezier(0.34,1.56,0.64,1)"
+        className="absolute h-7 w-7 rounded-full flex items-center justify-center transition-transform duration-500"
         style={{
           background: light ? "hsl(var(--gold))" : "hsl(var(--electric-blue))",
           transform: light ? "translateX(28px)" : "translateX(0)",
