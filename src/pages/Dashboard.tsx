@@ -5,7 +5,7 @@ import {
   Briefcase, Home, Users, FileSignature, Scale,
 } from "lucide-react";
 import { toast } from "sonner";
-import ParticleBg from "@/components/ParticleBg";
+import GradientMesh from "@/components/GradientMesh";
 import MobileNav from "@/components/MobileNav";
 import ZelligeEmpty from "@/components/ZelligeEmpty";
 
@@ -87,8 +87,8 @@ const Dashboard = () => {
   const TopIcon = CAT_ICON[stats.top as Category] ?? Scale;
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative">
-      <ParticleBg />
+    <div className="min-h-screen text-foreground relative">
+      <GradientMesh />
 
       <header className="relative z-10 border-b border-border/50 backdrop-blur-md bg-card/20">
         <div className="container mx-auto px-5 py-4 flex items-center gap-3">

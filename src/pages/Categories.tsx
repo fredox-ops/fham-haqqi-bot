@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft, Briefcase, Home, Users, FileSignature, Building2, ShoppingCart, Scale,
 } from "lucide-react";
-import ParticleBg from "@/components/ParticleBg";
+import GradientMesh from "@/components/GradientMesh";
 import MobileNav from "@/components/MobileNav";
 
 type CategoryCard = {
@@ -170,8 +170,8 @@ const FlipCard = ({ c }: { c: CategoryCard }) => {
 };
 
 const Categories = () => (
-  <div className="min-h-screen bg-background text-foreground relative">
-    <ParticleBg />
+  <div className="min-h-screen text-foreground relative">
+    <GradientMesh />
     <header className="relative z-10 border-b border-border/50 backdrop-blur-md bg-card/20">
       <div className="container mx-auto px-5 py-4 flex items-center gap-3">
         <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
