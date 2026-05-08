@@ -59,7 +59,7 @@ const Index = () => {
             <div className="text-center lg:text-left animate-fade-in">
               <div className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-full glass border border-primary/30 text-primary mb-6">
                 <Sparkles className="h-3.5 w-3.5" />
-                IA juridique marocaine — propulsée par Claude
+                IA juridique marocaine
               </div>
 
               {/* Animated counter */}
