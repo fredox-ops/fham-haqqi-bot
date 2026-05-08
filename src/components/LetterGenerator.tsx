@@ -363,7 +363,10 @@ const LetterGenerator = ({ open, onOpenChange, conversation, category }: Props) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl w-[95vw] h-[90vh] p-0 glass border-glass-border overflow-hidden flex flex-col gap-0">
+      <DialogContent
+        className="max-w-6xl w-[95vw] h-[90vh] p-0 glass overflow-hidden flex flex-col gap-0 animate-paper-unfold"
+        style={{ transformOrigin: "center center", borderRadius: "1.5rem" }}
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 shrink-0">
           <div className="flex items-center gap-3">

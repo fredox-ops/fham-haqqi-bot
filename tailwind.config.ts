@@ -68,12 +68,14 @@ export default {
         display: ['Tajawal', 'system-ui', 'sans-serif'],
       },
       backgroundImage: {
+        'gradient-blue': 'var(--gradient-blue)',
         'gradient-gold': 'var(--gradient-gold)',
         'gradient-emerald': 'var(--gradient-emerald)',
         'gradient-mixed': 'var(--gradient-mixed)',
         'gradient-hero': 'var(--gradient-hero)',
       },
       boxShadow: {
+        'blue': 'var(--shadow-blue)',
         'gold': 'var(--shadow-gold)',
         'emerald': 'var(--shadow-emerald)',
         'glass': 'var(--shadow-glass)',
@@ -119,6 +121,24 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "mesh-drift": {
+          "0%,100%": { transform: "translate3d(0,0,0) scale(1)" },
+          "50%": { transform: "translate3d(4%,-3%,0) scale(1.06)" },
+        },
+        "scales-3d": {
+          "0%":   { transform: "rotateY(0deg) rotateX(8deg)" },
+          "100%": { transform: "rotateY(360deg) rotateX(8deg)" },
+        },
+        "radar-sweep": { to: { transform: "rotate(360deg)" } },
+        "morph-pattern": {
+          "0%,100%": { borderRadius: "42% 58% 60% 40% / 50% 45% 55% 50%", transform: "rotate(0deg)" },
+          "50%":     { borderRadius: "60% 40% 45% 55% / 40% 60% 50% 45%", transform: "rotate(180deg)" },
+        },
+        "paper-unfold": {
+          "0%":   { transform: "scaleY(0.02) scaleX(0.6)", opacity: "0" },
+          "35%":  { transform: "scaleY(0.02) scaleX(1)", opacity: "0.6" },
+          "100%": { transform: "scaleY(1) scaleX(1)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -129,6 +149,11 @@ export default {
         "glow-pulse": "glow-pulse 3s ease-in-out infinite",
         "pattern-drift": "pattern-drift 60s linear infinite",
         "shimmer": "shimmer 3s linear infinite",
+        "mesh-drift": "mesh-drift 18s ease-in-out infinite",
+        "scales-3d": "scales-3d 14s linear infinite",
+        "radar-sweep": "radar-sweep 4s linear infinite",
+        "morph-pattern": "morph-pattern 8s ease-in-out infinite",
+        "paper-unfold": "paper-unfold 0.9s cubic-bezier(0.34,1.56,0.64,1) both",
       },
     },
   },

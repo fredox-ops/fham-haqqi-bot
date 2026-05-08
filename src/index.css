@@ -8,103 +8,103 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* DarjaLex – Deep navy base, gold + emerald accents */
-    --background: 225 56% 7%;          /* #0A0F1E */
-    --foreground: 40 30% 96%;
+    /* DarjaLex v2 — Pure black + electric blue + bright gold */
+    --background: 0 0% 0%;             /* pure black */
+    --foreground: 0 0% 98%;
 
-    --card: 225 45% 11%;
-    --card-foreground: 40 30% 96%;
+    --card: 230 25% 6%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 225 45% 11%;
-    --popover-foreground: 40 30% 96%;
+    --popover: 230 25% 6%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 36 91% 55%;             /* electric gold #F5A623 */
-    --primary-foreground: 225 56% 8%;
+    --primary: 220 100% 50%;           /* electric blue #0066FF */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 167 100% 42%;         /* emerald #00D4A1 */
-    --secondary-foreground: 225 56% 8%;
+    --secondary: 51 100% 50%;          /* bright gold #FFD700 */
+    --secondary-foreground: 0 0% 5%;
 
-    --muted: 225 35% 15%;
-    --muted-foreground: 220 15% 65%;
+    --muted: 230 18% 10%;
+    --muted-foreground: 230 10% 65%;
 
-    --accent: 167 100% 42%;
-    --accent-foreground: 225 56% 8%;
+    --accent: 220 100% 50%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 40 30% 96%;
+    --destructive: 0 90% 58%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 225 30% 20%;
-    --input: 225 30% 18%;
-    --ring: 36 91% 55%;
+    --warning: 28 100% 56%;
+    --warning-foreground: 0 0% 5%;
 
-    --gold: 36 91% 55%;
-    --gold-glow: 42 100% 65%;
-    --emerald: 167 100% 42%;
-    --navy-deep: 225 56% 7%;
-    --navy-mid: 225 50% 11%;
+    --border: 230 20% 14%;
+    --input: 230 20% 10%;
+    --ring: 220 100% 50%;
 
-    --gradient-hero: radial-gradient(ellipse at top, hsl(225 60% 15%) 0%, hsl(var(--navy-deep)) 60%);
-    --gradient-gold: linear-gradient(135deg, hsl(36 91% 55%), hsl(42 100% 65%));
-    --gradient-emerald: linear-gradient(135deg, hsl(167 100% 42%), hsl(160 100% 35%));
-    --gradient-mixed: linear-gradient(135deg, hsl(36 91% 55%) 0%, hsl(167 100% 42%) 100%);
+    --electric-blue: 220 100% 50%;
+    --electric-blue-glow: 215 100% 65%;
+    --gold: 51 100% 50%;
+    --gold-glow: 48 100% 65%;
+    --violet: 270 90% 60%;
 
-    --shadow-gold: 0 10px 40px -10px hsl(36 91% 55% / 0.5);
-    --shadow-emerald: 0 10px 40px -10px hsl(167 100% 42% / 0.4);
-    --shadow-glass: 0 8px 32px 0 hsl(225 60% 3% / 0.6);
+    --gradient-blue: linear-gradient(135deg, hsl(220 100% 50%), hsl(230 100% 62%));
+    --gradient-gold: linear-gradient(135deg, hsl(51 100% 50%), hsl(45 100% 60%));
+    --gradient-mixed: linear-gradient(135deg, hsl(220 100% 50%) 0%, hsl(270 90% 60%) 50%, hsl(51 100% 55%) 100%);
+    /* legacy alias used by older components */
+    --gradient-emerald: linear-gradient(135deg, hsl(220 100% 50%), hsl(230 100% 62%));
+    --gradient-hero: radial-gradient(ellipse at top, hsl(220 60% 14% / 0.4) 0%, hsl(0 0% 0%) 60%);
 
-    --glass-bg: hsl(225 45% 14% / 0.55);
-    --glass-border: hsl(40 30% 96% / 0.08);
+    --shadow-blue: 0 10px 50px -10px hsl(220 100% 50% / 0.55);
+    --shadow-gold: 0 10px 50px -10px hsl(51 100% 50% / 0.5);
+    --shadow-emerald: 0 10px 50px -10px hsl(220 100% 50% / 0.5);
+    --shadow-glass: 0 8px 32px 0 hsl(0 0% 0% / 0.7);
+
+    --glow-normal: 0 0 25px hsl(220 100% 60% / 0.35);
+    --glow-warning: 0 0 30px hsl(28 100% 56% / 0.55);
+    --glow-urgent: 0 0 35px hsl(0 90% 58% / 0.7);
+
+    --glass-bg: hsl(230 25% 7% / 0.55);
+    --glass-border: hsl(0 0% 100% / 0.08);
 
     --transition-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 
-    --radius: 1rem;
+    --radius: 1.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 0 0% 4%;
+    --sidebar-foreground: 0 0% 92%;
+    --sidebar-primary: 220 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 230 18% 10%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 230 20% 14%;
+    --sidebar-ring: 220 100% 50%;
+  }
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+  /* Light mode variant — toggled via ThemeToggle */
+  :root.light {
+    --background: 0 0% 98%;
+    --foreground: 230 30% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 230 30% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 230 30% 8%;
+    --primary: 220 100% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 45 95% 48%;
+    --secondary-foreground: 0 0% 5%;
+    --muted: 230 15% 94%;
+    --muted-foreground: 230 10% 40%;
+    --accent: 220 100% 48%;
+    --accent-foreground: 0 0% 100%;
+    --border: 230 15% 88%;
+    --input: 230 15% 92%;
+    --ring: 220 100% 48%;
+    --glass-bg: hsl(0 0% 100% / 0.6);
+    --glass-border: hsl(230 30% 8% / 0.08);
+    --shadow-glass: 0 8px 32px 0 hsl(230 30% 8% / 0.08);
   }
 
   .dark {
-    /* App is dark by default; .dark mirrors :root */
-    --background: 225 56% 7%;
-    --foreground: 40 30% 96%;
-    --card: 225 45% 11%;
-    --card-foreground: 40 30% 96%;
-    --popover: 225 45% 11%;
-    --popover-foreground: 40 30% 96%;
-    --primary: 36 91% 55%;
-    --primary-foreground: 225 56% 8%;
-    --secondary: 167 100% 42%;
-    --secondary-foreground: 225 56% 8%;
-    --muted: 225 35% 15%;
-    --muted-foreground: 220 15% 65%;
-    --accent: 167 100% 42%;
-    --accent-foreground: 225 56% 8%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 40 30% 96%;
-    --border: 225 30% 20%;
-    --input: 225 30% 18%;
-    --ring: 36 91% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* dark mirrors :root */
   }
 }
 
@@ -117,6 +117,7 @@ All colors MUST be HSL.
     @apply bg-background text-foreground antialiased;
     font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
     font-feature-settings: "ss01", "cv01";
+    transition: background-color 0.6s ease, color 0.6s ease;
   }
 }
 
@@ -127,6 +128,14 @@ All colors MUST be HSL.
     -webkit-backdrop-filter: blur(20px) saturate(140%);
     border: 1px solid var(--glass-border);
     box-shadow: var(--shadow-glass);
+  }
+
+  .text-gradient-blue {
+    background: var(--gradient-blue);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
 
   .text-gradient-gold {
@@ -145,8 +154,71 @@ All colors MUST be HSL.
     color: transparent;
   }
 
+  .glow-blue { box-shadow: 0 0 30px hsl(var(--electric-blue) / 0.45), 0 0 60px hsl(var(--electric-blue) / 0.15); }
+  .glow-warning { box-shadow: var(--glow-warning); }
+  .glow-urgent { box-shadow: var(--glow-urgent); animation: pulse-urgent 1.6s ease-in-out infinite; }
+
+  .pill-input-focus {
+    position: relative;
+  }
+  .pill-input-focus::before {
+    content: "";
+    position: absolute; inset: -1px;
+    border-radius: 9999px;
+    padding: 1px;
+    background: conic-gradient(from var(--angle, 0deg), hsl(var(--electric-blue)), hsl(var(--violet)), hsl(var(--gold)), hsl(var(--electric-blue)));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    opacity: 0; transition: opacity .4s ease;
+  }
+  .pill-input-focus:focus-within::before { opacity: 1; animation: angle-spin 6s linear infinite; }
+
+  @property --angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+  @keyframes angle-spin { to { --angle: 360deg; } }
+
   .arabic-pattern {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g fill='none' stroke='%23F5A623' stroke-width='0.6' opacity='0.18'><path d='M60 5 L115 60 L60 115 L5 60 Z'/><path d='M60 25 L95 60 L60 95 L25 60 Z'/><circle cx='60' cy='60' r='18'/><path d='M60 42 L78 60 L60 78 L42 60 Z'/><path d='M0 60 H120 M60 0 V120'/></g></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g fill='none' stroke='%230066FF' stroke-width='0.6' opacity='0.5'><path d='M60 5 L115 60 L60 115 L5 60 Z'/><path d='M60 25 L95 60 L60 95 L25 60 Z'/><circle cx='60' cy='60' r='18'/><path d='M60 42 L78 60 L60 78 L42 60 Z'/><path d='M0 60 H120 M60 0 V120'/></g></svg>");
     background-size: 220px 220px;
+  }
+
+  .zellige-overlay {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><g fill='none' stroke='%23FFD700' stroke-width='0.8' opacity='1'><polygon points='80,5 100,40 140,40 110,70 125,110 80,85 35,110 50,70 20,40 60,40'/><circle cx='80' cy='80' r='30'/><polygon points='80,55 95,75 80,95 65,75'/><path d='M0 80 H160 M80 0 V160'/></g></svg>");
+    background-size: 160px 160px;
+  }
+
+  .haptic-tap { transition: transform 120ms cubic-bezier(0.34,1.56,0.64,1); }
+  .haptic-tap:active { transform: scale(0.96); }
+}
+
+@layer utilities {
+  @keyframes pulse-urgent {
+    0%,100% { box-shadow: 0 0 25px hsl(0 90% 58% / 0.55); }
+    50%     { box-shadow: 0 0 50px hsl(0 90% 58% / 0.95); }
+  }
+  @keyframes mesh-drift {
+    0%   { transform: translate3d(0,0,0) scale(1); }
+    33%  { transform: translate3d(6%,-4%,0) scale(1.08); }
+    66%  { transform: translate3d(-5%,5%,0) scale(0.96); }
+    100% { transform: translate3d(0,0,0) scale(1); }
+  }
+  @keyframes scales-3d {
+    0%   { transform: rotateY(0deg) rotateX(8deg); }
+    100% { transform: rotateY(360deg) rotateX(8deg); }
+  }
+  @keyframes radar-sweep {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes paper-unfold {
+    0%   { transform: scaleY(0.02) scaleX(0.6); opacity: 0; }
+    35%  { transform: scaleY(0.02) scaleX(1); opacity: 0.6; }
+    100% { transform: scaleY(1) scaleX(1); opacity: 1; }
+  }
+  @keyframes morph-pattern {
+    0%,100% { border-radius: 42% 58% 60% 40% / 50% 45% 55% 50%; transform: rotate(0deg); }
+    50%     { border-radius: 60% 40% 45% 55% / 40% 60% 50% 45%; transform: rotate(180deg); }
+  }
+  @keyframes count-pop {
+    0% { transform: translateY(8px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
   }
 }
