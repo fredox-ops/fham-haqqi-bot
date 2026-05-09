@@ -485,26 +485,40 @@ const LetterGenerator = ({ open, onOpenChange, conversation, category }: Props) 
               hint="Auto-détecté"
             />
             <FieldGroup
-              label="Corps de la lettre"
+              label={lang === "ar" ? "نص الرسالة" : "Corps de la lettre"}
               value={fields.body}
               onChange={(v) => update("body", v)}
               textarea
               rows={8}
-              hint="Pré-rempli depuis votre conversation"
+              hint={aiLoading ? (lang === "ar" ? "جاري التوليد بالذكاء الاصطناعي…" : "Génération IA en cours…") : (lang === "ar" ? "تم توليده بالذكاء الاصطناعي" : "Généré par IA depuis votre conversation")}
             />
+
+            {/* AI regenerate */}
+            <Button
+              onClick={() => generateWithAI(lang)}
+              disabled={aiLoading}
+              variant="outline"
+              className="w-full h-10 rounded-2xl"
+            >
+              {aiLoading ? (
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {lang === "ar" ? "جاري التوليد…" : "Génération IA…"}</>
+              ) : (
+                <><Sparkles className="h-4 w-4 mr-2" /> {lang === "ar" ? "إعادة التوليد بالذكاء الاصطناعي" : "Régénérer avec l'IA"}</>
+              )}
+            </Button>
 
             {/* Finalize */}
             <Button
               onClick={finalize}
-              disabled={generating || stamped}
+              disabled={generating || stamped || aiLoading}
               className="w-full h-12 rounded-2xl bg-gradient-gold text-primary-foreground font-semibold shadow-gold hover:scale-[1.02] disabled:opacity-60 transition-all"
             >
               {generating ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Certification…</>
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {lang === "ar" ? "جاري الاعتماد…" : "Certification…"}</>
               ) : stamped ? (
-                <><Check className="h-4 w-4 mr-2" /> Lettre certifiée</>
+                <><Check className="h-4 w-4 mr-2" /> {lang === "ar" ? "رسالة معتمدة" : "Lettre certifiée"}</>
               ) : (
-                <><Stamp className="h-4 w-4 mr-2" /> Finaliser & apposer le tampon</>
+                <><Stamp className="h-4 w-4 mr-2" /> {lang === "ar" ? "إنهاء ووضع الختم" : "Finaliser & apposer le tampon"}</>
               )}
             </Button>
           </div>
