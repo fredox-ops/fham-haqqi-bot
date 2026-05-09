@@ -199,9 +199,9 @@ const Dashboard = () => {
                 <span
                   className="inline-block px-3 py-1.5 rounded-full text-sm font-semibold"
                   style={{
-                    background: `${DOMAIN_COLORS[topDomain] ?? "hsl(var(--gold))"}20`,
-                    color: DOMAIN_COLORS[topDomain] ?? "hsl(var(--gold))",
-                    border: `1px solid ${DOMAIN_COLORS[topDomain] ?? "hsl(var(--gold))"}40`,
+                    background: domainColor(topDomain, 0.12),
+                    color: domainColor(topDomain),
+                    border: `1px solid ${domainColor(topDomain, 0.25)}`,
                   }}
                 >
                   {t(topDomain)}
