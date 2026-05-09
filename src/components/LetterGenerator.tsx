@@ -254,17 +254,10 @@ function downloadPdf(f: LetterFields, lang: Lang) {
   doc.text(lang === "fr" ? "ROYAUME DU MAROC" : "AL-MAMLAKA AL-MAGHRIBIYA", pageW / 2, 11, { align: "center" });
 
   // Watermark
-  doc.setTextColor(180, 180, 190);
+  doc.setTextColor(211, 211, 211);
   doc.setFontSize(60);
   doc.setFont("helvetica", "bold");
-  const anyDoc = doc as any;
-  if (anyDoc.GState && anyDoc.setGState) {
-    anyDoc.setGState(new anyDoc.GState({ opacity: 0.08 }));
-  }
   doc.text("ROYAUME DU MAROC", pageW / 2, 160, { align: "center", angle: 25 });
-  if (anyDoc.GState && anyDoc.setGState) {
-    anyDoc.setGState(new anyDoc.GState({ opacity: 1 }));
-  }
 
   doc.setTextColor(20, 20, 30);
   doc.setFont("helvetica", "normal");
