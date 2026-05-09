@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import Categories from "./pages/Categories.tsx";
 import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import { AuthProvider, ProtectedRoute } from "@/lib/auth";
 import { LanguageProvider } from "@/lib/i18n";
 
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/categories" element={<Categories />} />
               <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
