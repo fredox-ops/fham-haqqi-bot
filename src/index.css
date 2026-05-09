@@ -4,27 +4,27 @@
 
 @layer base {
   :root {
-    /* Mizani v3 — editorial, near-black + gold/blue/emerald */
-    --background: 260 80% 2%;
-    --foreground: 265 100% 98%;
+    /* Mizani v4 — Maison de Justice (deep indigo night + imperial gold) */
+    --background: 230 38% 4%;
+    --foreground: 42 30% 96%;
 
-    --card: 258 45% 7%;
-    --card-foreground: 265 100% 98%;
+    --card: 230 32% 8%;
+    --card-foreground: 42 30% 96%;
 
-    --popover: 258 45% 7%;
-    --popover-foreground: 265 100% 98%;
+    --popover: 230 32% 8%;
+    --popover-foreground: 42 30% 96%;
 
     --primary: 42 78% 60%;             /* gold */
     --primary-foreground: 260 80% 4%;
 
-    --secondary: 230 84% 60%;          /* blue */
+    --secondary: 220 80% 58%;          /* Majorelle blue */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 258 35% 10%;
-    --muted-foreground: 270 12% 60%;
+    --muted: 230 28% 11%;
+    --muted-foreground: 42 12% 65%;
 
-    --accent: 162 94% 43%;             /* emerald */
-    --accent-foreground: 260 80% 4%;
+    --accent: 158 65% 42%;             /* Médina green */
+    --accent-foreground: 230 38% 4%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -32,34 +32,39 @@
     --warning: 28 100% 60%;
     --warning-foreground: 0 0% 5%;
 
-    --border: 258 30% 14%;
-    --input: 258 30% 10%;
+    --border: 230 25% 14%;
+    --input: 230 28% 10%;
     --ring: 42 78% 60%;
 
     --gold: 42 78% 60%;
     --gold-soft: 42 90% 75%;
-    --blue: 230 84% 60%;
-    --emerald: 162 94% 43%;
-    --violet: 270 70% 60%;
+    --blue: 220 80% 58%;
+    --emerald: 158 65% 45%;
+    --violet: 268 60% 60%;
     --pink: 330 82% 65%;
-    --orange: 24 95% 60%;
+    --orange: 14 70% 55%;
+    --terracotta: 14 70% 52%;
+    --ink: 230 35% 6%;
+    --paper: 42 30% 96%;
 
-    --bg-primary: 260 80% 2%;
-    --bg-secondary: 258 45% 7%;
-    --text-muted: 270 12% 49%;
+    --bg-primary: 230 38% 4%;
+    --bg-secondary: 230 32% 8%;
+    --text-muted: 42 12% 60%;
 
-    --gradient-gold: linear-gradient(135deg, hsl(42 78% 60%), hsl(36 90% 50%));
-    --gradient-gold-soft: linear-gradient(135deg, hsl(42 90% 70%), hsl(38 78% 56%));
-    --gradient-blue: linear-gradient(135deg, hsl(230 84% 60%), hsl(245 80% 65%));
-    --gradient-emerald: linear-gradient(135deg, hsl(162 94% 43%), hsl(180 80% 50%));
-    --gradient-mixed: linear-gradient(135deg, hsl(230 84% 60%), hsl(270 70% 60%) 50%, hsl(42 78% 60%));
+    --gradient-gold: linear-gradient(135deg, hsl(42 85% 65%), hsl(34 88% 48%));
+    --gradient-gold-soft: linear-gradient(135deg, hsl(42 90% 72%), hsl(38 78% 56%));
+    --gradient-blue: linear-gradient(135deg, hsl(220 80% 58%), hsl(235 75% 62%));
+    --gradient-emerald: linear-gradient(135deg, hsl(158 65% 42%), hsl(178 60% 48%));
+    --gradient-mixed: linear-gradient(135deg, hsl(220 80% 58%), hsl(268 55% 58%) 50%, hsl(42 78% 60%));
+    --gradient-paper: linear-gradient(180deg, hsl(42 28% 92%), hsl(40 25% 87%));
 
-    --shadow-gold: 0 12px 50px -10px hsl(42 78% 60% / 0.5);
-    --shadow-blue: 0 12px 50px -10px hsl(230 84% 60% / 0.55);
-    --shadow-glass: 0 10px 40px -8px hsl(260 80% 2% / 0.7);
+    --shadow-gold: 0 14px 55px -10px hsl(42 78% 60% / 0.45);
+    --shadow-blue: 0 14px 55px -10px hsl(220 80% 58% / 0.5);
+    --shadow-glass: 0 12px 50px -8px hsl(230 60% 2% / 0.7);
+    --shadow-paper: 0 1px 0 hsl(42 30% 100% / 0.04) inset, 0 24px 50px -20px hsl(230 60% 2% / 0.7);
 
-    --glass-bg: hsl(265 35% 100% / 0.04);
-    --glass-border: hsl(265 35% 100% / 0.08);
+    --glass-bg: hsl(42 30% 100% / 0.035);
+    --glass-border: hsl(42 60% 80% / 0.10);
 
     --radius: 1.25rem;
 
@@ -73,60 +78,65 @@
     --sidebar-ring: 42 78% 60%;
   }
 
-  /* === LIGHT MODE === */
+  /* === LIGHT MODE — Papier ivoire & encre === */
   .light {
-    --background: 48 33% 96%;          /* warm white #FAFAF8 */
-    --foreground: 36 60% 7%;           /* near-black #1A1208 */
+    --background: 42 35% 96%;          /* ivory paper */
+    --foreground: 30 35% 9%;           /* deep ink */
 
-    --card: 42 28% 92%;                /* #F0EDE6 */
-    --card-foreground: 36 60% 7%;
+    --card: 42 40% 99%;                /* near white card */
+    --card-foreground: 30 35% 9%;
 
-    --popover: 48 33% 96%;
-    --popover-foreground: 36 60% 7%;
+    --popover: 42 40% 99%;
+    --popover-foreground: 30 35% 9%;
 
-    --primary: 42 78% 60%;
-    --primary-foreground: 36 60% 7%;
+    --primary: 38 78% 45%;             /* burnished gold */
+    --primary-foreground: 42 40% 99%;
 
-    --secondary: 230 75% 50%;
+    --secondary: 210 60% 42%;          /* Chefchaouen blue */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 42 22% 88%;
-    --muted-foreground: 42 24% 33%;    /* #6B5E3E */
+    --muted: 42 22% 90%;
+    --muted-foreground: 30 18% 35%;
 
-    --accent: 162 70% 38%;
+    --accent: 158 55% 32%;             /* deep medina green */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 75% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 36 20% 82%;
-    --input: 42 28% 90%;
-    --ring: 42 78% 60%;
+    --border: 36 22% 82%;
+    --input: 42 28% 92%;
+    --ring: 38 78% 45%;
 
-    --gold: 42 78% 50%;
-    --gold-soft: 42 88% 65%;
-    --blue: 230 75% 50%;
-    --emerald: 162 70% 38%;
-    --violet: 270 60% 50%;
-    --pink: 330 70% 55%;
-    --orange: 24 90% 52%;
+    --gold: 38 78% 45%;
+    --gold-soft: 42 80% 60%;
+    --blue: 210 60% 42%;
+    --emerald: 158 55% 32%;
+    --violet: 268 50% 48%;
+    --pink: 340 60% 50%;
+    --orange: 14 70% 48%;
+    --terracotta: 14 70% 45%;
+    --ink: 30 35% 9%;
+    --paper: 42 35% 96%;
 
-    --bg-primary: 48 33% 96%;
-    --bg-secondary: 42 28% 92%;
-    --text-muted: 42 24% 33%;
+    --bg-primary: 42 35% 96%;
+    --bg-secondary: 42 40% 99%;
+    --text-muted: 30 18% 35%;
 
-    --gradient-gold: linear-gradient(135deg, hsl(42 78% 55%), hsl(36 90% 45%));
-    --gradient-gold-soft: linear-gradient(135deg, hsl(42 90% 65%), hsl(38 78% 50%));
-    --gradient-blue: linear-gradient(135deg, hsl(230 75% 50%), hsl(245 70% 55%));
-    --gradient-emerald: linear-gradient(135deg, hsl(162 70% 40%), hsl(180 60% 45%));
-    --gradient-mixed: linear-gradient(135deg, hsl(230 75% 50%), hsl(270 60% 50%) 50%, hsl(42 78% 55%));
+    --gradient-gold: linear-gradient(135deg, hsl(38 80% 50%), hsl(30 88% 38%));
+    --gradient-gold-soft: linear-gradient(135deg, hsl(42 85% 60%), hsl(36 75% 45%));
+    --gradient-blue: linear-gradient(135deg, hsl(210 60% 42%), hsl(220 55% 48%));
+    --gradient-emerald: linear-gradient(135deg, hsl(158 55% 32%), hsl(175 50% 38%));
+    --gradient-mixed: linear-gradient(135deg, hsl(210 60% 42%), hsl(268 50% 48%) 50%, hsl(38 78% 45%));
+    --gradient-paper: linear-gradient(180deg, hsl(42 40% 99%), hsl(42 30% 94%));
 
-    --shadow-gold: 0 12px 50px -12px hsl(42 78% 50% / 0.4);
-    --shadow-blue: 0 12px 50px -12px hsl(230 75% 50% / 0.4);
-    --shadow-glass: 0 10px 40px -8px hsl(42 24% 33% / 0.18);
+    --shadow-gold: 0 14px 50px -14px hsl(38 78% 45% / 0.35);
+    --shadow-blue: 0 14px 50px -14px hsl(210 60% 42% / 0.30);
+    --shadow-glass: 0 12px 45px -10px hsl(30 30% 20% / 0.14);
+    --shadow-paper: 0 1px 0 hsl(0 0% 100%) inset, 0 18px 40px -22px hsl(30 30% 15% / 0.25);
 
-    --glass-bg: hsl(0 0% 100% / 0.55);
-    --glass-border: hsl(36 30% 20% / 0.08);
+    --glass-bg: hsl(0 0% 100% / 0.65);
+    --glass-border: hsl(36 30% 20% / 0.10);
 
     --sidebar-background: 42 28% 94%;
     --sidebar-foreground: 36 60% 7%;
@@ -176,6 +186,8 @@
   .font-display { font-family: 'Cormorant Garamond', 'Georgia', serif; letter-spacing: -0.01em; }
   .font-body    { font-family: 'DM Sans', system-ui, sans-serif; }
   .font-arabic  { font-family: 'Amiri', 'Cormorant Garamond', serif; }
+  .font-kufi    { font-family: 'Reem Kufi', 'Amiri', serif; }
+  .font-justice { font-family: 'Fraunces', 'Cormorant Garamond', serif; font-optical-sizing: auto; letter-spacing: -0.02em; }
 
   .glass {
     background: var(--glass-bg);
@@ -186,9 +198,39 @@
   }
 
   .glass-strong {
-    background: hsl(258 45% 7% / 0.7);
+    background: hsl(var(--card) / 0.78);
     backdrop-filter: blur(28px) saturate(150%);
     border: 1px solid var(--glass-border);
+  }
+
+  .light .glass-strong {
+    background: hsl(0 0% 100% / 0.85);
+    box-shadow: var(--shadow-paper);
+  }
+
+  .paper {
+    background: var(--gradient-paper);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-paper);
+    position: relative;
+  }
+  .paper::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
+    opacity: 0.06; mix-blend-mode: multiply;
+  }
+  .light .paper::after { opacity: 0.10; }
+
+  /* Theme toggle clip-path circular reveal */
+  .theme-transitioning::before {
+    content: ""; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+    background: hsl(var(--background));
+    clip-path: circle(0% at var(--reveal-x, 50%) var(--reveal-y, 50%));
+    animation: theme-reveal 700ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+  @keyframes theme-reveal {
+    0%   { clip-path: circle(0% at var(--reveal-x, 50%) var(--reveal-y, 50%)); }
+    100% { clip-path: circle(150% at var(--reveal-x, 50%) var(--reveal-y, 50%)); }
   }
 
   .text-gradient-gold {
@@ -212,6 +254,10 @@
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><g fill='none' stroke='%23E8B84B' stroke-width='0.7' opacity='1'><polygon points='90,8 112,45 156,45 122,78 138,124 90,98 42,124 58,78 24,45 68,45'/><circle cx='90' cy='90' r='34'/><polygon points='90,60 110,82 90,104 70,82'/><path d='M0 90 H180 M90 0 V180'/></g></svg>");
     background-size: 180px 180px;
   }
+
+  /* Reveal-on-scroll utility */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 900ms cubic-bezier(0.22,1,0.36,1), transform 900ms cubic-bezier(0.22,1,0.36,1); }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
   .haptic-tap { transition: transform 120ms cubic-bezier(0.34,1.56,0.64,1); }
   .haptic-tap:active { transform: scale(0.97); }
