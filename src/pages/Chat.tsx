@@ -646,15 +646,18 @@ const Chat = () => {
                 type="button"
                 ref={micBtnRef}
                 onClick={toggleDictation}
-                aria-label={dictating ? "Arrêter la dictée" : "Dicter votre message"}
-                title={dictating ? "Arrêter la dictée" : "Dicter votre message"}
+                disabled={transcribing}
+                aria-label={dictating ? "Arrêter l'enregistrement" : "Enregistrer un message vocal"}
+                title={dictating ? "Arrêter l'enregistrement" : "Enregistrer un message vocal"}
                 className={`haptic-tap h-10 w-10 md:h-11 md:w-11 shrink-0 rounded-full flex items-center justify-center transition-all ${
                   dictating
                     ? "bg-destructive/15 text-destructive border border-destructive/40 animate-pulse"
+                    : transcribing
+                    ? "bg-gold/15 text-gold border border-gold/40"
                     : "hover:bg-muted/40 text-muted-foreground hover:text-gold"
                 }`}
               >
-                {dictating ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                {transcribing ? <Loader2 className="h-4 w-4 animate-spin" /> : dictating ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
               </button>
               <button
                 type="button"
