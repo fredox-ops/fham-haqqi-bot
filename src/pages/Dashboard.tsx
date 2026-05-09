@@ -32,17 +32,21 @@ const DEMO: Row[] = [
 ];
 
 const DOMAIN_COLORS: Record<string, string> = {
-  Travail: "hsl(var(--blue))",
-  Logement: "hsl(var(--gold))",
-  Famille: "hsl(var(--emerald))",
-  Contrats: "hsl(var(--violet))",
-  Administratif: "hsl(var(--orange))",
-  Consommation: "hsl(var(--pink))",
-  Consommateur: "hsl(var(--pink))",
-  Pénal: "hsl(var(--destructive))",
-  Commercial: "hsl(var(--blue))",
-  Fiscal: "hsl(var(--gold))",
-  Autre: "hsl(var(--muted-foreground))",
+  Travail: "var(--blue)",
+  Logement: "var(--gold)",
+  Famille: "var(--emerald)",
+  Contrats: "var(--violet)",
+  Administratif: "var(--orange)",
+  Consommation: "var(--pink)",
+  Consommateur: "var(--pink)",
+  Pénal: "var(--destructive)",
+  Commercial: "var(--blue)",
+  Fiscal: "var(--gold)",
+  Autre: "var(--muted-foreground)",
+};
+const domainColor = (name: string, alpha = 1) => {
+  const v = DOMAIN_COLORS[name] ?? "var(--gold)";
+  return alpha >= 1 ? `hsl(${v})` : `hsl(${v} / ${alpha})`;
 };
 
 const ALL_DOMAINS = ["Travail","Famille","Logement","Contrats","Administratif","Pénal","Consommation","Commercial","Fiscal","Autre"];
@@ -195,9 +199,9 @@ const Dashboard = () => {
                 <span
                   className="inline-block px-3 py-1.5 rounded-full text-sm font-semibold"
                   style={{
-                    background: `${DOMAIN_COLORS[topDomain] ?? "hsl(var(--gold))"}20`,
-                    color: DOMAIN_COLORS[topDomain] ?? "hsl(var(--gold))",
-                    border: `1px solid ${DOMAIN_COLORS[topDomain] ?? "hsl(var(--gold))"}40`,
+                    background: domainColor(topDomain, 0.12),
+                    color: domainColor(topDomain),
+                    border: `1px solid ${domainColor(topDomain, 0.25)}`,
                   }}
                 >
                   {t(topDomain)}
@@ -237,9 +241,9 @@ const Dashboard = () => {
                     onClick={() => setDomainFilter(d)}
                     className={`text-[11px] px-3 py-1.5 rounded-full border transition ${active ? "border-transparent" : "border-border/50 hover:text-foreground"}`}
                     style={active ? {
-                      background: `${DOMAIN_COLORS[d] ?? "hsl(var(--gold))"}20`,
-                      color: DOMAIN_COLORS[d] ?? "hsl(var(--gold))",
-                      borderColor: `${DOMAIN_COLORS[d] ?? "hsl(var(--gold))"}60`,
+                      background: domainColor(d, 0.12),
+                      color: domainColor(d),
+                      borderColor: domainColor(d, 0.4),
                     } : undefined}
                   >
                     {t(d)} ({count})
@@ -273,8 +277,8 @@ const Dashboard = () => {
                         <span
                           className="text-[11px] px-2.5 py-1 rounded-full font-medium"
                           style={{
-                            background: `${DOMAIN_COLORS[r.domain] ?? "hsl(var(--gold))"}20`,
-                            color: DOMAIN_COLORS[r.domain] ?? "hsl(var(--gold))",
+                            background: domainColor(r.domain, 0.12),
+                            color: domainColor(r.domain),
                           }}
                         >
                           {t(r.domain)}
@@ -331,7 +335,7 @@ const Dashboard = () => {
                       className="h-full rounded-full"
                       style={{
                         width: `${d.pct}%`,
-                        background: `linear-gradient(90deg, ${DOMAIN_COLORS[d.name]}, ${DOMAIN_COLORS[d.name]}70)`,
+                        background: `linear-gradient(90deg, ${domainColor(d.name)}, ${domainColor(d.name, 0.45)})`,
                         animation: `bar-fill 1.2s cubic-bezier(0.22,1,0.36,1) ${i * 100}ms both`,
                       }}
                     />
