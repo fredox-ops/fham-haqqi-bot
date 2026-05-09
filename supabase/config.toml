@@ -2,3 +2,6 @@ project_id = "lafbwfmokurhlgxdzrpe"
 
 [functions.suggest-prompts]
 verify_jwt = false
+
+[functions.generate-letter]
+verify_jwt = false

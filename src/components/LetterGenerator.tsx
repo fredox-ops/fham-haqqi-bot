@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { jsPDF } from "jspdf";
 import {
-  X, Copy, Download, Mail, Stamp, FileText, Loader2, Check,
+  X, Copy, Download, Mail, Stamp, FileText, Loader2, Check, Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Lang = "fr" | "ar";
@@ -104,7 +105,7 @@ const LetterPreview = ({
       {/* Watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
         <span
-          className="text-[hsl(36_91%_55%)]/[0.07] font-bold tracking-widest"
+          className="text-[hsl(0_0%_50%)]/[0.08] font-bold tracking-widest"
           style={{ fontSize: "clamp(2rem, 8vw, 5rem)", transform: "rotate(-25deg)" }}
         >
           {t.kingdom}
@@ -117,12 +118,12 @@ const LetterPreview = ({
       <div className="absolute bottom-0 left-0 w-20 h-20 border-b-2 border-l-2 border-[hsl(36_91%_55%)]" />
       <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-[hsl(36_91%_55%)]" />
 
-      {/* Gold header bar */}
-      <div className="relative bg-gradient-to-r from-[hsl(36_91%_55%)] via-[hsl(42_100%_65%)] to-[hsl(36_91%_55%)] px-8 py-3 text-center">
-        <div className="text-[hsl(225_56%_8%)] font-bold tracking-[0.25em] text-sm uppercase">
+      {/* Light gray header bar */}
+      <div className="relative bg-gradient-to-r from-[hsl(0_0%_92%)] via-[hsl(0_0%_96%)] to-[hsl(0_0%_92%)] border-b border-[hsl(0_0%_85%)] px-8 py-3 text-center">
+        <div className="text-[hsl(225_30%_25%)] font-bold tracking-[0.25em] text-sm uppercase">
           {t.kingdom}
         </div>
-        <div className="text-[hsl(225_56%_8%)]/70 text-[10px] tracking-widest mt-0.5">{t.ministry}</div>
+        <div className="text-[hsl(225_30%_45%)] text-[10px] tracking-widest mt-0.5">{t.ministry}</div>
       </div>
 
       {/* Body */}
@@ -242,21 +243,23 @@ function downloadPdf(f: LetterFields, lang: Lang) {
   const margin = 20;
   const maxW = pageW - margin * 2;
 
-  // Gold header bar
-  doc.setFillColor(245, 166, 35);
+  // Light gray header bar
+  doc.setFillColor(240, 240, 242);
   doc.rect(0, 0, pageW, 18, "F");
-  doc.setTextColor(10, 15, 30);
+  doc.setDrawColor(215, 215, 220);
+  doc.line(0, 18, pageW, 18);
+  doc.setTextColor(60, 65, 80);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text(lang === "fr" ? "ROYAUME DU MAROC" : "AL-MAMLAKA AL-MAGHRIBIYA", pageW / 2, 11, { align: "center" });
 
   // Watermark
-  doc.setTextColor(245, 166, 35);
+  doc.setTextColor(180, 180, 190);
   doc.setFontSize(60);
   doc.setFont("helvetica", "bold");
   const anyDoc = doc as any;
   if (anyDoc.GState && anyDoc.setGState) {
-    anyDoc.setGState(new anyDoc.GState({ opacity: 0.07 }));
+    anyDoc.setGState(new anyDoc.GState({ opacity: 0.08 }));
   }
   doc.text("ROYAUME DU MAROC", pageW / 2, 160, { align: "center", angle: 25 });
   if (anyDoc.GState && anyDoc.setGState) {
@@ -323,6 +326,36 @@ const LetterGenerator = ({ open, onOpenChange, conversation, category }: Props) 
   const [lang, setLang] = useState<Lang>("fr");
   const [stamped, setStamped] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const lastGenLangRef = useRef<Lang | null>(null);
+
+  const arabicDate = () =>
+    new Date().toLocaleDateString("ar-MA", { day: "numeric", month: "long", year: "numeric" });
+
+  const generateWithAI = async (targetLang: Lang) => {
+    if (!conversation || conversation.length === 0) return;
+    setAiLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-letter", {
+        body: { messages: conversation, lang: targetLang, category: category ?? null },
+      });
+      if (error) throw error;
+      setFields((prev) => ({
+        ...prev,
+        recipient: data?.recipient || prev.recipient,
+        subject: data?.subject || prev.subject,
+        body: data?.body || prev.body,
+        city: targetLang === "ar" ? "الدار البيضاء" : (prev.city || "Casablanca"),
+        date: targetLang === "ar" ? arabicDate() : new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }),
+      }));
+      lastGenLangRef.current = targetLang;
+    } catch (e) {
+      console.error(e);
+      toast.error(targetLang === "ar" ? "فشل توليد الرسالة" : "Échec de la génération IA");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   // Auto-fill on open
   useEffect(() => {
@@ -330,8 +363,20 @@ const LetterGenerator = ({ open, onOpenChange, conversation, category }: Props) 
       const auto = autofillFromConversation(conversation);
       setFields((prev) => ({ ...prev, ...DEFAULTS_FR, ...auto }));
       setStamped(false);
+      lastGenLangRef.current = null;
+      // Fire AI generation for current language
+      generateWithAI(lang);
     }
-  }, [open, conversation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  // Regenerate when language changes while open
+  useEffect(() => {
+    if (open && lastGenLangRef.current && lastGenLangRef.current !== lang) {
+      generateWithAI(lang);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
 
   const update = (k: keyof LetterFields, v: string) => setFields((p) => ({ ...p, [k]: v }));
 
@@ -340,7 +385,7 @@ const LetterGenerator = ({ open, onOpenChange, conversation, category }: Props) 
     await new Promise((r) => setTimeout(r, 700));
     setStamped(true);
     setGenerating(false);
-    toast.success("Lettre certifiée et prête.");
+    toast.success(lang === "ar" ? "تم اعتماد الرسالة." : "Lettre certifiée et prête.");
   };
 
   const onCopy = async () => {
@@ -440,26 +485,40 @@ const LetterGenerator = ({ open, onOpenChange, conversation, category }: Props) 
               hint="Auto-détecté"
             />
             <FieldGroup
-              label="Corps de la lettre"
+              label={lang === "ar" ? "نص الرسالة" : "Corps de la lettre"}
               value={fields.body}
               onChange={(v) => update("body", v)}
               textarea
               rows={8}
-              hint="Pré-rempli depuis votre conversation"
+              hint={aiLoading ? (lang === "ar" ? "جاري التوليد بالذكاء الاصطناعي…" : "Génération IA en cours…") : (lang === "ar" ? "تم توليده بالذكاء الاصطناعي" : "Généré par IA depuis votre conversation")}
             />
+
+            {/* AI regenerate */}
+            <Button
+              onClick={() => generateWithAI(lang)}
+              disabled={aiLoading}
+              variant="outline"
+              className="w-full h-10 rounded-2xl"
+            >
+              {aiLoading ? (
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {lang === "ar" ? "جاري التوليد…" : "Génération IA…"}</>
+              ) : (
+                <><Sparkles className="h-4 w-4 mr-2" /> {lang === "ar" ? "إعادة التوليد بالذكاء الاصطناعي" : "Régénérer avec l'IA"}</>
+              )}
+            </Button>
 
             {/* Finalize */}
             <Button
               onClick={finalize}
-              disabled={generating || stamped}
+              disabled={generating || stamped || aiLoading}
               className="w-full h-12 rounded-2xl bg-gradient-gold text-primary-foreground font-semibold shadow-gold hover:scale-[1.02] disabled:opacity-60 transition-all"
             >
               {generating ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Certification…</>
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {lang === "ar" ? "جاري الاعتماد…" : "Certification…"}</>
               ) : stamped ? (
-                <><Check className="h-4 w-4 mr-2" /> Lettre certifiée</>
+                <><Check className="h-4 w-4 mr-2" /> {lang === "ar" ? "رسالة معتمدة" : "Lettre certifiée"}</>
               ) : (
-                <><Stamp className="h-4 w-4 mr-2" /> Finaliser & apposer le tampon</>
+                <><Stamp className="h-4 w-4 mr-2" /> {lang === "ar" ? "إنهاء ووضع الختم" : "Finaliser & apposer le tampon"}</>
               )}
             </Button>
           </div>
