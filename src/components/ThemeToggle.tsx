@@ -40,10 +40,10 @@ const ThemeToggle = ({ className = "" }: { className?: string }) => {
         setTheme(next);
         apply(next);
         try { localStorage.setItem(KEY, next); } catch {}
-      }, 480);
+      }, 520);
       window.setTimeout(() => {
         document.documentElement.classList.remove("theme-transitioning");
-      }, 720);
+      }, 940);
     } else {
       setTheme(next);
       apply(next);
