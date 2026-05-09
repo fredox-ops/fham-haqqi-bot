@@ -7,6 +7,7 @@ import BackgroundFX from "@/components/BackgroundFX";
 import Header from "@/components/Header";
 import MobileNav from "@/components/MobileNav";
 import AnimatedCounter from "@/components/AnimatedCounter";
+import AnimatedLogo from "@/components/AnimatedLogo";
 
 const DOMAINS = [
   { name: "Travail",        glow: "blue",    Icon: Briefcase,     desc: "Licenciement, salaire, indemnités, CNSS." },
