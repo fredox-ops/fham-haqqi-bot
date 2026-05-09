@@ -6,6 +6,7 @@ import {
 import BackgroundFX from "@/components/BackgroundFX";
 import Header from "@/components/Header";
 import MobileNav from "@/components/MobileNav";
+import { useAuth, loadConversations, saveConversations } from "@/lib/auth";
 
 type Status = "Résolu" | "En cours" | "Urgent";
 type Row = {
@@ -72,10 +73,26 @@ const StatusBadge = ({ s }: { s: Status }) => {
 };
 
 const Dashboard = () => {
-  const [rows, setRows] = useState<Row[]>(DEMO);
+  const { user } = useAuth();
+  const [rows, setRows] = useState<Row[]>([]);
   const [resolved, setResolved] = useState(0);
 
   useEffect(() => {
+    if (!user) return;
+    const convs = loadConversations(user.email);
+    setRows(
+      convs.map((c) => ({
+        id: c.id,
+        date: c.date.slice(0, 10),
+        domain: c.domain || "Autre",
+        summary: c.summary,
+        status: c.status,
+      }))
+    );
+  }, [user]);
+
+  useEffect(() => {
+    if (!rows.length) { setResolved(0); return; }
     const r = (rows.filter((x) => x.status === "Résolu").length / rows.length) * 100;
     const t = setTimeout(() => setResolved(Math.round(r)), 200);
     return () => clearTimeout(t);
@@ -94,7 +111,13 @@ const Dashboard = () => {
     return Object.entries(counts).map(([k, v]) => ({ name: k, value: v, pct: (v / max) * 100 }));
   }, [rows]);
 
-  const remove = (id: string) => setRows((p) => p.filter((r) => r.id !== id));
+  const remove = (id: string) => {
+    setRows((p) => p.filter((r) => r.id !== id));
+    if (user) {
+      const convs = loadConversations(user.email).filter((c) => c.id !== id);
+      saveConversations(user.email, convs);
+    }
+  };
 
   return (
     <div className="min-h-screen text-foreground relative">
