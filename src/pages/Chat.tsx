@@ -555,41 +555,99 @@ const Chat = () => {
           <ThemeToggle />
         </header>
 
-        {/* Topic radar panel */}
+        {/* Topic radar panel — floating right side */}
         {radarOpen && messages.length > 0 && (
-          <div className="px-3 md:px-10 pt-3 md:pt-4 animate-fade-in">
-            <div className="max-w-3xl mx-auto glass rounded-2xl p-3 md:p-4 flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
-              <div className="shrink-0">
-                <LegalRadar counts={topicCounts} size={140} compact />
-              </div>
-              <div className="flex-1 min-w-0 w-full">
-                <div className="text-[10px] uppercase tracking-widest text-gold mb-1.5 flex items-center gap-1.5">
-                  <Radar className="h-3 w-3" /> {t("Radar des sujets détectés")}
-                </div>
-                <p className="text-xs text-muted-foreground mb-3">
-                  {t("Les domaines juridiques évoqués dans cette conversation.")}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {Object.entries(topicCounts)
-                    .filter(([, v]) => v > 0)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([name, v]) => (
-                      <span
-                        key={name}
-                        className="text-[10px] px-2.5 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold"
-                      >
-                        {t(name)} · {v}
+          <>
+            {/* Mobile backdrop */}
+            <div
+              className="lg:hidden fixed inset-0 z-30 bg-background/60 backdrop-blur-sm animate-fade-in"
+              onClick={() => setRadarOpen(false)}
+            />
+            <aside
+              className="fixed z-40 top-20 right-3 md:right-6 w-[92vw] max-w-sm lg:w-80 animate-slide-right"
+              style={{ animation: "slide-right 0.5s cubic-bezier(0.22,1,0.36,1) both" }}
+            >
+              <div className="relative glass rounded-3xl p-5 border border-gold/30 overflow-hidden shadow-gold">
+                {/* Animated mesh background */}
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-40"
+                  style={{
+                    background:
+                      "radial-gradient(circle at 30% 20%, hsl(var(--gold) / 0.25), transparent 60%), radial-gradient(circle at 80% 80%, hsl(var(--blue) / 0.2), transparent 55%)",
+                    animation: "mesh-drift 18s ease-in-out infinite",
+                  }}
+                />
+                {/* Pulsing ring accent */}
+                <div className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full border border-gold/20 animate-pulse-dot" />
+
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="relative inline-flex h-2 w-2">
+                        <span className="absolute inset-0 rounded-full bg-gold animate-ping opacity-75" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
                       </span>
-                    ))}
-                  {detectedTopics === 0 && (
-                    <span className="text-[11px] text-muted-foreground italic">
-                      {t("Aucun sujet identifié pour l'instant.")}
-                    </span>
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-gold font-semibold">
+                        {t("Radar juridique")}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setRadarOpen(false)}
+                      className="haptic-tap text-muted-foreground hover:text-foreground text-sm leading-none"
+                      aria-label="Fermer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <h3 className="font-display text-lg leading-tight mb-1">
+                    {t("Domaines détectés")}
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground mb-4">
+                    {t("Analyse en temps réel de votre conversation.")}
+                  </p>
+
+                  <div className="flex justify-center mb-4 animate-spring-in">
+                    <LegalRadar counts={topicCounts} size={220} compact />
+                  </div>
+
+                  {detectedTopics > 0 ? (
+                    <div className="space-y-1.5">
+                      {Object.entries(topicCounts)
+                        .filter(([, v]) => v > 0)
+                        .sort((a, b) => b[1] - a[1])
+                        .map(([name, v], i) => {
+                          const max = Math.max(...Object.values(topicCounts), 1);
+                          const pct = Math.round((v / max) * 100);
+                          return (
+                            <div
+                              key={name}
+                              className="group relative overflow-hidden rounded-xl bg-muted/30 border border-border/50 px-3 py-2 hover:border-gold/40 transition-all"
+                              style={{ animation: `fade-up 0.5s cubic-bezier(0.22,1,0.36,1) ${0.1 + i * 0.07}s both` }}
+                            >
+                              <div
+                                className="absolute inset-y-0 left-0 bg-gradient-to-r from-gold/20 to-transparent transition-all"
+                                style={{ width: `${pct}%` }}
+                              />
+                              <div className="relative flex items-center justify-between gap-2">
+                                <span className="text-xs font-medium truncate">{t(name)}</span>
+                                <span className="text-[10px] text-gold font-mono tabular-nums shrink-0">
+                                  {v} {v > 1 ? t("mentions") : t("mention")}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-[11px] text-muted-foreground italic">
+                      {t("Continuez la conversation, l'IA détectera les domaines.")}
+                    </div>
                   )}
                 </div>
               </div>
-            </div>
-          </div>
+            </aside>
+          </>
         )}
 
         {/* Urgency banner */}
