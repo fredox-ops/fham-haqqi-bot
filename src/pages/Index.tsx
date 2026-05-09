@@ -107,47 +107,9 @@ const Index = () => (
             </div>
           </div>
 
-          {/* Right: floating chat preview */}
-          <div className="hidden lg:block relative animate-fade-up" style={{ animationDelay: "0.4s" }}>
-            <div
-              aria-hidden
-              className="absolute inset-0 rounded-[40%] blur-[100px] opacity-50"
-              style={{ background: "radial-gradient(circle, hsl(var(--gold)/0.6), transparent 65%)" }}
-            />
-            <div className="relative animate-float-y">
-              <div className="glass-strong rounded-3xl p-6 border border-gold/30 shadow-gold">
-                <div className="flex items-center gap-2 mb-5">
-                  <div className="h-2 w-2 rounded-full bg-emerald animate-pulse-dot" />
-                  <span className="text-[11px] uppercase tracking-widest text-muted-foreground">Conversation en direct</span>
-                </div>
-
-                {/* User msg */}
-                <div className="flex justify-end mb-4">
-                  <div className="max-w-[85%] rounded-2xl rounded-br-md px-4 py-2.5 text-sm bg-gradient-gold text-primary-foreground font-medium">
-                    Mon patron m'a pas payé depuis 2 mois.
-                  </div>
-                </div>
-
-                {/* Assistant msg */}
-                <div className="flex items-start gap-2.5">
-                  <div className="h-8 w-8 rounded-full bg-gradient-mixed shrink-0 flex items-center justify-center text-[10px] font-bold text-white">
-                    DL
-                  </div>
-                  <div className="glass rounded-2xl rounded-tl-md px-4 py-3 text-sm leading-relaxed">
-                    <span className="text-gold font-semibold">Article 345</span> du Code du Travail —
-                    le non-paiement du salaire constitue un motif de rupture aux torts de l'employeur.
-                    <span className="block mt-2 text-xs text-muted-foreground">
-                      Vous pouvez saisir l'inspection du travail sous 90 jours.
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex gap-2">
-                  <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald/15 text-emerald border border-emerald/30">Action recommandée</span>
-                  <span className="text-[10px] px-2.5 py-1 rounded-full glass text-muted-foreground">Lettre disponible</span>
-                </div>
-              </div>
-            </div>
+          {/* Right: animated DarjaLex logo */}
+          <div className="hidden lg:flex items-center justify-center relative animate-fade-up" style={{ animationDelay: "0.4s" }}>
+            <AnimatedLogo />
           </div>
         </div>
       </section>
