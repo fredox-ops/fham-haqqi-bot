@@ -13,6 +13,7 @@ import MobileNav from "@/components/MobileNav";
 import VoiceCall from "@/components/VoiceCall";
 import { useAuth, loadConversations, upsertConversation, type StoredConversation } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
+import ThemeToggle from "@/components/ThemeToggle";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Category = "Travail" | "Logement" | "Famille" | "Contrats" | "Administratif" | "Consommateur";
@@ -355,6 +356,7 @@ const Chat = () => {
               <Trash2 className="h-3.5 w-3.5" /> Effacer
             </button>
           )}
+          <ThemeToggle />
         </header>
 
         {/* Urgency banner */}
