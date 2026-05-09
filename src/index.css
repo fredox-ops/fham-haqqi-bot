@@ -159,6 +159,19 @@
     transition: background-color 300ms ease, color 300ms ease;
   }
 
+  /* === Arabic / RTL === */
+  html[dir="rtl"] body,
+  html[lang="ar"] body {
+    font-family: 'Reem Kufi', 'Amiri', 'DM Sans', system-ui, sans-serif;
+  }
+  html[dir="rtl"] .font-display,
+  html[dir="rtl"] .font-justice {
+    font-family: 'Reem Kufi', 'Amiri', 'Cormorant Garamond', serif;
+    letter-spacing: 0;
+  }
+  /* Flip icon-only directional cues — keep numbers LTR */
+  html[dir="rtl"] .tabular-nums { direction: ltr; unicode-bidi: embed; }
+
   /* Smooth theme transition on most surfaces */
   body, header, aside, main, section, article, button, input, textarea, .glass, .glass-strong {
     transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;

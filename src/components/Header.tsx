@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Scale } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import LangToggle from "@/components/LangToggle";
+import { useT } from "@/lib/i18n";
 
 const Header = () => {
   const [shrunk, setShrunk] = useState(false);
+  const t = useT();
   useEffect(() => {
     const onScroll = () => setShrunk(window.scrollY > 12);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -12,9 +15,9 @@ const Header = () => {
   }, []);
 
   const navItems = [
-    { to: "/categories", label: "Domaines" },
-    { to: "/#how", label: "Comment ça marche" },
-    { to: "/dashboard", label: "Tableau de bord" },
+    { to: "/categories", label: t("Domaines") },
+    { to: "/#how", label: t("Comment ça marche") },
+    { to: "/dashboard", label: t("Tableau de bord") },
   ];
 
   return (
@@ -58,12 +61,13 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-3">
+          <LangToggle />
           <ThemeToggle />
           <Link
             to="/chat"
             className="haptic-tap hidden sm:inline-flex items-center justify-center h-10 px-5 rounded-full font-semibold text-sm border-2 border-gold text-gold hover:bg-gold hover:text-primary-foreground transition-all"
           >
-            Commencer
+            {t("Commencer")}
           </Link>
         </div>
       </div>

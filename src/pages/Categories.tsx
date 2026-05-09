@@ -5,6 +5,7 @@ import {
 import BackgroundFX from "@/components/BackgroundFX";
 import Header from "@/components/Header";
 import MobileNav from "@/components/MobileNav";
+import { useT } from "@/lib/i18n";
 
 const DOMAINS = [
   {
@@ -45,7 +46,9 @@ const DOMAINS = [
   },
 ];
 
-const Categories = () => (
+const Categories = () => {
+  const t = useT();
+  return (
   <div className="min-h-screen text-foreground relative">
     <BackgroundFX />
     <Header />
@@ -53,12 +56,12 @@ const Categories = () => (
     <main className="relative z-10 pt-32 pb-28 md:pb-16 px-6">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-14 animate-fade-up">
-          <div className="text-[11px] uppercase tracking-widest text-gold mb-3">Domaines juridiques</div>
+          <div className="text-[11px] uppercase tracking-widest text-gold mb-3">{t("Domaines juridiques")}</div>
           <h1 className="font-display text-5xl md:text-6xl tracking-tight">
-            Choisissez votre <span className="italic text-gradient-gold">domaine.</span>
+            {t("Choisissez votre")} <span className="italic text-gradient-gold">{t("domaine.")}</span>
           </h1>
           <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
-            Survolez une carte pour voir les questions les plus fréquentes.
+            {t("Survolez une carte pour voir les questions les plus fréquentes.")}
           </p>
         </div>
 
@@ -87,8 +90,8 @@ const Categories = () => (
                   >
                     <d.Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="font-display text-2xl mb-2">{d.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-5 flex-1">{d.desc}</p>
+                  <h3 className="font-display text-2xl mb-2">{t(d.name)}</h3>
+                  <p className="text-sm text-muted-foreground mb-5 flex-1">{t(d.desc)}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {d.articles.map((a) => (
                       <span key={a} className="text-[10px] px-2.5 py-1 rounded-full glass text-muted-foreground border border-border">
@@ -103,12 +106,12 @@ const Categories = () => (
                   className="absolute inset-0 glass-strong rounded-3xl p-7 flex flex-col"
                   style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
                 >
-                  <div className="text-[11px] uppercase tracking-widest text-gold mb-3">Questions fréquentes</div>
+                  <div className="text-[11px] uppercase tracking-widest text-gold mb-3">{t("Questions fréquentes")}</div>
                   <ul className="space-y-2.5 flex-1">
                     {d.questions.map((q) => (
                       <li key={q} className="text-sm flex items-start gap-2">
                         <span className="text-gold mt-1">•</span>
-                        <span>{q}</span>
+                        <span>{t(q)}</span>
                       </li>
                     ))}
                   </ul>
@@ -116,7 +119,7 @@ const Categories = () => (
                     to="/chat"
                     className="haptic-tap mt-4 inline-flex items-center justify-center gap-2 h-10 rounded-full bg-gradient-gold text-primary-foreground text-sm font-semibold"
                   >
-                    Consulter <ArrowRight className="h-3.5 w-3.5" />
+                    {t("Consulter")} <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
               </div>
@@ -128,6 +131,7 @@ const Categories = () => (
 
     <MobileNav />
   </div>
-);
+  );
+};
 
 export default Categories;

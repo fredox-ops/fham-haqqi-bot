@@ -14,6 +14,7 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 import MagneticButton from "@/components/MagneticButton";
 import ArticleCard from "@/components/ArticleCard";
 import Testimonial from "@/components/Testimonial";
+import { useT } from "@/lib/i18n";
 
 const DOMAINS = [
   { name: "Travail",        glow: "blue",    Icon: Briefcase,     desc: "Licenciement, salaire, indemnités, CNSS." },
@@ -81,7 +82,9 @@ const glowToColor = (g: string) =>
   : g === "orange" ? "hsl(var(--orange))"
   : "hsl(var(--pink))";
 
-const Index = () => (
+const Index = () => {
+  const t = useT();
+  return (
   <div className="min-h-screen text-foreground relative overflow-x-hidden">
     <BackgroundFX />
     <Header />
@@ -114,25 +117,24 @@ const Index = () => (
                 <span className="absolute inset-0 rounded-full bg-emerald animate-ping opacity-75" />
                 <span className="relative rounded-full h-2 w-2 bg-emerald" />
               </span>
-              <span className="text-muted-foreground">Maison de Justice</span>
-              <span className="text-foreground/80">— Code Marocain 2025</span>
+              <span className="text-muted-foreground">{t("Maison de Justice")}</span>
+              <span className="text-foreground/80">{t("— Code Marocain 2025")}</span>
             </div>
 
             <h1 className="font-justice text-6xl sm:text-7xl md:text-[5.75rem] font-normal leading-[0.95] tracking-tight mb-7">
               <span className="block animate-fade-up" style={{ animationDelay: "0.05s" }}>
-                La justice,
+                {t("La justice,")}
               </span>
               <span className="block animate-fade-up" style={{ animationDelay: "0.18s" }}>
-                à votre
+                {t("à votre")}
               </span>
               <span className="block italic text-gradient-gold animate-fade-up" style={{ animationDelay: "0.32s" }}>
-                mesure.
+                {t("mesure.")}
               </span>
             </h1>
 
             <p className="text-lg text-muted-foreground max-w-xl mb-10 animate-fade-up leading-relaxed" style={{ animationDelay: "0.45s" }}>
-              Mizani — <span className="text-foreground italic">l'équilibre</span> — vous lit la loi marocaine en darija ou en français.
-              Articles cités, démarches expliquées, lettres prêtes à signer.
+              {t("Mizani — l'équilibre — vous lit la loi marocaine en darija ou en français. Articles cités, démarches expliquées, lettres prêtes à signer.")}
             </p>
 
             <div className="flex flex-wrap items-center gap-3 mb-9 animate-fade-up" style={{ animationDelay: "0.55s" }}>
@@ -142,7 +144,7 @@ const Index = () => (
                   className="haptic-tap inline-flex items-center justify-center gap-2 h-13 px-8 rounded-full bg-gradient-gold text-primary-foreground font-semibold shadow-gold hover:shadow-[0_18px_60px_-10px_hsl(var(--gold)/0.7)] transition-all"
                   style={{ height: "3.4rem" }}
                 >
-                  Consulter Mizani
+                  {t("Consulter Mizani")}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </MagneticButton>
@@ -151,16 +153,16 @@ const Index = () => (
                 className="haptic-tap inline-flex items-center justify-center gap-2 h-13 px-6 rounded-full border border-gold/40 text-foreground/85 font-medium hover:border-gold hover:text-gold transition-all"
                 style={{ height: "3.4rem" }}
               >
-                Comment ça marche ↓
+                {t("Comment ça marche ↓")}
               </a>
             </div>
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground animate-fade-up" style={{ animationDelay: "0.7s" }}>
-              <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-emerald" /> Anonyme</span>
+              <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-emerald" /> {t("Anonyme")}</span>
               <span className="opacity-40">•</span>
-              <span><AnimatedCounter to={2_400_000} />+ Marocains lésés chaque année</span>
+              <span><AnimatedCounter to={2_400_000} />{t("+ Marocains lésés chaque année")}</span>
               <span className="opacity-40">•</span>
-              <span>Darija &amp; Français</span>
+              <span>{t("Darija & Français")}</span>
             </div>
           </div>
 
@@ -176,10 +178,10 @@ const Index = () => (
         <div className="glass-strong rounded-3xl px-6 md:px-10 py-7 grid grid-cols-2 md:grid-cols-4 gap-5 relative overflow-hidden">
           <ZelligePattern className="absolute inset-0" opacity={0.04} size={120} />
           {[
-            { v: <AnimatedCounter to={12} />, l: "Domaines juridiques" },
-            { v: "2025", l: "Code marocain à jour" },
-            { v: "FR · AR", l: "Darija & Français" },
-            { v: <AnimatedCounter to={50} />, l: "Modèles de lettres" },
+            { v: <AnimatedCounter to={12} />, l: t("Domaines juridiques") },
+            { v: "2025", l: t("Code marocain à jour") },
+            { v: "FR · AR", l: t("Darija & Français") },
+            { v: <AnimatedCounter to={50} />, l: t("Modèles de lettres") },
           ].map((s, i) => (
             <div key={i} className="relative text-center md:text-left">
               <div className="font-justice text-3xl md:text-4xl text-gradient-gold">{s.v}</div>
@@ -192,9 +194,9 @@ const Index = () => (
       {/* DOMAINES */}
       <section className="relative px-6 py-24 max-w-6xl mx-auto">
         <RevealOnScroll className="text-center mb-14">
-          <div className="inline-block text-[11px] uppercase tracking-widest text-gold mb-3">Domaines juridiques</div>
+          <div className="inline-block text-[11px] uppercase tracking-widest text-gold mb-3">{t("Domaines juridiques")}</div>
           <h2 className="font-justice text-4xl md:text-5xl tracking-tight">
-            Tous vos droits. <span className="italic text-gradient-gold">Un seul agent.</span>
+            {t("Tous vos droits.")} <span className="italic text-gradient-gold">{t("Un seul agent.")}</span>
           </h2>
         </RevealOnScroll>
 
@@ -228,10 +230,10 @@ const Index = () => (
                     >
                       <d.Icon className="h-5 w-5 text-foreground" />
                     </div>
-                    <h3 className="font-display text-2xl font-medium mb-1.5">{d.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-5">{d.desc}</p>
+                    <h3 className="font-display text-2xl font-medium mb-1.5">{t(d.name)}</h3>
+                    <p className="text-sm text-muted-foreground mb-5">{t(d.desc)}</p>
                     <span className="text-xs text-gold inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      Consulter <ArrowRight className="h-3 w-3" />
+                      {t("Consulter")} <ArrowRight className="h-3 w-3" />
                     </span>
                   </div>
                 </Link>
@@ -245,19 +247,19 @@ const Index = () => (
       <section className="relative px-6 py-20 max-w-6xl mx-auto">
         <RevealOnScroll className="text-center mb-14">
           <div className="inline-block text-[11px] uppercase tracking-widest text-gold mb-3 inline-flex items-center gap-2">
-            <BookOpen className="h-3.5 w-3.5" /> Articles cités
+            <BookOpen className="h-3.5 w-3.5" /> {t("Articles cités")}
           </div>
           <h2 className="font-justice text-4xl md:text-5xl tracking-tight">
-            La loi, <span className="italic text-gradient-gold">à la lettre.</span>
+            {t("La loi,")} <span className="italic text-gradient-gold">{t("à la lettre.")}</span>
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
-            Chaque réponse de Mizani s'appuie sur des articles précis du droit marocain.
+            {t("Chaque réponse de Mizani s'appuie sur des articles précis du droit marocain.")}
           </p>
         </RevealOnScroll>
         <div className="grid md:grid-cols-3 gap-5">
           {ARTICLES.map((a, i) => (
             <RevealOnScroll key={a.article} delay={i * 100}>
-              <ArticleCard {...a} />
+              <ArticleCard {...a} code={t(a.code)} title={t(a.title)} excerpt={t(a.excerpt)} />
             </RevealOnScroll>
           ))}
         </div>
@@ -266,9 +268,9 @@ const Index = () => (
       {/* COMMENT ÇA MARCHE */}
       <section id="how" className="relative px-6 py-20 max-w-6xl mx-auto">
         <RevealOnScroll className="text-center mb-14">
-          <div className="inline-block text-[11px] uppercase tracking-widest text-gold mb-3">Comment ça marche</div>
+          <div className="inline-block text-[11px] uppercase tracking-widest text-gold mb-3">{t("Comment ça marche")}</div>
           <h2 className="font-justice text-4xl md:text-5xl tracking-tight">
-            Quatre étapes. <span className="italic text-gradient-gold">Zéro jargon.</span>
+            {t("Quatre étapes.")} <span className="italic text-gradient-gold">{t("Zéro jargon.")}</span>
           </h2>
         </RevealOnScroll>
 
@@ -298,8 +300,8 @@ const Index = () => (
                     <s.Icon className="h-7 w-7 text-gold" />
                   </div>
                 </div>
-                <h3 className="font-display text-xl font-medium mb-1">{s.title}</h3>
-                <p className="text-xs text-muted-foreground max-w-[180px] mx-auto">{s.desc}</p>
+                <h3 className="font-display text-xl font-medium mb-1">{t(s.title)}</h3>
+                <p className="text-xs text-muted-foreground max-w-[180px] mx-auto">{t(s.desc)}</p>
               </RevealOnScroll>
             ))}
           </div>
@@ -310,10 +312,10 @@ const Index = () => (
       <section className="relative px-6 py-20 max-w-6xl mx-auto">
         <RevealOnScroll className="text-center mb-14">
           <div className="inline-block text-[11px] uppercase tracking-widest text-gold mb-3 inline-flex items-center gap-2">
-            <Sparkles className="h-3.5 w-3.5" /> Témoignages
+            <Sparkles className="h-3.5 w-3.5" /> {t("Témoignages")}
           </div>
           <h2 className="font-justice text-4xl md:text-5xl tracking-tight">
-            Des droits. <span className="italic text-gradient-gold">Des résultats.</span>
+            {t("Des droits.")} <span className="italic text-gradient-gold">{t("Des résultats.")}</span>
           </h2>
         </RevealOnScroll>
         <div className="grid md:grid-cols-3 gap-5">
@@ -335,10 +337,10 @@ const Index = () => (
             <div className="relative">
               <div className="font-arabic text-3xl text-gold/70 mb-2">العدالة</div>
               <h2 className="font-justice text-4xl md:text-5xl tracking-tight mb-4">
-                Vos droits, <span className="italic text-gradient-gold">à portée de mot.</span>
+                {t("Vos droits,")} <span className="italic text-gradient-gold">{t("à portée de mot.")}</span>
               </h2>
               <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-                Posez votre première question maintenant. C'est gratuit, anonyme et instantané.
+                {t("Posez votre première question maintenant. C'est gratuit, anonyme et instantané.")}
               </p>
               <MagneticButton strength={0.2}>
                 <Link
@@ -346,7 +348,7 @@ const Index = () => (
                   className="haptic-tap inline-flex items-center gap-2 h-13 px-8 rounded-full bg-gradient-gold text-primary-foreground font-semibold shadow-gold hover:shadow-[0_18px_60px_-10px_hsl(var(--gold)/0.7)] transition-all"
                   style={{ height: "3.4rem" }}
                 >
-                  Démarrer une consultation <ArrowRight className="h-4 w-4" />
+                  {t("Démarrer une consultation")} <ArrowRight className="h-4 w-4" />
                 </Link>
               </MagneticButton>
             </div>
@@ -356,11 +358,12 @@ const Index = () => (
     </main>
 
     <footer className="relative z-10 border-t border-border/40 py-8 px-6 text-center text-xs text-muted-foreground">
-      © 2026 Mizani — Information juridique générale. Ne remplace pas un avocat agréé.
+      {t("© 2026 Mizani — Information juridique générale. Ne remplace pas un avocat agréé.")}
     </footer>
 
     <MobileNav />
   </div>
-);
+  );
+};
 
 export default Index;

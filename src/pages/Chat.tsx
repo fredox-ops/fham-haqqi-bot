@@ -15,6 +15,8 @@ import LegalRadar from "@/components/LegalRadar";
 import { useAuth, fetchConversations, upsertConversation, type StoredConversation } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
+import LangToggle from "@/components/LangToggle";
+import { useT } from "@/lib/i18n";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Category = "Travail" | "Logement" | "Famille" | "Contrats" | "Administratif" | "Consommateur";
@@ -76,6 +78,7 @@ const Avatar = () => (
 const Chat = () => {
   const { user, logout } = useAuth();
   const nav = useNavigate();
+  const t = useT();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -278,7 +281,7 @@ const Chat = () => {
 
   const handleLogout = () => {
     logout();
-    toast.success("Déconnecté.");
+    toast.success(t("Déconnecté."));
     nav("/login", { replace: true });
   };
 
@@ -316,7 +319,7 @@ const Chat = () => {
             <span className="absolute inset-0 rounded-full bg-emerald animate-ping opacity-75" />
             <span className="relative rounded-full h-1.5 w-1.5 bg-emerald" />
           </span>
-          En ligne
+          {t("En ligne")}
         </div>
 
         <div className="px-4 pb-3">
@@ -325,20 +328,20 @@ const Chat = () => {
             className="haptic-tap w-full bg-gradient-gold text-primary-foreground rounded-full h-11 font-semibold shadow-gold hover:scale-[1.02] inline-flex items-center justify-center gap-2 transition-all"
           >
             <Plus className="h-4 w-4" />
-            Nouvelle consultation
+            {t("Nouvelle consultation")}
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-3 pb-4 space-y-5">
           {history.length === 0 && (
             <div className="px-3 py-6 text-center text-xs text-muted-foreground">
-              Aucune consultation pour le moment.
+              {t("Aucune consultation pour le moment.")}
             </div>
           )}
           {(["today","week","older"] as const).map((bucket) => {
             const items = grouped[bucket];
             if (!items.length) return null;
-            const labels = { today: "Aujourd'hui", week: "Cette semaine", older: "Plus ancien" };
+            const labels = { today: t("Aujourd'hui"), week: t("Cette semaine"), older: t("Plus ancien") };
             return (
               <div key={bucket}>
                 <div className="px-3 py-2 text-[10px] uppercase tracking-widest text-muted-foreground">{labels[bucket]}</div>
@@ -373,7 +376,7 @@ const Chat = () => {
                 {user.firstName.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm truncate">Bonjour, <span className="text-gold font-medium">{user.firstName}</span></div>
+                <div className="text-sm truncate">{t("Bonjour, ")}<span className="text-gold font-medium">{user.firstName}</span></div>
                 <div className="text-[10px] text-muted-foreground truncate">{user.email}</div>
               </div>
             </div>
@@ -382,7 +385,7 @@ const Chat = () => {
             onClick={handleLogout}
             className="haptic-tap w-full inline-flex items-center justify-center gap-2 h-10 rounded-full border border-border hover:border-destructive/50 hover:text-destructive text-xs text-muted-foreground transition-colors"
           >
-            <LogOut className="h-3.5 w-3.5" /> Déconnexion
+            <LogOut className="h-3.5 w-3.5" /> {t("Déconnexion")}
           </button>
         </div>
       </aside>
@@ -400,7 +403,7 @@ const Chat = () => {
           {detectedCategory && (
             <div className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full glass border border-gold/30 text-gold animate-fade-in">
               {(() => { const I = CATEGORY_ICONS[detectedCategory]; return <I className="h-3.5 w-3.5" />; })()}
-              <span className="font-medium">{detectedCategory}</span>
+              <span className="font-medium">{t(detectedCategory)}</span>
             </div>
           )}
           <div className="flex-1" />
@@ -424,9 +427,10 @@ const Chat = () => {
               onClick={newChat}
               className="haptic-tap text-xs text-muted-foreground hover:text-destructive transition-colors inline-flex items-center gap-1.5"
             >
-              <Trash2 className="h-3.5 w-3.5" /> Effacer
+              <Trash2 className="h-3.5 w-3.5" /> {t("Effacer")}
             </button>
           )}
+          <LangToggle />
           <ThemeToggle />
         </header>
 
@@ -439,10 +443,10 @@ const Chat = () => {
               </div>
               <div className="flex-1 min-w-0 w-full">
                 <div className="text-[10px] uppercase tracking-widest text-gold mb-1.5 flex items-center gap-1.5">
-                  <Radar className="h-3 w-3" /> Radar des sujets détectés
+                  <Radar className="h-3 w-3" /> {t("Radar des sujets détectés")}
                 </div>
                 <p className="text-xs text-muted-foreground mb-3">
-                  Les domaines juridiques évoqués dans cette conversation.
+                  {t("Les domaines juridiques évoqués dans cette conversation.")}
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {Object.entries(topicCounts)
@@ -453,12 +457,12 @@ const Chat = () => {
                         key={name}
                         className="text-[10px] px-2.5 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold"
                       >
-                        {name} · {v}
+                        {t(name)} · {v}
                       </span>
                     ))}
                   {detectedTopics === 0 && (
                     <span className="text-[11px] text-muted-foreground italic">
-                      Aucun sujet identifié pour l'instant.
+                      {t("Aucun sujet identifié pour l'instant.")}
                     </span>
                   )}
                 </div>
@@ -483,11 +487,11 @@ const Chat = () => {
               <div className="flex-1 text-sm">
                 <div className="font-semibold">
                   {urgency === "urgent"
-                    ? "Situation urgente — consultez un avocat"
-                    : "Attention : démarche à délai limité"}
+                    ? t("Situation urgente — consultez un avocat")
+                    : t("Attention : démarche à délai limité")}
                 </div>
                 <div className="text-xs text-muted-foreground mt-0.5">
-                  Pour une assistance rapide, contactez le Barreau du Maroc.
+                  {t("Pour une assistance rapide, contactez le Barreau du Maroc.")}
                 </div>
               </div>
               <button onClick={() => setUrgency("normal")} className="text-xs text-muted-foreground hover:text-foreground px-2">✕</button>
@@ -504,10 +508,10 @@ const Chat = () => {
                   DL
                 </div>
                 <h2 className="font-display text-3xl md:text-4xl mb-2">
-                  Bonjour. <span className="italic text-gradient-gold">Décrivez votre situation.</span>
+                  {t("Bonjour.")} <span className="italic text-gradient-gold">{t("Décrivez votre situation.")}</span>
                 </h2>
                 <p className="text-sm text-muted-foreground mb-8">
-                  En français ou en darija. La conversation reste privée.
+                  {t("En français ou en darija. La conversation reste privée.")}
                 </p>
                 <div className="grid sm:grid-cols-3 gap-3 max-w-2xl mx-auto">
                   {SUGGESTIONS.map((s) => (
@@ -517,7 +521,7 @@ const Chat = () => {
                       className="haptic-tap text-left text-sm p-4 rounded-2xl glass hover:border-gold/40 hover:-translate-y-0.5 transition-all"
                     >
                       <Sparkles className="h-3.5 w-3.5 text-gold mb-2" />
-                      {s}
+                      {t(s)}
                     </button>
                   ))}
                 </div>
@@ -621,7 +625,7 @@ const Chat = () => {
               </button>
             </form>
             <p className="text-[10px] md:text-[11px] text-muted-foreground/70 text-center mt-2 md:mt-3 px-2">
-              Mizani peut faire des erreurs. Pour les cas sérieux, consultez un avocat agréé.
+              {t("Mizani peut faire des erreurs. Pour les cas sérieux, consultez un avocat agréé.")}
             </p>
           </div>
         </div>

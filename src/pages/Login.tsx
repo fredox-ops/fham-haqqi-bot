@@ -5,6 +5,8 @@ import { z } from "zod";
 import { toast } from "sonner";
 import BackgroundFX from "@/components/BackgroundFX";
 import { useAuth } from "@/lib/auth";
+import { useT } from "@/lib/i18n";
+import LangToggle from "@/components/LangToggle";
 
 const schema = z.object({
   email: z.string().trim().email({ message: "Email invalide" }).max(255),
@@ -26,6 +28,7 @@ const ZelligeCorner = () => (
 const Login = () => {
   const nav = useNavigate();
   const { login } = useAuth();
+  const t = useT();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,7 +40,7 @@ const Login = () => {
     setLoading(true);
     try {
       await login(parsed.data.email, parsed.data.password);
-      toast.success("Bienvenue.");
+      toast.success(t("Bienvenue."));
       nav("/chat", { replace: true });
     } catch (err: any) {
       toast.error(err?.message ?? "Connexion impossible.");
@@ -47,6 +50,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-5 relative">
       <BackgroundFX />
+      <div className="absolute top-4 right-4 z-20"><LangToggle /></div>
       <div
         className="relative w-full max-w-[480px] glass rounded-3xl p-8 md:p-10 overflow-hidden border border-gold/30"
         style={{ boxShadow: "0 30px 80px -20px hsl(42 78% 60% / 0.35), inset 0 1px 0 hsl(0 0% 100% / 0.05)", animation: "spring-in 0.6s cubic-bezier(0.34,1.56,0.64,1)" }}
@@ -62,25 +66,25 @@ const Login = () => {
           </span>
         </Link>
 
-        <h1 className="relative z-10 font-display text-4xl mb-1.5">Bon retour.</h1>
-        <p className="relative z-10 text-muted-foreground text-sm mb-7">Vos droits vous attendent.</p>
+        <h1 className="relative z-10 font-display text-4xl mb-1.5">{t("Bon retour.")}</h1>
+        <p className="relative z-10 text-muted-foreground text-sm mb-7">{t("Vos droits vous attendent.")}</p>
 
         <form onSubmit={submit} className="relative z-10 space-y-4">
-          <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="vous@exemple.ma" autoComplete="email" />
-          <Field label="Mot de passe" type="password" value={password} onChange={setPassword} placeholder="••••••••" autoComplete="current-password" />
+          <Field label={t("Email")} type="email" value={email} onChange={setEmail} placeholder="vous@exemple.ma" autoComplete="email" />
+          <Field label={t("Mot de passe")} type="password" value={password} onChange={setPassword} placeholder="••••••••" autoComplete="current-password" />
 
           <button
             type="submit"
             disabled={loading}
             className="haptic-tap w-full h-12 rounded-full bg-gradient-gold text-primary-foreground font-semibold shadow-gold inline-flex items-center justify-center gap-2 disabled:opacity-60 hover:scale-[1.01] transition-transform"
           >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Se connecter"}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("Se connecter")}
           </button>
         </form>
 
         <div className="relative z-10 mt-6 text-center text-sm">
           <Link to="/register" className="text-gold hover:underline inline-flex items-center gap-1">
-            Pas encore de compte ? S'inscrire <ArrowRight className="h-3.5 w-3.5" />
+            {t("Pas encore de compte ? S'inscrire")} <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
 
