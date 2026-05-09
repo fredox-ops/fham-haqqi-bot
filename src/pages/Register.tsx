@@ -78,7 +78,7 @@ const Register = () => {
             <Scale className="h-4 w-4 text-primary-foreground" />
           </span>
           <span className="font-display text-2xl">
-            Darja<span className="text-gradient-gold italic">Lex</span>
+            <span className="text-gradient-gold italic">Mizani</span>
           </span>
         </Link>
 
