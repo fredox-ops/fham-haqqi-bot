@@ -432,12 +432,12 @@ const Chat = () => {
 
         {/* Topic radar panel */}
         {radarOpen && messages.length > 0 && (
-          <div className="px-4 md:px-10 pt-4 animate-fade-in">
-            <div className="max-w-3xl mx-auto glass rounded-2xl p-4 flex items-center gap-5">
+          <div className="px-3 md:px-10 pt-3 md:pt-4 animate-fade-in">
+            <div className="max-w-3xl mx-auto glass rounded-2xl p-3 md:p-4 flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
               <div className="shrink-0">
-                <LegalRadar counts={topicCounts} size={180} compact />
+                <LegalRadar counts={topicCounts} size={140} compact />
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 w-full">
                 <div className="text-[10px] uppercase tracking-widest text-gold mb-1.5 flex items-center gap-1.5">
                   <Radar className="h-3 w-3" /> Radar des sujets détectés
                 </div>
@@ -496,7 +496,7 @@ const Chat = () => {
         )}
 
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 md:px-10 py-8">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 md:px-10 py-6 md:py-8">
           <div className="max-w-3xl mx-auto space-y-6">
             {messages.length === 0 && (
               <div className="text-center py-16 animate-fade-up">
@@ -546,16 +546,16 @@ const Chat = () => {
         </div>
 
         {/* Input */}
-        <div className="px-4 md:px-10 pb-6 pt-2">
+        <div className="px-3 md:px-10 pb-24 md:pb-6 pt-2">
           <div className="max-w-3xl mx-auto">
             <form
               onSubmit={(e) => { e.preventDefault(); send(input); }}
-              className="pill-input-focus glass rounded-full p-2 pl-2 flex items-end gap-2 transition-all"
+              className="pill-input-focus glass rounded-3xl md:rounded-full p-1.5 md:p-2 flex items-end gap-1 md:gap-2 transition-all"
             >
               <button
                 type="button"
                 onClick={() => setLang(lang === "fr" ? "ar" : "fr")}
-                className="haptic-tap shrink-0 h-11 px-3 rounded-full text-xs font-bold text-gold hover:bg-gold/10 transition-colors"
+                className="haptic-tap shrink-0 h-10 md:h-11 px-2 md:px-3 rounded-full text-[11px] md:text-xs font-bold text-gold hover:bg-gold/10 transition-colors"
                 aria-label="Changer la langue"
               >
                 {lang.toUpperCase()}
@@ -573,7 +573,7 @@ const Chat = () => {
                   : "وصف وضعيتك بالدارجة أو الفرنسية…"}
                 disabled={loading}
                 dir={lang === "ar" ? "rtl" : "ltr"}
-                className="flex-1 bg-transparent resize-none text-sm md:text-base placeholder:text-muted-foreground/70 focus:outline-none py-2.5 max-h-32"
+                className="flex-1 min-w-0 bg-transparent resize-none text-sm md:text-base placeholder:text-muted-foreground/70 focus:outline-none py-2.5 max-h-32"
               />
               <button
                 type="button"
@@ -581,7 +581,7 @@ const Chat = () => {
                 onClick={toggleDictation}
                 aria-label={dictating ? "Arrêter la dictée" : "Dicter votre message"}
                 title={dictating ? "Arrêter la dictée" : "Dicter votre message"}
-                className={`haptic-tap h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all ${
+                className={`haptic-tap h-10 w-10 md:h-11 md:w-11 shrink-0 rounded-full flex items-center justify-center transition-all ${
                   dictating
                     ? "bg-destructive/15 text-destructive border border-destructive/40 animate-pulse"
                     : "hover:bg-muted/40 text-muted-foreground hover:text-gold"
@@ -606,21 +606,21 @@ const Chat = () => {
                 }}
                 aria-label="Lancer un appel vocal"
                 title="Appel vocal avec Mizani"
-                className="haptic-tap h-11 w-11 shrink-0 rounded-full bg-emerald/15 hover:bg-emerald/25 border border-emerald/40 text-emerald flex items-center justify-center transition-all hover:scale-105"
+                className="haptic-tap h-10 w-10 md:h-11 md:w-11 shrink-0 rounded-full bg-emerald/15 hover:bg-emerald/25 border border-emerald/40 text-emerald flex items-center justify-center transition-all hover:scale-105"
               >
                 <Phone className="h-4 w-4" />
               </button>
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
-                className="haptic-tap h-11 w-11 shrink-0 rounded-full bg-gradient-gold text-primary-foreground shadow-gold hover:scale-[1.06] disabled:opacity-50 disabled:scale-100 transition-all group inline-flex items-center justify-center"
+                className="haptic-tap h-10 w-10 md:h-11 md:w-11 shrink-0 rounded-full bg-gradient-gold text-primary-foreground shadow-gold hover:scale-[1.06] disabled:opacity-50 disabled:scale-100 transition-all group inline-flex items-center justify-center"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
                   <Send className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 )}
               </button>
             </form>
-            <p className="text-[11px] text-muted-foreground/70 text-center mt-3">
+            <p className="text-[10px] md:text-[11px] text-muted-foreground/70 text-center mt-2 md:mt-3 px-2">
               Mizani peut faire des erreurs. Pour les cas sérieux, consultez un avocat agréé.
             </p>
           </div>
