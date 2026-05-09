@@ -234,56 +234,79 @@
   }
   .light .paper::after { opacity: 0.10; }
 
-  /* Theme toggle: cinematic zellige iris — circular reveal from the click point
-     with an expanding rotating mandala ring and a luminous gold flash. */
-  .theme-transitioning::before,
-  .theme-transitioning::after {
-    content: ""; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
-    will-change: transform, opacity, clip-path;
+  /* Theme toggle: "Gold Split" — GPU-only (transform + opacity).
+     Two panels of the previous theme slide outward, revealing the new theme,
+     while a luminous gold seam and a radial spark pulse at center. */
+  .theme-fx-root {
+    position: fixed; inset: 0; z-index: 9999; pointer-events: none; overflow: hidden;
   }
-  /* Iris panel — carries the destination background + zellige starfield, revealed via expanding circle */
-  .theme-transitioning::before {
-    background:
-      radial-gradient(circle at var(--reveal-x, 50%) var(--reveal-y, 50%), hsl(var(--gold) / 0.18), transparent 36%),
-      radial-gradient(circle at 22% 28%, hsl(var(--gold) / 0.10), transparent 40%),
-      radial-gradient(circle at 78% 72%, hsl(var(--gold) / 0.08), transparent 44%),
-      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'><g fill='none' stroke='%23d4a24a' stroke-width='0.6' opacity='0.22'><polygon points='110,18 132,70 188,70 142,104 160,158 110,126 60,158 78,104 32,70 88,70'/><circle cx='110' cy='110' r='44'/><polygon points='110,72 138,110 110,148 82,110'/></g></svg>") center / 240px 240px repeat,
-      hsl(var(--background));
-    clip-path: circle(0% at var(--reveal-x, 50%) var(--reveal-y, 50%));
-    animation: theme-iris 1100ms cubic-bezier(0.7, 0, 0.2, 1) forwards;
-    box-shadow: inset 0 0 120px hsl(var(--gold) / 0.18);
+  .theme-fx-left, .theme-fx-right {
+    position: absolute; top: 0; bottom: 0; width: 50.5%;
+    background: var(--theme-from-bg, hsl(var(--background)));
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
   }
-  /* Rotating zellige mandala — scales out from the click point */
-  .theme-transitioning::after {
-    --mandala-size: 12vmax;
-    left: var(--reveal-x, 50%); top: var(--reveal-y, 50%);
-    inset: auto;
-    width: var(--mandala-size); height: var(--mandala-size);
-    margin-left: calc(var(--mandala-size) * -0.5);
-    margin-top: calc(var(--mandala-size) * -0.5);
-    background:
-      radial-gradient(circle, hsl(var(--gold) / 0.95) 0%, hsl(var(--gold) / 0.6) 14%, hsl(var(--gold) / 0) 60%),
-      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='%23f5cf6b' stroke-width='1.4'><polygon points='100,8 122,60 178,60 132,94 150,150 100,116 50,150 68,94 22,60 78,60'/><circle cx='100' cy='100' r='52'/><circle cx='100' cy='100' r='30'/><polygon points='100,52 130,100 100,148 70,100'/><g stroke-width='0.8' opacity='0.85'><line x1='100' y1='4' x2='100' y2='196'/><line x1='4' y1='100' x2='196' y2='100'/><line x1='30' y1='30' x2='170' y2='170'/><line x1='170' y1='30' x2='30' y2='170'/></g></g></svg>") center / contain no-repeat;
-    border-radius: 50%;
-    mix-blend-mode: screen;
-    filter: drop-shadow(0 0 24px hsl(var(--gold) / 0.85)) drop-shadow(0 0 60px hsl(var(--gold) / 0.55));
+  .theme-fx-left  { left: 0;  animation: theme-split-left  800ms cubic-bezier(0.7, 0, 0.18, 1) forwards; }
+  .theme-fx-right { right: 0; animation: theme-split-right 800ms cubic-bezier(0.7, 0, 0.18, 1) forwards; }
+  .theme-fx-seam {
+    position: absolute; top: -5%; bottom: -5%; left: 50%;
+    width: 3px; margin-left: -1.5px;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      hsl(var(--gold) / 0.0) 4%,
+      hsl(var(--gold) / 0.95) 30%,
+      hsl(var(--gold)) 50%,
+      hsl(var(--gold) / 0.95) 70%,
+      hsl(var(--gold) / 0.0) 96%,
+      transparent 100%
+    );
+    box-shadow: 0 0 24px hsl(var(--gold) / 0.85), 0 0 60px hsl(var(--gold) / 0.55);
     opacity: 0;
-    transform: scale(0) rotate(0deg);
-    animation: theme-mandala 1100ms cubic-bezier(0.65, 0, 0.2, 1) forwards;
+    transform: translate3d(0, 0, 0) scaleX(1);
+    will-change: opacity, transform;
+    animation: theme-seam-pulse 800ms cubic-bezier(0.7, 0, 0.18, 1) forwards;
   }
-  @keyframes theme-iris {
-    0%   { clip-path: circle(0% at var(--reveal-x, 50%) var(--reveal-y, 50%)); }
-    100% { clip-path: circle(160% at var(--reveal-x, 50%) var(--reveal-y, 50%)); }
+  .theme-fx-spark {
+    position: absolute; top: 50%; left: 50%;
+    width: 40vmax; height: 40vmax;
+    margin-left: -20vmax; margin-top: -20vmax;
+    background: radial-gradient(
+      circle,
+      hsl(var(--gold) / 0.85) 0%,
+      hsl(var(--gold) / 0.45) 14%,
+      hsl(var(--gold) / 0.12) 32%,
+      hsl(var(--gold) / 0) 60%
+    );
+    border-radius: 50%;
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0);
+    will-change: opacity, transform;
+    animation: theme-spark-pulse 800ms cubic-bezier(0.65, 0, 0.2, 1) forwards;
   }
-  @keyframes theme-mandala {
-    0%   { opacity: 0; transform: scale(0) rotate(0deg); }
-    18%  { opacity: 1; }
-    55%  { opacity: 0.9; }
-    100% { opacity: 0; transform: scale(28) rotate(220deg); }
+  @keyframes theme-split-left {
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-101%, 0, 0); }
+  }
+  @keyframes theme-split-right {
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(101%, 0, 0); }
+  }
+  @keyframes theme-seam-pulse {
+    0%   { opacity: 0; transform: translate3d(0, 0, 0) scaleX(0.4); }
+    20%  { opacity: 1; transform: translate3d(0, 0, 0) scaleX(1.6); }
+    60%  { opacity: 0.9; transform: translate3d(0, 0, 0) scaleX(1.2); }
+    100% { opacity: 0; transform: translate3d(0, 0, 0) scaleX(0.6); }
+  }
+  @keyframes theme-spark-pulse {
+    0%   { opacity: 0; transform: translate3d(0, 0, 0) scale(0); }
+    35%  { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    100% { opacity: 0; transform: translate3d(0, 0, 0) scale(2.4); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .theme-transitioning::before,
-    .theme-transitioning::after { animation-duration: 1ms; }
+    .theme-fx-left, .theme-fx-right, .theme-fx-seam, .theme-fx-spark {
+      animation-duration: 1ms !important;
+    }
   }
 
   .text-gradient-gold {
