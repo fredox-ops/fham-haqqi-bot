@@ -118,12 +118,12 @@ const LetterPreview = ({
       <div className="absolute bottom-0 left-0 w-20 h-20 border-b-2 border-l-2 border-[hsl(36_91%_55%)]" />
       <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-[hsl(36_91%_55%)]" />
 
-      {/* Light gray header bar */}
-      <div className="relative bg-gradient-to-r from-[hsl(0_0%_92%)] via-[hsl(0_0%_96%)] to-[hsl(0_0%_92%)] border-b border-[hsl(0_0%_85%)] px-8 py-3 text-center">
-        <div className="text-[hsl(225_30%_25%)] font-bold tracking-[0.25em] text-sm uppercase">
+      {/* Gold header bar */}
+      <div className="relative bg-gradient-to-r from-[hsl(36_91%_55%)] via-[hsl(40_95%_60%)] to-[hsl(36_91%_55%)] border-b border-[hsl(36_70%_45%)] px-8 py-3 text-center">
+        <div className="text-[hsl(225_50%_12%)] font-bold tracking-[0.25em] text-sm uppercase">
           {t.kingdom}
         </div>
-        <div className="text-[hsl(225_30%_45%)] text-[10px] tracking-widest mt-0.5">{t.ministry}</div>
+        <div className="text-[hsl(225_50%_20%)] text-[10px] tracking-widest mt-0.5">{t.ministry}</div>
       </div>
 
       {/* Body */}
@@ -243,12 +243,12 @@ function downloadPdf(f: LetterFields, lang: Lang) {
   const margin = 20;
   const maxW = pageW - margin * 2;
 
-  // Light gray header bar
-  doc.setFillColor(240, 240, 242);
+  // Gold header bar
+  doc.setFillColor(245, 166, 35);
   doc.rect(0, 0, pageW, 18, "F");
-  doc.setDrawColor(215, 215, 220);
+  doc.setDrawColor(180, 120, 20);
   doc.line(0, 18, pageW, 18);
-  doc.setTextColor(60, 65, 80);
+  doc.setTextColor(20, 20, 30);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text(lang === "fr" ? "ROYAUME DU MAROC" : "AL-MAMLAKA AL-MAGHRIBIYA", pageW / 2, 11, { align: "center" });
