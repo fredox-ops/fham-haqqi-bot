@@ -25,7 +25,7 @@ const Header = () => {
       <div className="container mx-auto px-6 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5 group">
           <div className="relative h-9 w-9 rounded-xl bg-gradient-gold flex items-center justify-center shadow-gold">
-            <Scale className="h-4.5 w-4.5 text-primary-foreground" strokeWidth={2.4} />
+            <Scale className="h-5 w-5 text-primary-foreground" strokeWidth={2.4} />
           </div>
           <span className="font-display text-2xl font-semibold tracking-tight">
             Darja<span className="text-gradient-gold italic">Lex</span>
