@@ -11,12 +11,16 @@ import { useAuth, fetchConversations, deleteConversation } from "@/lib/auth";
 import { useT } from "@/lib/i18n";
 
 type Status = "Résolu" | "En cours" | "Urgent";
+type Urgency = "low" | "medium" | "high";
 type Row = {
   id: string;
   date: string;
   domain: string;
   summary: string;
   status: Status;
+  title?: string | null;
+  tags?: string[];
+  urgency?: Urgency;
 };
 
 const DEMO: Row[] = [
@@ -33,7 +37,20 @@ const DOMAIN_COLORS: Record<string, string> = {
   Famille: "hsl(var(--emerald))",
   Contrats: "hsl(var(--violet))",
   Administratif: "hsl(var(--orange))",
+  Consommation: "hsl(var(--pink))",
   Consommateur: "hsl(var(--pink))",
+  Pénal: "hsl(var(--destructive))",
+  Commercial: "hsl(var(--blue))",
+  Fiscal: "hsl(var(--gold))",
+  Autre: "hsl(var(--muted-foreground))",
+};
+
+const ALL_DOMAINS = ["Travail","Famille","Logement","Contrats","Administratif","Pénal","Consommation","Commercial","Fiscal","Autre"];
+
+const URGENCY_STYLES: Record<Urgency, string> = {
+  low: "bg-emerald/15 text-emerald border-emerald/30",
+  medium: "bg-gold/15 text-gold border-gold/30",
+  high: "bg-destructive/15 text-destructive border-destructive/40 animate-pulse",
 };
 
 const Sparkline = ({ data }: { data: number[] }) => {
