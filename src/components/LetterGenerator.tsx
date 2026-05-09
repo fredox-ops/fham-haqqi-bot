@@ -243,21 +243,23 @@ function downloadPdf(f: LetterFields, lang: Lang) {
   const margin = 20;
   const maxW = pageW - margin * 2;
 
-  // Gold header bar
-  doc.setFillColor(245, 166, 35);
+  // Light gray header bar
+  doc.setFillColor(240, 240, 242);
   doc.rect(0, 0, pageW, 18, "F");
-  doc.setTextColor(10, 15, 30);
+  doc.setDrawColor(215, 215, 220);
+  doc.line(0, 18, pageW, 18);
+  doc.setTextColor(60, 65, 80);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text(lang === "fr" ? "ROYAUME DU MAROC" : "AL-MAMLAKA AL-MAGHRIBIYA", pageW / 2, 11, { align: "center" });
 
   // Watermark
-  doc.setTextColor(245, 166, 35);
+  doc.setTextColor(180, 180, 190);
   doc.setFontSize(60);
   doc.setFont("helvetica", "bold");
   const anyDoc = doc as any;
   if (anyDoc.GState && anyDoc.setGState) {
-    anyDoc.setGState(new anyDoc.GState({ opacity: 0.07 }));
+    anyDoc.setGState(new anyDoc.GState({ opacity: 0.08 }));
   }
   doc.text("ROYAUME DU MAROC", pageW / 2, 160, { align: "center", angle: 25 });
   if (anyDoc.GState && anyDoc.setGState) {
