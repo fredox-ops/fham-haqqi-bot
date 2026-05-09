@@ -1,206 +1,128 @@
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, Briefcase, Home, Users, FileSignature, Building2, ShoppingCart, Scale,
+  Briefcase, Home as HomeIcon, Users, FileSignature, Building2, ShoppingBag, ArrowRight,
 } from "lucide-react";
-import GradientMesh from "@/components/GradientMesh";
+import BackgroundFX from "@/components/BackgroundFX";
+import Header from "@/components/Header";
 import MobileNav from "@/components/MobileNav";
 
-type CategoryCard = {
-  name: string;
-  arabic: string;
-  icon: typeof Briefcase;
-  accent: "gold" | "emerald";
-  articles: string[];
-  questions: string[];
-};
-
-const CATEGORIES: CategoryCard[] = [
+const DOMAINS = [
   {
-    name: "Travail",
-    arabic: "الشغل",
-    icon: Briefcase,
-    accent: "gold",
-    articles: ["Art. 19 CT", "Art. 41 CT", "Art. 53 CT", "Art. 65 CT"],
-    questions: [
-      "Quel préavis pour un licenciement ?",
-      "Comment sont payées les heures supplémentaires ?",
-      "Comment calculer mes indemnités de départ ?",
-    ],
+    name: "Travail", glow: "hsl(var(--blue))", Icon: Briefcase,
+    desc: "Licenciement, salaires, indemnités, CNSS, heures supplémentaires.",
+    articles: ["Loi 65-99", "Art. 39", "Art. 345", "Art. 41"],
+    questions: ["Mon employeur me licencie sans motif", "Calcul indemnité de départ", "Heures sup non payées"],
   },
   {
-    name: "Logement",
-    arabic: "السكن",
-    icon: Home,
-    accent: "emerald",
-    articles: ["Loi 67-12", "Art. 7", "Art. 22", "Art. 35"],
-    questions: [
-      "Mon propriétaire peut-il augmenter le loyer ?",
-      "Comment récupérer ma caution ?",
-      "Procédure d'expulsion : que faire ?",
-    ],
+    name: "Logement", glow: "hsl(var(--gold))", Icon: HomeIcon,
+    desc: "Bail, loyer, caution, expulsion, troubles de voisinage.",
+    articles: ["Loi 67-12", "Art. 5", "Art. 19"],
+    questions: ["Mon propriétaire augmente le loyer", "Restitution caution", "Procédure expulsion"],
   },
   {
-    name: "Famille",
-    arabic: "الأسرة",
-    icon: Users,
-    accent: "gold",
-    articles: ["Moudawana 4", "Art. 78", "Art. 85", "Art. 198"],
-    questions: [
-      "Quelles étapes pour un divorce ?",
-      "Comment fixer la pension alimentaire ?",
-      "Comment fonctionne l'héritage ?",
-    ],
+    name: "Famille", glow: "hsl(var(--emerald))", Icon: Users,
+    desc: "Mariage, divorce, garde, pension, héritage, Moudawana.",
+    articles: ["Loi 70-03", "Art. 78", "Art. 84", "Art. 99"],
+    questions: ["Procédure de divorce", "Pension alimentaire", "Garde des enfants"],
   },
   {
-    name: "Contrats",
-    arabic: "العقود",
-    icon: FileSignature,
-    accent: "emerald",
-    articles: ["DOC Art. 230", "Art. 232", "Art. 259", "Art. 264"],
-    questions: [
-      "Comment résilier un contrat ?",
-      "Quelles clauses sont abusives ?",
-      "Comment rédiger une mise en demeure ?",
-    ],
+    name: "Contrats", glow: "hsl(var(--violet))", Icon: FileSignature,
+    desc: "Clauses, signature, résiliation, vices du consentement.",
+    articles: ["DOC", "Art. 230", "Art. 259"],
+    questions: ["Résilier un contrat", "Clause abusive", "Non-respect d'engagement"],
   },
   {
-    name: "Administratif",
-    arabic: "الإدارة",
-    icon: Building2,
-    accent: "gold",
-    articles: ["Loi 55-19", "Décret 2-17-410", "Art. 12", "Art. 28"],
-    questions: [
-      "Comment obtenir un acte de naissance ?",
-      "Procédure de recours administratif ?",
-      "Délais pour une demande à la commune ?",
-    ],
+    name: "Administratif", glow: "hsl(var(--orange))", Icon: Building2,
+    desc: "État civil, commune, recours gracieux, hiérarchique.",
+    articles: ["Loi 41-90", "Art. 8"],
+    questions: ["Recours contre décision", "Délivrance document", "Plainte commune"],
   },
   {
-    name: "Consommateur",
-    arabic: "المستهلك",
-    icon: ShoppingCart,
-    accent: "emerald",
-    articles: ["Loi 31-08", "Art. 36", "Art. 65", "Art. 202"],
-    questions: [
-      "Délai pour retourner un produit ?",
-      "Garantie légale au Maroc ?",
-      "Comment porter réclamation ?",
-    ],
+    name: "Consommateur", glow: "hsl(var(--pink))", Icon: ShoppingBag,
+    desc: "Achats, garanties, e-commerce, services défaillants.",
+    articles: ["Loi 31-08", "Art. 65", "Art. 202"],
+    questions: ["Produit défectueux", "Refus de remboursement", "Fraude commerciale"],
   },
 ];
 
-const FlipCard = ({ c }: { c: CategoryCard }) => {
-  const Icon = c.icon;
-  return (
-    <div className="group [perspective:1200px] h-72">
-      <div className="relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-        {/* Front */}
-        <div className="absolute inset-0 [backface-visibility:hidden] glass rounded-3xl p-5 flex flex-col">
-          <div className="flex items-center justify-between">
-            <div
-              className={`h-12 w-12 rounded-2xl flex items-center justify-center shadow-${c.accent} ${
-                c.accent === "gold" ? "bg-gradient-gold" : "bg-gradient-emerald"
-              }`}
-            >
-              <Icon
-                className={`h-6 w-6 ${
-                  c.accent === "gold" ? "text-primary-foreground" : "text-secondary-foreground"
-                }`}
-              />
-            </div>
-            <span
-              lang="ar"
-              dir="rtl"
-              className="text-lg text-muted-foreground/80"
-            >
-              {c.arabic}
-            </span>
-          </div>
-          <h3 className="mt-4 text-xl font-bold">{c.name}</h3>
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {c.articles.map((a) => (
-              <span
-                key={a}
-                className={`text-[10px] font-medium px-2.5 py-1 rounded-full border ${
-                  c.accent === "gold"
-                    ? "border-primary/30 bg-primary/10 text-primary"
-                    : "border-secondary/30 bg-secondary/10 text-secondary"
-                }`}
-              >
-                {a}
-              </span>
-            ))}
-          </div>
-          <p className="mt-auto text-[11px] text-muted-foreground/70">
-            Survolez pour voir les questions fréquentes
+const Categories = () => (
+  <div className="min-h-screen text-foreground relative">
+    <BackgroundFX />
+    <Header />
+
+    <main className="relative z-10 pt-32 pb-28 md:pb-16 px-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-14 animate-fade-up">
+          <div className="text-[11px] uppercase tracking-widest text-gold mb-3">Domaines juridiques</div>
+          <h1 className="font-display text-5xl md:text-6xl tracking-tight">
+            Choisissez votre <span className="italic text-gradient-gold">domaine.</span>
+          </h1>
+          <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
+            Survolez une carte pour voir les questions les plus fréquentes.
           </p>
         </div>
 
-        {/* Back */}
-        <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden] glass rounded-3xl p-5 flex flex-col">
-          <div className="flex items-center gap-2">
-            <Icon className={c.accent === "gold" ? "h-4 w-4 text-primary" : "h-4 w-4 text-secondary"} />
-            <h3 className="text-base font-bold">{c.name} — Questions fréquentes</h3>
-          </div>
-          <ul className="mt-3 space-y-2 flex-1">
-            {c.questions.map((q, i) => (
-              <li
-                key={i}
-                className="text-sm text-muted-foreground border-l-2 pl-3 leading-snug"
-                style={{ borderColor: "hsl(var(--border))" }}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {DOMAINS.map((d, i) => (
+            <div
+              key={d.name}
+              className="group relative animate-fade-up"
+              style={{ animationDelay: `${i * 70}ms`, perspective: "1200px" }}
+            >
+              <div
+                className="relative w-full h-[320px] transition-transform duration-700"
+                style={{ transformStyle: "preserve-3d" }}
               >
-                {q}
-              </li>
-            ))}
-          </ul>
-          <Link
-            to="/chat"
-            className={`mt-3 inline-flex items-center justify-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full transition-all ${
-              c.accent === "gold"
-                ? "bg-gradient-gold text-primary-foreground shadow-gold"
-                : "bg-gradient-emerald text-secondary-foreground shadow-emerald"
-            } hover:scale-[1.03]`}
-          >
-            Poser ma question
-          </Link>
+                {/* FRONT */}
+                <div
+                  className="absolute inset-0 glass rounded-3xl p-7 flex flex-col group-hover:[transform:rotateY(180deg)] transition-transform duration-700"
+                  style={{ backfaceVisibility: "hidden" }}
+                >
+                  <div
+                    className="h-12 w-12 rounded-2xl flex items-center justify-center mb-5"
+                    style={{
+                      background: `linear-gradient(135deg, ${d.glow}, transparent)`,
+                      boxShadow: `0 10px 40px -10px ${d.glow}`,
+                    }}
+                  >
+                    <d.Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-display text-2xl mb-2">{d.name}</h3>
+                  <p className="text-sm text-muted-foreground mb-5 flex-1">{d.desc}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {d.articles.map((a) => (
+                      <span key={a} className="text-[10px] px-2.5 py-1 rounded-full glass text-muted-foreground border border-border">
+                        {a}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* BACK */}
+                <div
+                  className="absolute inset-0 glass-strong rounded-3xl p-7 flex flex-col"
+                  style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                >
+                  <div className="text-[11px] uppercase tracking-widest text-gold mb-3">Questions fréquentes</div>
+                  <ul className="space-y-2.5 flex-1">
+                    {d.questions.map((q) => (
+                      <li key={q} className="text-sm flex items-start gap-2">
+                        <span className="text-gold mt-1">•</span>
+                        <span>{q}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    to="/chat"
+                    className="haptic-tap mt-4 inline-flex items-center justify-center gap-2 h-10 rounded-full bg-gradient-gold text-primary-foreground text-sm font-semibold"
+                  >
+                    Consulter <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-    </div>
-  );
-};
-
-const Categories = () => (
-  <div className="min-h-screen text-foreground relative">
-    <GradientMesh />
-    <header className="relative z-10 border-b border-border/50 backdrop-blur-md bg-card/20">
-      <div className="container mx-auto px-5 py-4 flex items-center gap-3">
-        <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="h-4 w-4" />
-          <span className="text-sm">Accueil</span>
-        </Link>
-        <div className="ml-auto flex items-center gap-2">
-          <div className="h-9 w-9 rounded-xl bg-gradient-gold flex items-center justify-center shadow-gold">
-            <Scale className="h-4.5 w-4.5 text-primary-foreground" />
-          </div>
-          <span className="font-bold">Domaines juridiques</span>
-        </div>
-      </div>
-    </header>
-
-    <main className="relative z-10 container mx-auto px-5 py-8 pb-28 md:pb-12 max-w-6xl">
-      <div className="mb-8 animate-fade-in">
-        <h1 className="text-3xl md:text-4xl font-bold">
-          Domaines <span className="text-gradient-gold">juridiques</span>
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Explorez les six grands domaines du droit marocain.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {CATEGORIES.map((c) => (
-          <FlipCard key={c.name} c={c} />
-        ))}
       </div>
     </main>
 

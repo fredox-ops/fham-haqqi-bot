@@ -1,148 +1,289 @@
 import { Link } from "react-router-dom";
-import { Scale, ArrowRight, Play, Sparkles } from "lucide-react";
-import GradientMesh from "@/components/GradientMesh";
-import AnimatedCounter from "@/components/AnimatedCounter";
-import Floating3DScales from "@/components/Floating3DScales";
-import ThemeToggle from "@/components/ThemeToggle";
-import AmbientSound from "@/components/AmbientSound";
+import {
+  ArrowRight, Sparkles, Mic, Brain, FileText, Download,
+  Briefcase, Home as HomeIcon, Users, FileSignature, Building2, ShoppingBag,
+} from "lucide-react";
+import BackgroundFX from "@/components/BackgroundFX";
+import Header from "@/components/Header";
 import MobileNav from "@/components/MobileNav";
+import AnimatedCounter from "@/components/AnimatedCounter";
 
-const Index = () => {
-  return (
-    <div className="min-h-screen text-foreground relative overflow-x-hidden">
-      <GradientMesh />
+const DOMAINS = [
+  { name: "Travail",        glow: "blue",    Icon: Briefcase,     desc: "Licenciement, salaire, indemnités, CNSS." },
+  { name: "Logement",       glow: "gold",    Icon: HomeIcon,      desc: "Loyer, caution, expulsion, copropriété." },
+  { name: "Famille",        glow: "emerald", Icon: Users,         desc: "Divorce, pension, garde, héritage." },
+  { name: "Contrats",       glow: "violet",  Icon: FileSignature, desc: "Clauses, résiliation, obligations." },
+  { name: "Administratif",  glow: "orange",  Icon: Building2,     desc: "Commune, état civil, recours." },
+  { name: "Consommateur",   glow: "pink",    Icon: ShoppingBag,   desc: "Achats, garanties, services défaillants." },
+] as const;
 
-      {/* Nav */}
-      <header className="fixed top-0 inset-x-0 z-40">
-        <div className="container mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-2.5 animate-fade-in">
-            <div className="h-9 w-9 rounded-2xl bg-gradient-blue flex items-center justify-center shadow-blue">
-              <Scale className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-lg font-bold tracking-tight">
-              Darja<span className="text-gradient-blue">Lex</span>
-            </span>
-          </div>
-          <nav className="hidden md:flex items-center gap-7 text-sm text-muted-foreground animate-fade-in">
-            <Link to="/categories" className="hover:text-foreground transition-colors">Domaines</Link>
-            <Link to="/dashboard" className="hover:text-foreground transition-colors">Tableau de bord</Link>
-            <Link to="/chat" className="hover:text-foreground transition-colors">Assistant</Link>
-            <AmbientSound />
-            <ThemeToggle />
-          </nav>
-        </div>
-      </header>
+const STEPS = [
+  { Icon: Mic,      title: "Décrivez votre situation", desc: "En français ou en darija. À l'écrit ou bientôt à l'oral." },
+  { Icon: Brain,    title: "L'agent analyse",          desc: "DarjaLex identifie le droit applicable et la jurisprudence." },
+  { Icon: FileText, title: "Recevez une explication",  desc: "Articles cités, démarches détaillées, langage clair." },
+  { Icon: Download, title: "Téléchargez votre lettre", desc: "Mise en demeure, recours, plainte — prête à signer." },
+];
 
-      <main className="relative z-10 pb-24 md:pb-0">
-        {/* HERO */}
-        <section className="relative min-h-screen flex items-center justify-center px-6 pt-24">
-          {/* Massive Arabic calligraphy background */}
-          <div
-            aria-hidden
+const glowToColor = (g: string) =>
+  g === "blue" ? "hsl(var(--blue))"
+  : g === "gold" ? "hsl(var(--gold))"
+  : g === "emerald" ? "hsl(var(--emerald))"
+  : g === "violet" ? "hsl(var(--violet))"
+  : g === "orange" ? "hsl(var(--orange))"
+  : "hsl(var(--pink))";
+
+const Index = () => (
+  <div className="min-h-screen text-foreground relative overflow-x-hidden">
+    <BackgroundFX />
+    <Header />
+
+    <main className="relative z-10 pb-28 md:pb-12">
+      {/* HERO */}
+      <section className="relative min-h-[100svh] flex items-center px-6 pt-28">
+        {/* Massive Arabic background */}
+        <div aria-hidden className="pointer-events-none select-none absolute inset-0 flex items-center justify-center overflow-hidden">
+          <span
+            className="font-arabic font-bold leading-none text-foreground"
+            style={{ fontSize: "min(95vw, 80vh)", opacity: 0.04 }}
             lang="ar"
-            className="pointer-events-none select-none absolute inset-0 flex items-center justify-center overflow-hidden"
           >
-            <span
-              className="font-bold text-gradient-mixed leading-none"
-              style={{
-                fontSize: "min(80vw, 60vh)",
-                opacity: 0.10,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              حق
-            </span>
-          </div>
+            حق
+          </span>
+        </div>
 
-          <div className="relative grid lg:grid-cols-[1.2fr_1fr] gap-10 items-center max-w-6xl w-full">
-            {/* Left content */}
-            <div className="text-center lg:text-left animate-fade-in">
-              <div className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-full glass border border-primary/30 text-primary mb-6">
-                <Sparkles className="h-3.5 w-3.5" />
-                IA juridique marocaine
-              </div>
-
-              {/* Animated counter */}
-              <div className="text-base md:text-lg text-muted-foreground mb-4">
-                <span className="text-3xl md:text-4xl font-bold text-gradient-gold">
-                  +<AnimatedCounter to={2_400_000} />
-                </span>{" "}
-                citoyens marocains lésés de leurs droits chaque année
-              </div>
-
-              <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05] mb-5">
-                L'IA qui parle{" "}
-                <span className="text-gradient-blue">darija</span>.
-                <br />
-                L'IA qui connaît{" "}
-                <span className="text-gradient-gold">vos droits</span>.
-              </h1>
-
-              <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10">
-                Posez vos questions juridiques en français ou en darija.
-                DarjaLex vous explique vos droits, cite la loi marocaine et
-                rédige vos lettres officielles.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-                <Link
-                  to="/chat"
-                  className="haptic-tap inline-flex items-center justify-center gap-2 h-14 px-7 rounded-full bg-gradient-blue text-white font-semibold shadow-blue hover:scale-[1.03] transition-all"
-                >
-                  Commencer gratuitement
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  to="/categories"
-                  className="haptic-tap inline-flex items-center justify-center gap-2 h-14 px-7 rounded-full bg-transparent border-2 font-semibold transition-all hover:scale-[1.03]"
-                  style={{ borderColor: "hsl(var(--gold))", color: "hsl(var(--gold))" }}
-                >
-                  <Play className="h-4 w-4" />
-                  Voir une démo
-                </Link>
-              </div>
+        <div className="relative grid lg:grid-cols-[1.3fr_1fr] gap-12 items-center max-w-6xl w-full mx-auto">
+          {/* Left */}
+          <div>
+            <div className="inline-flex items-center gap-2.5 text-xs px-4 py-2 rounded-full glass mb-7 animate-fade-up">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inset-0 rounded-full bg-emerald animate-ping opacity-75" />
+                <span className="relative rounded-full h-2 w-2 bg-emerald" />
+              </span>
+              <span className="text-muted-foreground">Agent IA actif</span>
+              <span className="text-foreground/80">— Droit Marocain 2025</span>
             </div>
 
-            {/* Right: floating 3D scales */}
-            <div className="hidden lg:flex items-center justify-center">
-              <Floating3DScales size={320} />
+            <h1 className="font-display text-6xl sm:text-7xl md:text-[5.5rem] font-medium leading-[0.95] tracking-tight mb-6">
+              <span className="block animate-fade-up" style={{ animationDelay: "0.05s" }}>
+                Comprenez
+              </span>
+              <span className="block animate-fade-up" style={{ animationDelay: "0.18s" }}>
+                vos droits.
+              </span>
+              <span className="block italic text-gradient-gold animate-fade-up" style={{ animationDelay: "0.32s" }}>
+                En darija.
+              </span>
+            </h1>
+
+            <p className="text-lg text-muted-foreground max-w-xl mb-9 animate-fade-up" style={{ animationDelay: "0.45s" }}>
+              Des millions de Marocains ignorent leurs droits faute d'accès.{" "}
+              <span className="text-foreground">DarjaLex change ça.</span>
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3 mb-7 animate-fade-up" style={{ animationDelay: "0.55s" }}>
+              <Link
+                to="/chat"
+                className="haptic-tap inline-flex items-center justify-center gap-2 h-13 px-7 rounded-full bg-gradient-gold text-primary-foreground font-semibold shadow-gold hover:scale-[1.03] transition-all"
+                style={{ height: "3.25rem" }}
+              >
+                Consulter l'agent
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href="#how"
+                className="haptic-tap inline-flex items-center justify-center gap-2 h-13 px-6 rounded-full border-2 border-gold/60 text-gold font-semibold hover:border-gold hover:bg-gold/10 transition-all"
+                style={{ height: "3.25rem" }}
+              >
+                Voir une démo ↓
+              </a>
+            </div>
+
+            <div className="text-xs text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 animate-fade-up" style={{ animationDelay: "0.7s" }}>
+              <span><AnimatedCounter to={2_400_000} />+ lésés</span>
+              <span className="opacity-40">•</span>
+              <span>Darija &amp; Français</span>
+              <span className="opacity-40">•</span>
+              <span>100% gratuit</span>
             </div>
           </div>
-        </section>
 
-        {/* Quick value props */}
-        <section className="relative px-6 py-20 max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-5">
-            {[
-              { t: "Droit du Travail", d: "Licenciement, salaire, indemnités, préavis.", c: "blue" },
-              { t: "Logement & Bail", d: "Loyer, caution, expulsion, copropriété.", c: "gold" },
-              { t: "Famille & Moudawana", d: "Divorce, pension, garde, héritage.", c: "blue" },
-            ].map((x) => (
-              <div key={x.t} className="glass rounded-3xl p-6 hover:-translate-y-1 transition-all">
-                <div
-                  className="h-10 w-10 rounded-2xl flex items-center justify-center mb-4"
-                  style={{
-                    background: x.c === "blue" ? "var(--gradient-blue)" : "var(--gradient-gold)",
-                    boxShadow: x.c === "blue" ? "var(--shadow-blue)" : "var(--shadow-gold)",
-                  }}
-                >
-                  <Scale className="h-5 w-5 text-white" />
+          {/* Right: floating chat preview */}
+          <div className="hidden lg:block relative animate-fade-up" style={{ animationDelay: "0.4s" }}>
+            <div
+              aria-hidden
+              className="absolute inset-0 rounded-[40%] blur-[100px] opacity-50"
+              style={{ background: "radial-gradient(circle, hsl(var(--gold)/0.6), transparent 65%)" }}
+            />
+            <div className="relative animate-float-y">
+              <div className="glass-strong rounded-3xl p-6 border border-gold/30 shadow-gold">
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="h-2 w-2 rounded-full bg-emerald animate-pulse-dot" />
+                  <span className="text-[11px] uppercase tracking-widest text-muted-foreground">Conversation en direct</span>
                 </div>
-                <h3 className="text-lg font-bold mb-1">{x.t}</h3>
-                <p className="text-sm text-muted-foreground">{x.d}</p>
+
+                {/* User msg */}
+                <div className="flex justify-end mb-4">
+                  <div className="max-w-[85%] rounded-2xl rounded-br-md px-4 py-2.5 text-sm bg-gradient-gold text-primary-foreground font-medium">
+                    Mon patron m'a pas payé depuis 2 mois.
+                  </div>
+                </div>
+
+                {/* Assistant msg */}
+                <div className="flex items-start gap-2.5">
+                  <div className="h-8 w-8 rounded-full bg-gradient-mixed shrink-0 flex items-center justify-center text-[10px] font-bold text-white">
+                    DL
+                  </div>
+                  <div className="glass rounded-2xl rounded-tl-md px-4 py-3 text-sm leading-relaxed">
+                    <span className="text-gold font-semibold">Article 345</span> du Code du Travail —
+                    le non-paiement du salaire constitue un motif de rupture aux torts de l'employeur.
+                    <span className="block mt-2 text-xs text-muted-foreground">
+                      Vous pouvez saisir l'inspection du travail sous 90 jours.
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex gap-2">
+                  <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald/15 text-emerald border border-emerald/30">Action recommandée</span>
+                  <span className="text-[10px] px-2.5 py-1 rounded-full glass text-muted-foreground">Lettre disponible</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* STATS BAR */}
+      <section className="relative px-6 -mt-10 max-w-6xl mx-auto">
+        <div className="glass-strong rounded-3xl px-6 md:px-10 py-7 grid grid-cols-2 md:grid-cols-4 gap-5">
+          {[
+            { v: <AnimatedCounter to={12} />, l: "Domaines juridiques" },
+            { v: "2025", l: "Code marocain à jour" },
+            { v: "FR · AR", l: "Darija & Français" },
+            { v: <AnimatedCounter to={50} />, l: "Modèles de lettres" },
+          ].map((s, i) => (
+            <div key={i} className="text-center md:text-left">
+              <div className="font-display text-3xl md:text-4xl text-gradient-gold">{s.v}</div>
+              <div className="text-[11px] uppercase tracking-widest text-muted-foreground mt-1">{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* DOMAINES */}
+      <section className="relative px-6 py-24 max-w-6xl mx-auto">
+        <div className="text-center mb-14">
+          <div className="inline-block text-[11px] uppercase tracking-widest text-gold mb-3">Domaines juridiques</div>
+          <h2 className="font-display text-4xl md:text-5xl tracking-tight">
+            Tous vos droits. <span className="italic text-gradient-gold">Un seul agent.</span>
+          </h2>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {DOMAINS.map((d, i) => {
+            const color = glowToColor(d.glow);
+            return (
+              <Link
+                to="/categories"
+                key={d.name}
+                className="group relative glass rounded-3xl p-7 hover:-translate-y-2 transition-all duration-500 animate-fade-up"
+                style={{ animationDelay: `${i * 70}ms` }}
+              >
+                <div
+                  aria-hidden
+                  className="absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity blur-xl"
+                  style={{ background: `radial-gradient(circle at 30% 0%, ${color}, transparent 60%)`, opacity: 0 }}
+                />
+                <div className="relative">
+                  <div
+                    className="h-12 w-12 rounded-2xl flex items-center justify-center mb-5 transition-shadow"
+                    style={{
+                      background: `linear-gradient(135deg, ${color}, transparent)`,
+                      boxShadow: `0 10px 40px -10px ${color}`,
+                    }}
+                  >
+                    <d.Icon className="h-5 w-5 text-foreground" />
+                  </div>
+                  <h3 className="font-display text-2xl font-medium mb-1.5">{d.name}</h3>
+                  <p className="text-sm text-muted-foreground mb-5">{d.desc}</p>
+                  <span className="text-xs text-gold inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    Consulter <ArrowRight className="h-3 w-3" />
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* COMMENT ÇA MARCHE */}
+      <section id="how" className="relative px-6 py-20 max-w-6xl mx-auto">
+        <div className="text-center mb-14">
+          <div className="inline-block text-[11px] uppercase tracking-widest text-gold mb-3">Comment ça marche</div>
+          <h2 className="font-display text-4xl md:text-5xl tracking-tight">
+            Quatre étapes. <span className="italic text-gradient-gold">Zéro jargon.</span>
+          </h2>
+        </div>
+
+        <div className="relative">
+          {/* Dashed connector line (desktop) */}
+          <svg
+            aria-hidden
+            className="hidden lg:block absolute top-12 left-0 w-full h-2 pointer-events-none"
+            viewBox="0 0 1000 4" preserveAspectRatio="none"
+          >
+            <line
+              x1="60" y1="2" x2="940" y2="2"
+              stroke="hsl(var(--gold))" strokeWidth="1.5" strokeDasharray="6 8"
+              strokeDashoffset="900"
+              style={{ animation: "dash-draw 2s ease forwards", strokeDasharray: "900" }}
+            />
+          </svg>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+            {STEPS.map((s, i) => (
+              <div key={i} className="text-center animate-fade-up" style={{ animationDelay: `${i * 120}ms` }}>
+                <div className="relative inline-flex">
+                  <div className="h-24 w-24 rounded-full glass flex items-center justify-center mb-4 mx-auto relative">
+                    <div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-gradient-gold text-primary-foreground text-sm font-bold flex items-center justify-center shadow-gold">
+                      {i + 1}
+                    </div>
+                    <s.Icon className="h-7 w-7 text-gold" />
+                  </div>
+                </div>
+                <h3 className="font-display text-xl font-medium mb-1">{s.title}</h3>
+                <p className="text-xs text-muted-foreground max-w-[180px] mx-auto">{s.desc}</p>
               </div>
             ))}
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
-      <footer className="relative z-10 border-t border-border/50 py-10 px-6 text-center text-xs text-muted-foreground">
-        © 2026 DarjaLex — Information juridique générale. Ne remplace pas un avocat.
-      </footer>
+      {/* CTA Footer band */}
+      <section className="relative px-6 py-20">
+        <div className="max-w-4xl mx-auto text-center glass-strong rounded-[2rem] p-12">
+          <h2 className="font-display text-4xl md:text-5xl tracking-tight mb-4">
+            Vos droits, <span className="italic text-gradient-gold">à portée de mot.</span>
+          </h2>
+          <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
+            Posez votre première question maintenant. C'est gratuit, anonyme et instantané.
+          </p>
+          <Link
+            to="/chat"
+            className="haptic-tap inline-flex items-center gap-2 h-13 px-8 rounded-full bg-gradient-gold text-primary-foreground font-semibold shadow-gold hover:scale-[1.03] transition-all"
+            style={{ height: "3.25rem" }}
+          >
+            Démarrer une consultation <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+    </main>
 
-      <MobileNav />
-    </div>
-  );
-};
+    <footer className="relative z-10 border-t border-border/40 py-8 px-6 text-center text-xs text-muted-foreground">
+      © 2026 DarjaLex — Information juridique générale. Ne remplace pas un avocat agréé.
+    </footer>
+
+    <MobileNav />
+  </div>
+);
 
 export default Index;
