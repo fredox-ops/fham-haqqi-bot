@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Scale } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const Header = () => {
   const [shrunk, setShrunk] = useState(false);
@@ -56,12 +57,15 @@ const Header = () => {
           )}
         </nav>
 
-        <Link
-          to="/chat"
-          className="haptic-tap inline-flex items-center justify-center h-10 px-5 rounded-full font-semibold text-sm border-2 border-gold text-gold hover:bg-gold hover:text-primary-foreground transition-all"
-        >
-          Commencer
-        </Link>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <Link
+            to="/chat"
+            className="haptic-tap hidden sm:inline-flex items-center justify-center h-10 px-5 rounded-full font-semibold text-sm border-2 border-gold text-gold hover:bg-gold hover:text-primary-foreground transition-all"
+          >
+            Commencer
+          </Link>
+        </div>
       </div>
     </header>
   );
