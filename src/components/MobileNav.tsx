@@ -13,7 +13,7 @@ const MobileNav = () => (
     aria-label="Navigation principale"
     className="md:hidden fixed bottom-0 inset-x-0 z-40 px-3 pb-3 pt-2"
   >
-    <div className="glass rounded-full flex items-center justify-around px-2 py-1.5 shadow-glass border border-border/60 backdrop-blur-2xl">
+    <div className="glass-strong rounded-full flex items-center justify-around px-2 py-1.5">
       {items.map((item) => (
         <NavLink
           key={item.to}
@@ -22,7 +22,7 @@ const MobileNav = () => (
           className={({ isActive }) =>
             `haptic-tap flex flex-col items-center gap-0.5 px-3 py-2 rounded-full text-[10px] font-medium transition-all ${
               isActive
-                ? "text-white bg-gradient-blue shadow-blue"
+                ? "text-primary-foreground bg-gradient-gold shadow-gold"
                 : "text-muted-foreground hover:text-foreground"
             }`
           }
