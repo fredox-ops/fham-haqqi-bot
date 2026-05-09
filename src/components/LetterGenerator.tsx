@@ -244,7 +244,7 @@ function downloadPdf(f: LetterFields, lang: Lang) {
   const maxW = pageW - margin * 2;
 
   // Light gray header bar
-  doc.setFillColor(240, 240, 242);
+  doc.setFillColor(211, 211, 211);
   doc.rect(0, 0, pageW, 18, "F");
   doc.setDrawColor(215, 215, 220);
   doc.line(0, 18, pageW, 18);
