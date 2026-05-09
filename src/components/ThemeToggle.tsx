@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
 type Theme = "dark" | "light";
@@ -19,6 +19,7 @@ export const initTheme = () => {
 
 const ThemeToggle = ({ className = "" }: { className?: string }) => {
   const [theme, setTheme] = useState<Theme>("dark");
+  const btnRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     const saved = (localStorage.getItem(KEY) as Theme | null) ?? "dark";
@@ -27,6 +28,16 @@ const ThemeToggle = ({ className = "" }: { className?: string }) => {
   }, []);
 
   const toggle = () => {
+    const btn = btnRef.current;
+    if (btn && typeof document !== "undefined") {
+      const r = btn.getBoundingClientRect();
+      document.documentElement.style.setProperty("--reveal-x", `${r.left + r.width / 2}px`);
+      document.documentElement.style.setProperty("--reveal-y", `${r.top + r.height / 2}px`);
+      document.documentElement.classList.add("theme-transitioning");
+      window.setTimeout(() => {
+        document.documentElement.classList.remove("theme-transitioning");
+      }, 700);
+    }
     const next: Theme = theme === "dark" ? "light" : "dark";
     setTheme(next);
     apply(next);
@@ -35,6 +46,7 @@ const ThemeToggle = ({ className = "" }: { className?: string }) => {
 
   return (
     <button
+      ref={btnRef}
       onClick={toggle}
       aria-label={theme === "dark" ? "Activer le mode clair" : "Activer le mode sombre"}
       className={`haptic-tap relative h-10 w-10 rounded-full glass border border-border hover:border-gold/50 flex items-center justify-center text-foreground hover:text-gold transition-all overflow-hidden ${className}`}
