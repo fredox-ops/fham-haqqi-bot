@@ -70,12 +70,12 @@ const Categories = () => (
               style={{ animationDelay: `${i * 70}ms`, perspective: "1200px" }}
             >
               <div
-                className="relative w-full h-[320px] transition-transform duration-700"
+                className="relative w-full h-[320px] transition-transform duration-700 group-hover:[transform:rotateY(180deg)]"
                 style={{ transformStyle: "preserve-3d" }}
               >
                 {/* FRONT */}
                 <div
-                  className="absolute inset-0 glass rounded-3xl p-7 flex flex-col group-hover:[transform:rotateY(180deg)] transition-transform duration-700"
+                  className="absolute inset-0 glass rounded-3xl p-7 flex flex-col"
                   style={{ backfaceVisibility: "hidden" }}
                 >
                   <div
