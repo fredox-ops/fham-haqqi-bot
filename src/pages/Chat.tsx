@@ -593,7 +593,18 @@ const Chat = () => {
               <button
                 type="button"
                 ref={callBtnRef}
-                onClick={() => setVoiceOpen(true)}
+                onClick={async () => {
+                  try {
+                    // Must run inside the click gesture for Chrome to grant permission
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    stream.getTracks().forEach((t) => t.stop());
+                    setVoiceOpen(true);
+                  } catch (err: any) {
+                    if (err?.name === "NotAllowedError") toast.error("Microphone refusé. Autorisez-le dans les paramètres du navigateur.");
+                    else if (err?.name === "NotFoundError") toast.error("Aucun microphone détecté.");
+                    else toast.error("Impossible d'accéder au microphone.");
+                  }
+                }}
                 aria-label="Lancer un appel vocal"
                 title="Appel vocal avec Mizani"
                 className="haptic-tap h-11 w-11 shrink-0 rounded-full bg-emerald/15 hover:bg-emerald/25 border border-emerald/40 text-emerald flex items-center justify-center transition-all hover:scale-105"
