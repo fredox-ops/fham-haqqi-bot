@@ -1,97 +1,57 @@
-## Goal
+## Objectif
 
-Faire fonctionner le chat sans clé API à fournir, et **classer automatiquement** chaque conversation par domaine juridique marocain pour filtrer l'historique.
+Remplacer l'animation actuelle (iris + mandala) — saccadée — par une transition de thème **fluide, GPU-only, et impressionnante** : un **split zellige doré** où l'écran se fend en deux moitiés qui glissent en sens opposés, séparées par une fine ligne d'or lumineuse, pendant qu'un éclat doré se propage au centre.
 
----
+## Pourquoi ça ne saccade plus
 
-## 1. Quelle API ? Quel dataset ?
+Causes du lag actuel :
+- `clip-path: circle(...)` animé sur un overlay plein écran → recalcul du masque chaque frame, non accéléré GPU partout.
+- Pseudo-élément `::after` avec **gros SVG en background-image** + `mix-blend-mode: screen` + double `drop-shadow` filter → composite très coûteux à chaque frame.
+- Combiné à `backdrop-blur` déjà présent dans l'app sur le header / cards → frame drops.
 
-**API → Lovable AI Gateway** (intégré, sans clé à gérer, facturé en crédits Lovable).
-- Modèle conversation : `google/gemini-2.5-pro` — excellent en français, arabe et darija, gros contexte (citations longues, mémoire de conversation).
-- Modèle classification : `google/gemini-2.5-flash-lite` — rapide et bon marché, parfait pour étiqueter et résumer.
-- On remplace l'edge function actuelle qui dépend de `ANTHROPIC_API_KEY` (qu'il faudrait remplacer après remix). Plus de clé à entretenir.
+Nouvelle approche n'utilise **que `transform` et `opacity`** (les deux propriétés GPU-accélérées), zéro `clip-path`, zéro `filter`, zéro SVG raster lourd.
 
-**Dataset → aucun dataset à entraîner.**
-Trois options possibles, du plus simple au plus complet :
-
-1. **LLM seul (recommandé maintenant)** — Gemini 2.5 Pro connaît déjà le Code du travail, la Moudawana, le DOC, etc. Zéro setup. Risque modéré d'erreur sur des numéros d'articles précis.
-2. **RAG léger (étape suivante, optionnel)** — stocker ~200-500 chunks des codes marocains clés (Travail, Famille, DOC, Logement 67-12, Pénal) dans une table avec embeddings (`pgvector` + embeddings via Lovable AI), et injecter les 5 articles les plus pertinents dans le prompt. Améliore beaucoup la fiabilité des citations.
-3. Scrape complet du Bulletin Officiel (sgg.gov.ma) — surdimensionné, à éviter pour l'instant.
-
-Pour la **classification**, pas de dataset nécessaire : on utilise le LLM en zero-shot avec une taxonomie fixe.
-
-**Taxonomie utilisée partout** (UI, BD, IA) :
-`Travail`, `Famille`, `Logement`, `Contrats`, `Administratif`, `Pénal`, `Consommation`, `Commercial`, `Fiscal`, `Autre`.
-
----
-
-## 2. Ce qu'on construit
-
-### A. Réécriture de `supabase/functions/chat/index.ts`
-- Appel à Lovable AI Gateway (`https://ai.gateway.lovable.dev/v1/chat/completions`) avec `google/gemini-2.5-pro` et `stream: true`.
-- Conserver le system prompt (assistant juridique marocain, FR/AR/Darija, markdown).
-- Envoyer les 10 derniers messages comme mémoire.
-- Gestion explicite des erreurs 429 / 402 → toast côté client.
-- Le format SSE renvoyé reste OpenAI-compatible → le parseur frontend ne change pas.
-
-### B. Nouvelle edge function `supabase/functions/classify-conversation/index.ts`
-- Entrée : `{ conversation_id }`.
-- Charge les messages (service role) via la base.
-- Appelle `google/gemini-2.5-flash-lite` avec **structured output** pour produire :
-  ```
-  { domain, summary (≤120 car), tags[], urgency: low|medium|high, language: fr|ar|darija, title }
-  ```
-- Met à jour `conversations` : `domain`, `summary` + nouvelles colonnes `tags`, `urgency`, `language`, `title`.
-- Déclenchée depuis le client après chaque réponse de l'assistant (debounce 1s).
-
-### C. Migration base de données
-Ajouter à `conversations` :
-- `tags text[] default '{}'`
-- `urgency text default 'low'` (low/medium/high)
-- `language text default 'fr'`
-- `title text`
-
-Le champ `domain` reste `text`, contraint dans l'app à la taxonomie.
-
-### D. Frontend
-- **`src/pages/Chat.tsx`** : persister les messages (déjà partiellement câblé), puis appeler `classify-conversation` après chaque tour assistant.
-- **`src/pages/Dashboard.tsx`** : historique groupé/filtrable par `domain`, badges `urgency` et `tags`, affichage du `title` au lieu du brut.
-- Tous les libellés via `i18n.tsx` existant (FR/AR).
-
-### E. Mémoire conversation
-La mémoire = derniers 10 messages envoyés au gateway. Pour des fils plus longs, le `summary` produit par le classifier est ajouté en system note pour conserver le contexte sans payer un gros historique.
-
----
-
-## 3. Flux technique
+## Concept visuel : "Split d'or"
 
 ```text
-Client (Chat.tsx)
-   │  stream  ┌──────────────────────────┐
-   ├────────► │ /functions/v1/chat       │ → Lovable AI (gemini-2.5-pro, SSE)
-   │ ◄────────┤ tokens                   │
-   │ insère user+assistant en BD
-   │
-   │ après réponse complète
-   ├────────► │ /functions/v1/classify-  │ → Lovable AI (flash-lite, structured)
-   │          │ conversation             │ → UPDATE conversations SET domain,
-   │          └──────────────────────────┘                            summary,
-   │                                                                  tags,
-   │                                                                  urgency,
-   │                                                                  language,
-   │                                                                  title
-   ▼
-Dashboard.tsx lit conversations, filtre par domaine, affiche badges.
+Avant clic              Pendant (0-50%)            Pendant (50-100%)         Après
+┌──────────┐          ┌─────┐  ┌─────┐           ┌──┐        ┌──┐          ┌──────────┐
+│  ancien  │   →      │ anc │══│ anc │     →     │a │  ✦✦✦  │ a│    →     │ nouveau  │
+│  thème   │          │ ien │  │ ien │           │  │        │  │          │  thème   │
+└──────────┘          └─────┘  └─────┘           └──┘        └──┘          └──────────┘
+                       glisse ←  → glisse        écartement max + flash
+                       (révèle nouveau thème dessous)
 ```
 
-Erreurs : 429 → toast « Trop de requêtes ». 402 → toast « Crédits Lovable AI épuisés, ajoutez des fonds ».
+1. Au clic, deux panneaux plein écran apparaissent côte à côte, chacun affichant **l'ancien thème figé** (snapshot du body via overlay coloré du background actuel).
+2. Ces deux panneaux glissent en sens opposés (gauche → hors écran à gauche, droite → hors écran à droite) avec `translateX`.
+3. À la jonction, une **fine bande verticale dorée** (gradient doux, pas de filter) s'élargit puis s'estompe — donne l'impression d'une fente lumineuse qui fend le monde.
+4. Pendant que les panneaux glissent, le `<html>` change de classe → le vrai nouveau thème se révèle dessous.
+5. Petite "étincelle" centrale : un disque doré radial-gradient qui scale de 0 à ~2 puis fade (uniquement transform + opacity).
 
-Secrets : seulement `LOVABLE_API_KEY` (déjà présent). `ANTHROPIC_API_KEY` n'est plus utilisé.
+Durée totale : **800 ms** (plus court = perçu plus snappy, moins de risque de saccades).
 
----
+## Détails techniques
 
-## 4. Hors scope (étapes futures)
+- **Pas de `clip-path` animé**, **pas de `filter` animé**, **pas de SVG en background-image** sur l'overlay.
+- Trois pseudo-couches via un container fixe injecté ou via les pseudo-éléments de `<html>` :
+  - `.theme-split-left`  : `transform: translateX(0) → translateX(-101%)`, background = couleur de l'ancien thème (capturée au début).
+  - `.theme-split-right` : `transform: translateX(0) → translateX(101%)`, idem.
+  - `.theme-spark` : disque centré, `transform: scale(0) → scale(2.4)`, `opacity: 0 → 1 → 0`.
+  - `.theme-seam` : ligne verticale 2px dorée centrée, `opacity 0 → 1 → 0`, `transform: scaleY(1)` (pas de scale animé).
+- Capture de l'ancienne couleur de fond : lire `getComputedStyle(document.body).backgroundColor` **avant** le swap, l'appliquer en variable CSS `--theme-from-bg` sur les deux panneaux.
+- Le swap de classe `light` se fait à **400 ms** (mi-animation), quand les panneaux sont déjà à ~50% de leur course → l'utilisateur ne voit jamais un flash brut du nouveau thème, masqué par les panneaux.
+- `will-change: transform` sur les panneaux uniquement pendant l'animation, retiré au cleanup.
+- `pointer-events: none` sur tous les overlays.
+- Respect de `prefers-reduced-motion` : durée 1ms, swap immédiat.
 
-- RAG avec `pgvector` sur les codes marocains (option 2 ci-dessus).
-- Génération de lettres officielles ancrée sur les articles récupérés.
-- Dashboard de modération admin.
+## Fichiers touchés
+
+1. **`src/index.css`** — supprimer le bloc actuel `.theme-transitioning::before/::after` + keyframes `theme-iris` / `theme-mandala`. Ajouter :
+   - 4 éléments stylés (`.theme-fx-left`, `.theme-fx-right`, `.theme-fx-seam`, `.theme-fx-spark`) en `position: fixed`, animés uniquement via transform/opacity.
+   - Keyframes `split-left`, `split-right`, `seam-pulse`, `spark-pulse`.
+2. **`src/components/ThemeToggle.tsx`** — au lieu d'ajouter une seule classe sur `<html>`, créer dynamiquement un container `<div class="theme-fx-root">` avec 4 enfants, capturer la couleur de fond actuelle dans `--theme-from-bg`, lancer l'anim, swap la classe `light` à 400 ms, retirer le container à 820 ms. Ajuster les timings en conséquence.
+
+## Vérification
+
+Après implémentation : tester le toggle plusieurs fois rapidement (vérifier qu'il n'y a pas d'overlays orphelins), vérifier que la frame rate reste fluide en passant le toggle dans une page chargée (Dashboard avec ses charts).
