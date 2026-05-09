@@ -98,6 +98,10 @@ const Chat = () => {
   const micBtnRef = useRef<HTMLButtonElement>(null);
   const callBtnRef = useRef<HTMLButtonElement>(null);
   const recogRef = useRef<any>(null);
+  const mediaRecRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recStreamRef = useRef<MediaStream | null>(null);
+  const [transcribing, setTranscribing] = useState(false);
   const convIdRef = useRef<string>(crypto.randomUUID());
 
   useEffect(() => {
