@@ -29,19 +29,26 @@ const ThemeToggle = ({ className = "" }: { className?: string }) => {
 
   const toggle = () => {
     const btn = btnRef.current;
+    const next: Theme = theme === "dark" ? "light" : "dark";
     if (btn && typeof document !== "undefined") {
       const r = btn.getBoundingClientRect();
       document.documentElement.style.setProperty("--reveal-x", `${r.left + r.width / 2}px`);
       document.documentElement.style.setProperty("--reveal-y", `${r.top + r.height / 2}px`);
       document.documentElement.classList.add("theme-transitioning");
+      // Let the circular wipe cover the screen first, then swap the theme
+      window.setTimeout(() => {
+        setTheme(next);
+        apply(next);
+        try { localStorage.setItem(KEY, next); } catch {}
+      }, 480);
       window.setTimeout(() => {
         document.documentElement.classList.remove("theme-transitioning");
-      }, 700);
+      }, 720);
+    } else {
+      setTheme(next);
+      apply(next);
+      try { localStorage.setItem(KEY, next); } catch {}
     }
-    const next: Theme = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    apply(next);
-    try { localStorage.setItem(KEY, next); } catch {}
   };
 
   return (
