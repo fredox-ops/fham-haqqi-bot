@@ -369,7 +369,7 @@ const Chat = () => {
           <Link to="/" className="flex items-center gap-2.5 group">
             <ArrowLeft className="h-4 w-4 text-muted-foreground group-hover:-translate-x-0.5 transition-transform" />
             <span className="font-display text-xl">
-              Darja<span className="text-gradient-gold italic">Lex</span>
+              <span className="text-gradient-gold italic">Mizani</span>
             </span>
           </Link>
           <button className="md:hidden" onClick={() => setSidebarOpen(false)}>
