@@ -452,7 +452,7 @@ const LetterGenerator = ({ open, onOpenChange, conversation, category }: Props) 
             <Button
               onClick={finalize}
               disabled={generating || stamped}
-              className="w-full h-12 rounded-2xl bg-gradient-emerald text-secondary-foreground font-semibold shadow-emerald hover:scale-[1.02] disabled:opacity-60 transition-all"
+              className="w-full h-12 rounded-2xl bg-gradient-gold text-primary-foreground font-semibold shadow-gold hover:scale-[1.02] disabled:opacity-60 transition-all"
             >
               {generating ? (
                 <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Certification…</>

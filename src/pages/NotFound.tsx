@@ -1,24 +1,26 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import BackgroundFX from "@/components/BackgroundFX";
 
-const NotFound = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-  }, [location.pathname]);
-
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
-          Return to Home
-        </a>
+const NotFound = () => (
+  <div className="min-h-screen relative flex items-center justify-center px-6">
+    <BackgroundFX />
+    <div className="absolute inset-0 zellige-overlay opacity-[0.04] pointer-events-none" />
+    <div className="relative text-center animate-fade-up">
+      <div className="font-arabic text-gradient-gold text-7xl md:text-9xl mb-4" lang="ar" dir="rtl">
+        حق غير موجود
       </div>
+      <h1 className="font-display text-3xl md:text-4xl mb-3">Cette page n'existe pas.</h1>
+      <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+        Le droit que vous cherchez s'est perdu en chemin. Revenons à l'accueil.
+      </p>
+      <Link
+        to="/"
+        className="haptic-tap inline-flex items-center justify-center h-12 px-7 rounded-full bg-gradient-gold text-primary-foreground font-semibold shadow-gold hover:scale-105 transition-all"
+      >
+        Retour à l'accueil
+      </Link>
     </div>
-  );
-};
+  </div>
+);
 
 export default NotFound;
