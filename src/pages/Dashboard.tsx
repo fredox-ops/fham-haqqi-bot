@@ -7,7 +7,7 @@ import BackgroundFX from "@/components/BackgroundFX";
 import Header from "@/components/Header";
 import MobileNav from "@/components/MobileNav";
 import LegalRadar from "@/components/LegalRadar";
-import { useAuth, loadConversations, saveConversations } from "@/lib/auth";
+import { useAuth, fetchConversations, deleteConversation } from "@/lib/auth";
 
 type Status = "Résolu" | "En cours" | "Urgent";
 type Row = {
@@ -80,16 +80,17 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!user) return;
-    const convs = loadConversations(user.email);
-    setRows(
-      convs.map((c) => ({
-        id: c.id,
-        date: c.date.slice(0, 10),
-        domain: c.domain || "Autre",
-        summary: c.summary,
-        status: c.status,
-      }))
-    );
+    fetchConversations().then((convs) => {
+      setRows(
+        convs.map((c) => ({
+          id: c.id,
+          date: c.date.slice(0, 10),
+          domain: c.domain || "Autre",
+          summary: c.summary,
+          status: c.status,
+        }))
+      );
+    });
   }, [user]);
 
   useEffect(() => {
@@ -120,10 +121,7 @@ const Dashboard = () => {
 
   const remove = (id: string) => {
     setRows((p) => p.filter((r) => r.id !== id));
-    if (user) {
-      const convs = loadConversations(user.email).filter((c) => c.id !== id);
-      saveConversations(user.email, convs);
-    }
+    deleteConversation(id);
   };
 
   return (
