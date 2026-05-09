@@ -28,27 +28,38 @@ const ThemeToggle = ({ className = "" }: { className?: string }) => {
   }, []);
 
   const toggle = () => {
-    const btn = btnRef.current;
     const next: Theme = theme === "dark" ? "light" : "dark";
-    if (btn && typeof document !== "undefined") {
-      const r = btn.getBoundingClientRect();
-      document.documentElement.style.setProperty("--reveal-x", `${r.left + r.width / 2}px`);
-      document.documentElement.style.setProperty("--reveal-y", `${r.top + r.height / 2}px`);
-      document.documentElement.classList.add("theme-transitioning");
-      // Let the circular wipe cover the screen first, then swap the theme
-      window.setTimeout(() => {
-        setTheme(next);
-        apply(next);
-        try { localStorage.setItem(KEY, next); } catch {}
-      }, 600);
-      window.setTimeout(() => {
-        document.documentElement.classList.remove("theme-transitioning");
-      }, 1150);
-    } else {
+    if (typeof document === "undefined") {
+      setTheme(next); apply(next);
+      try { localStorage.setItem(KEY, next); } catch {}
+      return;
+    }
+
+    // Capture current theme background before swapping
+    const fromBg = getComputedStyle(document.body).backgroundColor || "hsl(var(--background))";
+
+    // Build overlay: two panels of the OLD theme that slide apart, plus seam + spark
+    const root = document.createElement("div");
+    root.className = "theme-fx-root";
+    root.style.setProperty("--theme-from-bg", fromBg);
+    const left = document.createElement("div"); left.className = "theme-fx-left";
+    const right = document.createElement("div"); right.className = "theme-fx-right";
+    const seam = document.createElement("div"); seam.className = "theme-fx-seam";
+    const spark = document.createElement("div"); spark.className = "theme-fx-spark";
+    root.append(left, right, seam, spark);
+    document.body.appendChild(root);
+
+    // Swap theme mid-animation, while panels still mostly cover the screen
+    window.setTimeout(() => {
       setTheme(next);
       apply(next);
       try { localStorage.setItem(KEY, next); } catch {}
-    }
+    }, 380);
+
+    // Cleanup after animation completes
+    window.setTimeout(() => {
+      root.remove();
+    }, 840);
   };
 
   return (
