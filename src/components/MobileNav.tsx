@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Home, MessageCircle, LayoutGrid, User } from "lucide-react";
 
@@ -9,21 +8,10 @@ const items = [
   { to: "/dashboard", label: "Profil", icon: User },
 ];
 
-const MobileNav = () => {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 80);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  return (
+const MobileNav = () => (
   <nav
     aria-label="Navigation principale"
-    className={`md:hidden fixed bottom-0 inset-x-0 z-40 px-3 pb-3 pt-2 transition-all duration-300 ${
-      visible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
-    }`}
+    className="md:hidden fixed bottom-0 inset-x-0 z-40 px-3 pb-3 pt-2"
   >
     <div className="glass-strong rounded-full flex items-center justify-around px-2 py-1.5">
       {items.map((item) => (
@@ -45,7 +33,6 @@ const MobileNav = () => {
       ))}
     </div>
   </nav>
-  );
-};
+);
 
 export default MobileNav;
