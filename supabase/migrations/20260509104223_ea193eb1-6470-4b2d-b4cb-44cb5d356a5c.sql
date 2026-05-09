@@ -1,0 +1,5 @@
+ALTER TABLE public.conversations
+  ADD COLUMN IF NOT EXISTS tags text[] NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS urgency text NOT NULL DEFAULT 'low',
+  ADD COLUMN IF NOT EXISTS language text NOT NULL DEFAULT 'fr',
+  ADD COLUMN IF NOT EXISTS title text;

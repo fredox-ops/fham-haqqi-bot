@@ -19,27 +19,39 @@ export type Database = {
           created_at: string
           domain: string
           id: string
+          language: string
           status: string
           summary: string
+          tags: string[]
+          title: string | null
           updated_at: string
+          urgency: string
           user_id: string
         }
         Insert: {
           created_at?: string
           domain?: string
           id?: string
+          language?: string
           status?: string
           summary?: string
+          tags?: string[]
+          title?: string | null
           updated_at?: string
+          urgency?: string
           user_id: string
         }
         Update: {
           created_at?: string
           domain?: string
           id?: string
+          language?: string
           status?: string
           summary?: string
+          tags?: string[]
+          title?: string | null
           updated_at?: string
+          urgency?: string
           user_id?: string
         }
         Relationships: []
