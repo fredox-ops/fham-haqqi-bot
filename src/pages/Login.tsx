@@ -84,16 +84,6 @@ const Login = () => {
           </Link>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            localStorage.setItem("darjalex.session", JSON.stringify({ firstName: "Invité", email: "guest@darjalex.local" }));
-            window.location.href = "/chat";
-          }}
-          className="haptic-tap relative z-10 mt-3 w-full h-11 rounded-full border border-border/60 hover:bg-muted/40 text-muted-foreground hover:text-foreground inline-flex items-center justify-center text-sm transition-colors"
-        >
-          Continuer sans compte
-        </button>
       </div>
     </div>
   );

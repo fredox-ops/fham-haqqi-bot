@@ -12,7 +12,7 @@ import LetterGenerator from "@/components/LetterGenerator";
 import MobileNav from "@/components/MobileNav";
 import VoiceCall from "@/components/VoiceCall";
 import LegalRadar from "@/components/LegalRadar";
-import { useAuth, loadConversations, upsertConversation, type StoredConversation } from "@/lib/auth";
+import { useAuth, fetchConversations, upsertConversation, type StoredConversation } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -101,7 +101,7 @@ const Chat = () => {
   }, [messages, loading]);
 
   useEffect(() => {
-    if (user) setHistory(loadConversations(user.email));
+    if (user) fetchConversations().then(setHistory);
   }, [user]);
 
   // Persist current conversation after each AI response
@@ -120,8 +120,7 @@ const Chat = () => {
       status: urgency === "urgent" ? "Urgent" : "En cours",
       messages,
     };
-    upsertConversation(user.email, conv);
-    setHistory(loadConversations(user.email));
+    upsertConversation(user.id, conv).then(() => fetchConversations().then(setHistory));
   }, [messages, loading, user, detectedCategory, urgency]);
 
   // === Topic radar counts (per-category keyword hits across user messages) ===
