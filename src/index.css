@@ -428,3 +428,10 @@
     pointer-events: none;
   }
 }
+
+@keyframes logo-spin { to { transform: rotate(360deg); } }
+@keyframes logo-spin-rev { to { transform: rotate(-360deg); } }
+@keyframes logo-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50%      { opacity: 0.75; transform: scale(1.06); }
+}
