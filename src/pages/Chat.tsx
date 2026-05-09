@@ -3,8 +3,15 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft, Mic, MicOff, Phone, Send, Loader2, Plus, Briefcase, Home as HomeIcon, FileSignature,
   Users, FileText, AlertTriangle, Menu, X, Trash2, ThumbsUp, ThumbsDown, Copy, Sparkles,
-  Building2, ShoppingBag, LogOut, Radar,
+  Building2, ShoppingBag, LogOut, Radar, Volume2, Square,
 } from "lucide-react";
+
+// Detect if a string is predominantly Arabic script
+const isArabic = (s: string) => {
+  const arabic = (s.match(/[\u0600-\u06FF]/g) || []).length;
+  const letters = (s.match(/[A-Za-z\u0600-\u06FF]/g) || []).length || 1;
+  return arabic / letters > 0.3;
+};
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import BackgroundFX from "@/components/BackgroundFX";
@@ -834,14 +841,48 @@ const Chat = () => {
 const MessageBubble = ({
   msg, isLast, loading, onGenerateLetter,
 }: { msg: Msg; isLast: boolean; loading: boolean; onGenerateLetter: () => void }) => {
+  const rtl = isArabic(msg.content);
+  const [speaking, setSpeaking] = useState(false);
+  const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  useEffect(() => () => {
+    try { window.speechSynthesis?.cancel(); } catch {}
+  }, []);
+
+  const toggleSpeak = () => {
+    const synth = window.speechSynthesis;
+    if (!synth) { toast.error("Synthèse vocale non supportée."); return; }
+    if (speaking) {
+      synth.cancel();
+      setSpeaking(false);
+      return;
+    }
+    synth.cancel();
+    // Strip markdown for cleaner speech
+    const clean = msg.content.replace(/[*_`#>~\[\]()]/g, "").replace(/\s+/g, " ").trim();
+    const u = new SpeechSynthesisUtterance(clean);
+    u.lang = rtl ? "ar-MA" : "fr-FR";
+    const voices = synth.getVoices();
+    const match = voices.find((v) => v.lang.toLowerCase().startsWith(rtl ? "ar" : "fr"));
+    if (match) u.voice = match;
+    u.rate = 1; u.pitch = 1;
+    u.onend = () => setSpeaking(false);
+    u.onerror = () => setSpeaking(false);
+    utterRef.current = u;
+    setSpeaking(true);
+    synth.speak(u);
+  };
+
   if (msg.role === "user") {
     return (
       <div className="flex justify-end animate-slide-right">
         <div
+          dir={rtl ? "rtl" : "ltr"}
           className="max-w-[80%] px-5 py-3 text-sm md:text-base leading-relaxed font-medium text-primary-foreground"
           style={{
             background: "linear-gradient(135deg, hsl(var(--gold)), hsl(var(--gold-soft)))",
-            borderRadius: "18px 18px 4px 18px",
+            borderRadius: rtl ? "18px 18px 18px 4px" : "18px 18px 4px 18px",
+            textAlign: rtl ? "right" : "left",
           }}
         >
           {msg.content}
@@ -856,7 +897,11 @@ const MessageBubble = ({
     <div className="flex items-start gap-3 animate-fade-up">
       <Avatar />
       <div className="flex-1 min-w-0 space-y-3">
-        <div className="glass rounded-2xl rounded-tl-md px-5 py-3.5 max-w-[92%] border-l-4 border-blue">
+        <div
+          dir={rtl ? "rtl" : "ltr"}
+          className="glass rounded-2xl rounded-tl-md px-5 py-3.5 max-w-[92%] border-l-4 border-blue"
+          style={{ textAlign: rtl ? "right" : "left" }}
+        >
           <div className="prose prose-sm prose-invert max-w-none prose-p:my-2 prose-headings:my-2 prose-headings:text-foreground prose-strong:text-gold prose-li:my-0.5 prose-a:text-gold">
             <ReactMarkdown>{msg.content || "…"}</ReactMarkdown>
           </div>
@@ -864,6 +909,18 @@ const MessageBubble = ({
 
         {showActions && (
           <div className="flex flex-wrap gap-2 pl-1">
+            <button
+              onClick={toggleSpeak}
+              className={`haptic-tap text-xs flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all ${
+                speaking
+                  ? "bg-emerald/20 border-emerald/50 text-emerald animate-pulse"
+                  : "bg-blue/10 hover:bg-blue/20 border-blue/30 text-blue"
+              }`}
+              aria-label={speaking ? "Arrêter la lecture" : "Écouter"}
+            >
+              {speaking ? <Square className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+              {speaking ? "Arrêter" : "Écouter"}
+            </button>
             <button
               onClick={onGenerateLetter}
               className="haptic-tap text-xs flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gold/10 hover:bg-gold/20 border border-gold/30 text-gold transition-all"
