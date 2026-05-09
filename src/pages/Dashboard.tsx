@@ -277,8 +277,8 @@ const Dashboard = () => {
                         <span
                           className="text-[11px] px-2.5 py-1 rounded-full font-medium"
                           style={{
-                            background: `${DOMAIN_COLORS[r.domain] ?? "hsl(var(--gold))"}20`,
-                            color: DOMAIN_COLORS[r.domain] ?? "hsl(var(--gold))",
+                            background: domainColor(r.domain, 0.12),
+                            color: domainColor(r.domain),
                           }}
                         >
                           {t(r.domain)}
