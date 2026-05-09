@@ -270,6 +270,13 @@ const Dashboard = () => {
             </div>
             <style>{`@keyframes bar-fill { from { width: 0%; } }`}</style>
           </div>
+
+          {/* LEGAL RADAR */}
+          <div className="glass rounded-3xl p-6 mt-10 animate-fade-up">
+            <div className="text-[11px] uppercase tracking-widest text-gold mb-1">Radar Juridique</div>
+            <h2 className="font-display text-xl mb-6">Vos domaines juridiques actifs</h2>
+            <LegalRadar counts={radarCounts} />
+          </div>
         </div>
       </main>
 
