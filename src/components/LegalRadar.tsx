@@ -20,9 +20,13 @@ const polar = (angleDeg: number, r: number) => {
 
 interface Props {
   counts: Record<string, number>;
+  /** Render width in px (default 320). SVG viewBox stays the same. */
+  size?: number;
+  /** Hide legend/labels for compact mode */
+  compact?: boolean;
 }
 
-const LegalRadar = ({ counts }: Props) => {
+const LegalRadar = ({ counts, size = 320, compact = false }: Props) => {
   const max = Math.max(...AXES.map((a) => counts[a.name] || 0), 1);
 
   const dataPoints = AXES.map((a, i) => {
@@ -48,7 +52,10 @@ const LegalRadar = ({ counts }: Props) => {
   return (
     <div className="flex flex-col items-center">
       <div className="relative">
-        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-[320px] h-[320px] max-w-full">
+        <svg
+          viewBox={`0 0 ${SIZE} ${SIZE}`}
+          style={{ width: size, height: size, maxWidth: "100%" }}
+        >
           {/* Concentric rings */}
           {[0.25, 0.5, 0.75, 1].map((r) => (
             <circle
@@ -123,7 +130,7 @@ const LegalRadar = ({ counts }: Props) => {
           ))}
 
           {/* Axis labels */}
-          {AXES.map((a, i) => {
+          {!compact && AXES.map((a, i) => {
             const [x, y] = polar((360 / AXES.length) * i, RADIUS + 22);
             return (
               <text
@@ -142,6 +149,7 @@ const LegalRadar = ({ counts }: Props) => {
       </div>
 
       {/* Legend */}
+      {!compact && (
       <div className="mt-5 grid grid-cols-3 sm:grid-cols-6 gap-x-4 gap-y-2">
         {AXES.map((a) => (
           <div key={a.name} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -150,6 +158,7 @@ const LegalRadar = ({ counts }: Props) => {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 };
