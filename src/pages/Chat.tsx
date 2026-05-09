@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft, Mic, Send, Loader2, Plus, Briefcase, Home as HomeIcon, FileSignature,
   Users, FileText, AlertTriangle, Menu, X, Trash2, ThumbsUp, ThumbsDown, Copy, Sparkles,
-  Building2, ShoppingBag, Phone, LogOut,
+  Building2, ShoppingBag, LogOut,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -88,6 +88,7 @@ const Chat = () => {
   const [history, setHistory] = useState<StoredConversation[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const micBtnRef = useRef<HTMLButtonElement>(null);
   const convIdRef = useRef<string>(crypto.randomUUID());
 
   useEffect(() => {
@@ -469,9 +470,10 @@ const Chat = () => {
               />
               <button
                 type="button"
-                onClick={() => toast.info("Entrée vocale bientôt disponible.")}
+                ref={micBtnRef}
+                onClick={() => setVoiceOpen(true)}
+                aria-label="Lancer un appel vocal"
                 className="haptic-tap h-11 w-11 shrink-0 rounded-full hover:bg-muted/40 flex items-center justify-center text-muted-foreground hover:text-gold transition-all"
-                aria-label="Entrée vocale"
               >
                 <Mic className="h-4 w-4" />
               </button>
@@ -499,22 +501,11 @@ const Chat = () => {
         category={detectedCategory}
       />
 
-      {/* Floating voice call button */}
-      <button
-        onClick={() => setVoiceOpen(true)}
-        className="voice-ring fixed bottom-24 md:bottom-28 right-5 md:right-8 z-40 group h-14 w-14 md:h-16 md:w-16 rounded-full bg-gradient-gold text-primary-foreground shadow-gold flex items-center justify-center transition-all hover:scale-110"
-        aria-label="Démarrer un appel vocal"
-      >
-        <Phone className="h-5 w-5 md:h-6 md:w-6" />
-        <span className="pointer-events-none absolute right-full mr-3 whitespace-nowrap glass px-3 py-1.5 rounded-full text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-          Appel vocal en darija
-        </span>
-      </button>
-
       <VoiceCall
         open={voiceOpen}
         onClose={() => setVoiceOpen(false)}
         history={messages}
+        sourceRef={micBtnRef}
         onSaveTranscript={(t) => setMessages((prev) => [...prev, ...t])}
       />
 
