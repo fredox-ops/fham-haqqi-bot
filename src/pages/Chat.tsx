@@ -723,16 +723,30 @@ const Chat = () => {
                   {t("En français ou en darija. La conversation reste privée.")}
                 </p>
                 <div className="grid sm:grid-cols-3 gap-3 max-w-2xl mx-auto">
-                  {SUGGESTIONS.map((s) => (
+                  {(loadingSuggestions ? Array.from({ length: 3 }) : suggestions).map((s, i) => (
                     <button
-                      key={s}
-                      onClick={() => send(s)}
-                      className="haptic-tap text-left text-sm p-4 rounded-2xl glass hover:border-gold/40 hover:-translate-y-0.5 transition-all"
+                      key={(s as string) ?? `skel-${i}`}
+                      onClick={() => s && send(s as string)}
+                      disabled={loadingSuggestions || !s}
+                      className="haptic-tap text-left text-sm p-4 rounded-2xl glass hover:border-gold/40 hover:-translate-y-0.5 transition-all disabled:opacity-60 disabled:cursor-wait min-h-[76px]"
+                      style={{ animation: `fade-up 0.4s ease ${i * 0.08}s both` }}
                     >
                       <Sparkles className="h-3.5 w-3.5 text-gold mb-2" />
-                      {t(s)}
+                      {loadingSuggestions || !s ? (
+                        <span className="block h-3 w-3/4 rounded bg-muted/50 animate-pulse" />
+                      ) : (
+                        <span dir={isArabic(s as string) ? "rtl" : "ltr"}>{s as string}</span>
+                      )}
                     </button>
                   ))}
+                  <button
+                    onClick={loadSuggestions}
+                    disabled={loadingSuggestions}
+                    className="sm:col-span-3 mx-auto mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-gold transition-colors disabled:opacity-50"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    {loadingSuggestions ? t("Génération…") : t("Autres suggestions")}
+                  </button>
                 </div>
               </div>
             )}
