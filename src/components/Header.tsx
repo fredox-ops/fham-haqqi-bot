@@ -28,7 +28,7 @@ const Header = () => {
             <Scale className="h-5 w-5 text-primary-foreground" strokeWidth={2.4} />
           </div>
           <span className="font-display text-2xl font-semibold tracking-tight">
-            Darja<span className="text-gradient-gold italic">Lex</span>
+            Miz<span className="text-gradient-gold italic">ani</span>
           </span>
         </Link>
 
