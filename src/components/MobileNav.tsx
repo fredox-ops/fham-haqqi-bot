@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { createPortal } from "react-dom";
 import { Home, MessageCircle, LayoutGrid, User } from "lucide-react";
 
 const items = [
@@ -8,10 +9,10 @@ const items = [
   { to: "/dashboard", label: "Profil", icon: User },
 ];
 
-const MobileNav = () => (
+const MobileNav = () => createPortal(
   <nav
     aria-label="Navigation principale"
-    className="md:hidden fixed bottom-0 inset-x-0 z-40 px-3 pb-3 pt-2"
+    className="md:hidden fixed bottom-0 inset-x-0 z-50 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-2"
   >
     <div className="glass-strong rounded-full flex items-center justify-around px-2 py-1.5">
       {items.map((item) => (
@@ -32,7 +33,8 @@ const MobileNav = () => (
         </NavLink>
       ))}
     </div>
-  </nav>
+  </nav>,
+  document.body,
 );
 
 export default MobileNav;
