@@ -98,6 +98,10 @@ const Chat = () => {
   const micBtnRef = useRef<HTMLButtonElement>(null);
   const callBtnRef = useRef<HTMLButtonElement>(null);
   const recogRef = useRef<any>(null);
+  const mediaRecRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recStreamRef = useRef<MediaStream | null>(null);
+  const [transcribing, setTranscribing] = useState(false);
   const convIdRef = useRef<string>(crypto.randomUUID());
 
   useEffect(() => {
@@ -152,40 +156,88 @@ const Chat = () => {
     [topicCounts]
   );
 
-  // === Mic dictation (Web Speech API) — fills input, does NOT open call ===
-  const toggleDictation = () => {
+  // === Audio recording → server-side transcription (Gemini multimodal) ===
+  const stopRecorderTracks = () => {
+    recStreamRef.current?.getTracks().forEach((t) => t.stop());
+    recStreamRef.current = null;
+  };
+
+  const toggleDictation = async () => {
+    if (transcribing) return;
     if (dictating) {
-      try { recogRef.current?.stop?.(); } catch {}
-      setDictating(false);
+      try { mediaRecRef.current?.stop(); } catch {}
       return;
     }
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR) {
-      toast.error("La dictée vocale n'est pas supportée par ce navigateur.");
-      return;
-    }
-    const r = new SR();
-    r.lang = lang === "ar" ? "ar-MA" : "fr-FR";
-    r.continuous = false;
-    r.interimResults = true;
-    let finalText = "";
-    r.onresult = (e: any) => {
-      let interim = "";
-      finalText = "";
-      for (let i = 0; i < e.results.length; i++) {
-        const t = e.results[i][0].transcript;
-        if (e.results[i].isFinal) finalText += t;
-        else interim += t;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recStreamRef.current = stream;
+      const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm;codecs=opus"
+        : MediaRecorder.isTypeSupported("audio/mp4")
+        ? "audio/mp4"
+        : "audio/webm";
+      const rec = new MediaRecorder(stream, { mimeType: mime });
+      audioChunksRef.current = [];
+      rec.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      rec.onstop = async () => {
+        setDictating(false);
+        stopRecorderTracks();
+        const blob = new Blob(audioChunksRef.current, { type: mime });
+        if (blob.size < 800) {
+          toast.error(lang === "ar" ? "تسجيل قصير جداً." : "Enregistrement trop court.");
+          return;
+        }
+        setTranscribing(true);
+        try {
+          const buf = await blob.arrayBuffer();
+          // base64 encode without blowing the stack
+          let binary = "";
+          const bytes = new Uint8Array(buf);
+          const CHUNK = 0x8000;
+          for (let i = 0; i < bytes.length; i += CHUNK) {
+            binary += String.fromCharCode.apply(
+              null,
+              Array.from(bytes.subarray(i, i + CHUNK)),
+            );
+          }
+          const base64 = btoa(binary);
+          const { data, error } = await supabase.functions.invoke("transcribe-audio", {
+            body: { audio: base64, mimeType: mime, language: lang },
+          });
+          if (error) throw error;
+          const text = (data as any)?.text?.trim?.() ?? "";
+          if (!text) {
+            toast.error(lang === "ar" ? "تعذر التعرف على الصوت." : "Audio non reconnu.");
+          } else {
+            setInput((prev) => (prev ? `${prev} ${text}` : text));
+            inputRef.current?.focus();
+          }
+        } catch (err) {
+          console.error(err);
+          toast.error(lang === "ar" ? "فشل التحويل الصوتي." : "Échec de la transcription.");
+        } finally {
+          setTranscribing(false);
+        }
+      };
+      rec.onerror = () => {
+        setDictating(false);
+        stopRecorderTracks();
+      };
+      mediaRecRef.current = rec;
+      rec.start();
+      setDictating(true);
+    } catch (err: any) {
+      stopRecorderTracks();
+      if (err?.name === "NotAllowedError") {
+        toast.error("Microphone refusé. Autorisez-le dans les paramètres du navigateur.");
+      } else if (err?.name === "NotFoundError") {
+        toast.error("Aucun microphone détecté.");
+      } else {
+        toast.error("Impossible d'accéder au microphone.");
       }
-      setInput((prev) => {
-        // Replace nothing — append live to current input via ref of last submission
-        return (finalText || interim).trim();
-      });
-    };
-    r.onerror = () => setDictating(false);
-    r.onend = () => setDictating(false);
-    recogRef.current = r;
-    try { r.start(); setDictating(true); } catch { setDictating(false); }
+    }
   };
 
   const send = async (text: string) => {
@@ -594,15 +646,18 @@ const Chat = () => {
                 type="button"
                 ref={micBtnRef}
                 onClick={toggleDictation}
-                aria-label={dictating ? "Arrêter la dictée" : "Dicter votre message"}
-                title={dictating ? "Arrêter la dictée" : "Dicter votre message"}
+                disabled={transcribing}
+                aria-label={dictating ? "Arrêter l'enregistrement" : "Enregistrer un message vocal"}
+                title={dictating ? "Arrêter l'enregistrement" : "Enregistrer un message vocal"}
                 className={`haptic-tap h-10 w-10 md:h-11 md:w-11 shrink-0 rounded-full flex items-center justify-center transition-all ${
                   dictating
                     ? "bg-destructive/15 text-destructive border border-destructive/40 animate-pulse"
+                    : transcribing
+                    ? "bg-gold/15 text-gold border border-gold/40"
                     : "hover:bg-muted/40 text-muted-foreground hover:text-gold"
                 }`}
               >
-                {dictating ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                {transcribing ? <Loader2 className="h-4 w-4 animate-spin" /> : dictating ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
               </button>
               <button
                 type="button"
