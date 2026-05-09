@@ -481,3 +481,7 @@
   0%, 100% { opacity: 0.45; transform: scale(1); }
   50%      { opacity: 0.75; transform: scale(1.06); }
 }
+@keyframes balance-tilt {
+  0%, 100% { transform: rotate(-4deg); }
+  50%      { transform: rotate(4deg); }
+}
