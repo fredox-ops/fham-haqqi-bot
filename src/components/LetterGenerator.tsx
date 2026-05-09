@@ -119,7 +119,7 @@ const LetterPreview = ({
       <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-[hsl(36_91%_55%)]" />
 
       {/* Light gray header bar */}
-      <div className="relative bg-gradient-to-r from-[hsl(0_0%_92%)] via-[hsl(0_0%_96%)] to-[hsl(0_0%_92%)] border-b border-[hsl(0_0%_85%)] px-8 py-3 text-center">
+      <div className="relative bg-[#D3D3D3] border-b border-[hsl(0_0%_75%)] px-8 py-3 text-center">
         <div className="text-[hsl(225_30%_25%)] font-bold tracking-[0.25em] text-sm uppercase">
           {t.kingdom}
         </div>
