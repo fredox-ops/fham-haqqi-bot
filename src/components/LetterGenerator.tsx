@@ -243,12 +243,12 @@ function downloadPdf(f: LetterFields, lang: Lang) {
   const margin = 20;
   const maxW = pageW - margin * 2;
 
-  // Light gray header bar
-  doc.setFillColor(240, 240, 242);
+  // Gold header bar
+  doc.setFillColor(245, 166, 35);
   doc.rect(0, 0, pageW, 18, "F");
-  doc.setDrawColor(215, 215, 220);
+  doc.setDrawColor(180, 120, 20);
   doc.line(0, 18, pageW, 18);
-  doc.setTextColor(60, 65, 80);
+  doc.setTextColor(20, 20, 30);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text(lang === "fr" ? "ROYAUME DU MAROC" : "AL-MAMLAKA AL-MAGHRIBIYA", pageW / 2, 11, { align: "center" });
