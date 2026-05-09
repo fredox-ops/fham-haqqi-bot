@@ -560,21 +560,6 @@ const Chat = () => {
           <div className="flex-1" />
           {messages.length > 0 && (
             <button
-              onClick={() => setRadarOpen((v) => !v)}
-              className={`haptic-tap text-xs inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full glass border transition-colors ${
-                radarOpen ? "border-gold/40 text-gold" : "border-border text-muted-foreground hover:text-foreground"
-              }`}
-              aria-label="Afficher le radar des sujets"
-            >
-              <Radar className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Radar</span>
-              {detectedTopics > 0 && (
-                <span className="text-[10px] bg-gold/20 text-gold rounded-full px-1.5">{detectedTopics}</span>
-              )}
-            </button>
-          )}
-          {messages.length > 0 && (
-            <button
               onClick={newChat}
               className="haptic-tap text-xs text-muted-foreground hover:text-destructive transition-colors inline-flex items-center gap-1.5"
             >
