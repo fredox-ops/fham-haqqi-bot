@@ -72,7 +72,7 @@ const TypingDots = () => (
 
 const Avatar = () => (
   <div className="h-8 w-8 shrink-0 rounded-full flex items-center justify-center bg-gradient-mixed text-[10px] font-bold text-white">
-    DL
+    MZ
   </div>
 );
 
@@ -162,21 +162,69 @@ const Chat = () => {
     recStreamRef.current = null;
   };
 
+  const stopSpeechRecognition = () => {
+    try { recogRef.current?.abort?.(); recogRef.current?.stop?.(); } catch {}
+    recogRef.current = null;
+  };
+
+  const appendTranscribedText = (text: string) => {
+    const cleaned = text.trim();
+    if (!cleaned) return;
+    setInput((prev) => (prev ? `${prev} ${cleaned}` : cleaned));
+    requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
+  const startBrowserDictation = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error(lang === "ar" ? "التسجيل الصوتي غير مدعوم في هذا المتصفح." : "L'audio n'est pas supporté par ce navigateur.");
+      return;
+    }
+    stopSpeechRecognition();
+    const recognition = new SpeechRecognition();
+    recognition.lang = lang === "ar" ? "ar-MA" : "fr-FR";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recogRef.current = recognition;
+    recognition.onresult = (event: any) => {
+      const text = Array.from(event.results)
+        .map((result: any) => result?.[0]?.transcript ?? "")
+        .join(" ");
+      appendTranscribedText(text);
+    };
+    recognition.onerror = () => {
+      toast.error(lang === "ar" ? "فشل التسجيل الصوتي." : "Échec de l'enregistrement vocal.");
+    };
+    recognition.onend = () => {
+      setDictating(false);
+      recogRef.current = null;
+    };
+    setDictating(true);
+    recognition.start();
+  };
+
   const toggleDictation = async () => {
-    if (transcribing) return;
     if (dictating) {
       try { mediaRecRef.current?.stop(); } catch {}
+      stopSpeechRecognition();
+      stopRecorderTracks();
+      setDictating(false);
+      return;
+    }
+    if (transcribing) {
+      toast.message(lang === "ar" ? "جاري تحويل الصوت…" : "Transcription en cours…");
       return;
     }
     try {
+      if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+        startBrowserDictation();
+        return;
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       recStreamRef.current = stream;
-      const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-        ? "audio/webm;codecs=opus"
-        : MediaRecorder.isTypeSupported("audio/mp4")
-        ? "audio/mp4"
-        : "audio/webm";
-      const rec = new MediaRecorder(stream, { mimeType: mime });
+      const mime = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"]
+        .find((type) => MediaRecorder.isTypeSupported(type));
+      const rec = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
       audioChunksRef.current = [];
       rec.ondataavailable = (e) => {
         if (e.data && e.data.size > 0) audioChunksRef.current.push(e.data);
@@ -184,7 +232,8 @@ const Chat = () => {
       rec.onstop = async () => {
         setDictating(false);
         stopRecorderTracks();
-        const blob = new Blob(audioChunksRef.current, { type: mime });
+        const finalMime = rec.mimeType || mime || "audio/webm";
+        const blob = new Blob(audioChunksRef.current, { type: finalMime });
         if (blob.size < 800) {
           toast.error(lang === "ar" ? "تسجيل قصير جداً." : "Enregistrement trop court.");
           return;
@@ -203,16 +252,19 @@ const Chat = () => {
             );
           }
           const base64 = btoa(binary);
-          const { data, error } = await supabase.functions.invoke("transcribe-audio", {
-            body: { audio: base64, mimeType: mime, language: lang },
+          const invokePromise = supabase.functions.invoke("transcribe-audio", {
+            body: { audio: base64, mimeType: finalMime, language: lang },
           });
+          const timeoutPromise = new Promise<never>((_, reject) => {
+            window.setTimeout(() => reject(new Error("transcription-timeout")), 45000);
+          });
+          const { data, error } = await Promise.race([invokePromise, timeoutPromise]);
           if (error) throw error;
           const text = (data as any)?.text?.trim?.() ?? "";
           if (!text) {
             toast.error(lang === "ar" ? "تعذر التعرف على الصوت." : "Audio non reconnu.");
           } else {
-            setInput((prev) => (prev ? `${prev} ${text}` : text));
-            inputRef.current?.focus();
+            appendTranscribedText(text);
           }
         } catch (err) {
           console.error(err);
@@ -239,6 +291,12 @@ const Chat = () => {
       }
     }
   };
+
+  useEffect(() => () => {
+    try { mediaRecRef.current?.stop(); } catch {}
+    stopRecorderTracks();
+    stopSpeechRecognition();
+  }, []);
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
@@ -568,7 +626,7 @@ const Chat = () => {
             {messages.length === 0 && (
               <div className="text-center py-16 animate-fade-up">
                 <div className="inline-flex h-16 w-16 rounded-full bg-gradient-mixed items-center justify-center text-white font-bold text-lg mb-6 animate-pulse-dot">
-                  DL
+                  MZ
                 </div>
                 <h2 className="font-display text-3xl md:text-4xl mb-2">
                   {t("Bonjour.")} <span className="italic text-gradient-gold">{t("Décrivez votre situation.")}</span>
@@ -645,9 +703,8 @@ const Chat = () => {
                 type="button"
                 ref={micBtnRef}
                 onClick={toggleDictation}
-                disabled={transcribing}
-                aria-label={dictating ? "Arrêter l'enregistrement" : "Enregistrer un message vocal"}
-                title={dictating ? "Arrêter l'enregistrement" : "Enregistrer un message vocal"}
+                aria-label={dictating ? "Arrêter l'enregistrement" : transcribing ? "Transcription en cours" : "Enregistrer un message vocal"}
+                title={dictating ? "Arrêter l'enregistrement" : transcribing ? "Transcription en cours" : "Enregistrer un message vocal"}
                 className={`haptic-tap h-10 w-10 md:h-11 md:w-11 shrink-0 rounded-full flex items-center justify-center transition-all ${
                   dictating
                     ? "bg-destructive/15 text-destructive border border-destructive/40 animate-pulse"
@@ -681,7 +738,7 @@ const Chat = () => {
               </button>
               <button
                 type="submit"
-                disabled={loading || !input.trim()}
+                disabled={!input.trim()}
                 className="haptic-tap h-10 w-10 md:h-11 md:w-11 shrink-0 rounded-full bg-gradient-gold text-primary-foreground shadow-gold hover:scale-[1.06] disabled:opacity-50 disabled:scale-100 transition-all group inline-flex items-center justify-center"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
