@@ -72,6 +72,71 @@
     --sidebar-border: 258 30% 14%;
     --sidebar-ring: 42 78% 60%;
   }
+
+  /* === LIGHT MODE === */
+  .light {
+    --background: 48 33% 96%;          /* warm white #FAFAF8 */
+    --foreground: 36 60% 7%;           /* near-black #1A1208 */
+
+    --card: 42 28% 92%;                /* #F0EDE6 */
+    --card-foreground: 36 60% 7%;
+
+    --popover: 48 33% 96%;
+    --popover-foreground: 36 60% 7%;
+
+    --primary: 42 78% 60%;
+    --primary-foreground: 36 60% 7%;
+
+    --secondary: 230 75% 50%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 42 22% 88%;
+    --muted-foreground: 42 24% 33%;    /* #6B5E3E */
+
+    --accent: 162 70% 38%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 75% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 36 20% 82%;
+    --input: 42 28% 90%;
+    --ring: 42 78% 60%;
+
+    --gold: 42 78% 50%;
+    --gold-soft: 42 88% 65%;
+    --blue: 230 75% 50%;
+    --emerald: 162 70% 38%;
+    --violet: 270 60% 50%;
+    --pink: 330 70% 55%;
+    --orange: 24 90% 52%;
+
+    --bg-primary: 48 33% 96%;
+    --bg-secondary: 42 28% 92%;
+    --text-muted: 42 24% 33%;
+
+    --gradient-gold: linear-gradient(135deg, hsl(42 78% 55%), hsl(36 90% 45%));
+    --gradient-gold-soft: linear-gradient(135deg, hsl(42 90% 65%), hsl(38 78% 50%));
+    --gradient-blue: linear-gradient(135deg, hsl(230 75% 50%), hsl(245 70% 55%));
+    --gradient-emerald: linear-gradient(135deg, hsl(162 70% 40%), hsl(180 60% 45%));
+    --gradient-mixed: linear-gradient(135deg, hsl(230 75% 50%), hsl(270 60% 50%) 50%, hsl(42 78% 55%));
+
+    --shadow-gold: 0 12px 50px -12px hsl(42 78% 50% / 0.4);
+    --shadow-blue: 0 12px 50px -12px hsl(230 75% 50% / 0.4);
+    --shadow-glass: 0 10px 40px -8px hsl(42 24% 33% / 0.18);
+
+    --glass-bg: hsl(0 0% 100% / 0.55);
+    --glass-border: hsl(36 30% 20% / 0.08);
+
+    --sidebar-background: 42 28% 94%;
+    --sidebar-foreground: 36 60% 7%;
+    --sidebar-primary: 42 78% 50%;
+    --sidebar-primary-foreground: 36 60% 7%;
+    --sidebar-accent: 42 22% 88%;
+    --sidebar-accent-foreground: 36 60% 7%;
+    --sidebar-border: 36 20% 82%;
+    --sidebar-ring: 42 78% 50%;
+  }
 }
 
 @layer base {
@@ -81,6 +146,12 @@
     @apply bg-background text-foreground antialiased;
     font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
     font-feature-settings: "ss01";
+    transition: background-color 300ms ease, color 300ms ease;
+  }
+
+  /* Smooth theme transition on most surfaces */
+  body, header, aside, main, section, article, button, input, textarea, .glass, .glass-strong {
+    transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
   }
 
   ::selection { background: hsl(var(--gold) / 0.3); color: hsl(var(--foreground)); }
@@ -198,6 +269,13 @@
   @keyframes urgent-pulse {
     0%,100% { box-shadow: 0 0 0 0 hsl(var(--destructive) / 0.6); }
     50%     { box-shadow: 0 0 0 10px hsl(var(--destructive) / 0); }
+  }
+
+  @keyframes radar-draw {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes fade-in {
+    to { opacity: 1; }
   }
 
   /* === Voice call orb === */

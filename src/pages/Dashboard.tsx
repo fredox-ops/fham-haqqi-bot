@@ -6,6 +6,7 @@ import {
 import BackgroundFX from "@/components/BackgroundFX";
 import Header from "@/components/Header";
 import MobileNav from "@/components/MobileNav";
+import LegalRadar from "@/components/LegalRadar";
 import { useAuth, loadConversations, saveConversations } from "@/lib/auth";
 
 type Status = "Résolu" | "En cours" | "Urgent";
@@ -109,6 +110,12 @@ const Dashboard = () => {
     rows.forEach((r) => (counts[r.domain] = (counts[r.domain] || 0) + 1));
     const max = Math.max(...Object.values(counts), 1);
     return Object.entries(counts).map(([k, v]) => ({ name: k, value: v, pct: (v / max) * 100 }));
+  }, [rows]);
+
+  const radarCounts = useMemo(() => {
+    const c: Record<string, number> = {};
+    rows.forEach((r) => (c[r.domain] = (c[r.domain] || 0) + 1));
+    return c;
   }, [rows]);
 
   const remove = (id: string) => {
@@ -262,6 +269,13 @@ const Dashboard = () => {
               ))}
             </div>
             <style>{`@keyframes bar-fill { from { width: 0%; } }`}</style>
+          </div>
+
+          {/* LEGAL RADAR */}
+          <div className="glass rounded-3xl p-6 mt-10 animate-fade-up">
+            <div className="text-[11px] uppercase tracking-widest text-gold mb-1">Radar Juridique</div>
+            <h2 className="font-display text-xl mb-6">Vos domaines juridiques actifs</h2>
+            <LegalRadar counts={radarCounts} />
           </div>
         </div>
       </main>
