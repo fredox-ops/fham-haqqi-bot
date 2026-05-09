@@ -182,17 +182,19 @@ export const Field = ({
   label: string; type?: string; value: string; onChange: (v: string) => void;
   placeholder?: string; autoComplete?: string; children?: React.ReactNode; rightElement?: React.ReactNode;
 }) => (
-  <label className="block relative">
+  <label className="block">
     <span className="block text-[11px] uppercase tracking-widest text-muted-foreground mb-1.5">{label}</span>
-    <input
-      type={type}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      autoComplete={autoComplete}
-      className="w-full h-12 px-4 pr-10 rounded-2xl bg-input/80 border border-border focus:border-gold focus:bg-input outline-none text-sm transition-colors placeholder:text-muted-foreground/60"
-    />
-    {rightElement}
+    <div className="relative">
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        className="w-full h-12 px-4 pr-10 rounded-2xl bg-input/80 border border-border focus:border-gold focus:bg-input outline-none text-sm transition-colors placeholder:text-muted-foreground/60"
+      />
+      {rightElement}
+    </div>
     {children}
   </label>
 );
