@@ -638,7 +638,6 @@ const Chat = () => {
                 placeholder={lang === "fr"
                   ? "Décrivez votre situation en français ou en darija…"
                   : "وصف وضعيتك بالدارجة أو الفرنسية…"}
-                disabled={loading}
                 dir={lang === "ar" ? "rtl" : "ltr"}
                 className="flex-1 min-w-0 bg-transparent resize-none text-sm md:text-base placeholder:text-muted-foreground/70 focus:outline-none py-2.5 max-h-32"
               />
