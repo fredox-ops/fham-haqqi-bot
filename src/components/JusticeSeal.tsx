@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+
 /**
  * Mizani Justice Seal — animated SVG emblem.
  * Layers:
@@ -5,22 +7,72 @@
  *  2. Inner counter-rotating zellige star
  *  3. Center: animated balance scales (oscillating beam)
  *  4. Glow halo + status orbits
+ * Cursor-interactive: parallax tilt + ring nudge follow the mouse.
  */
 const JusticeSeal = ({ size = 460 }: { size?: number }) => {
-  const ARABIC = ["ع", "د", "ا", "ل", "ة", "ح", "ق", "ق"]; // adala / haqq
+  // Full word, properly connected glyphs (Amiri renders the ligatures cleanly)
+  const WORD = "العدالة";
+  const ringRef = useRef<HTMLDivElement>(null);
+  const [tilt, setTilt] = useState({ x: 0, y: 0, mag: 0 });
+
+  useEffect(() => {
+    const el = ringRef.current;
+    if (!el) return;
+    let raf = 0;
+    const onMove = (e: MouseEvent) => {
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      // Normalize -1..1 within ~1.6× the seal radius
+      const dx = (e.clientX - cx) / (r.width * 0.8);
+      const dy = (e.clientY - cy) / (r.height * 0.8);
+      const clamp = (n: number) => Math.max(-1, Math.min(1, n));
+      const nx = clamp(dx);
+      const ny = clamp(dy);
+      const mag = Math.min(1, Math.hypot(nx, ny));
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => setTilt({ x: nx, y: ny, mag }));
+    };
+    const onLeave = () => setTilt({ x: 0, y: 0, mag: 0 });
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseleave", onLeave);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseleave", onLeave);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // Tilt amounts (degrees / pixels)
+  const rotX = -tilt.y * 12;
+  const rotY = tilt.x * 12;
+  const shiftX = tilt.x * 14;
+  const shiftY = tilt.y * 14;
+
   return (
     <div
-      className="relative flex items-center justify-center"
-      style={{ width: size, height: size }}
+      ref={ringRef}
+      className="relative flex items-center justify-center cursor-pointer"
+      style={{
+        width: size,
+        height: size,
+        perspective: "1200px",
+        transform: `rotateX(${rotX}deg) rotateY(${rotY}deg)`,
+        transformStyle: "preserve-3d",
+        transition: "transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+      }}
       aria-label="Sceau de justice Mizani"
     >
       {/* halo */}
       <div
         aria-hidden
-        className="absolute inset-0 rounded-full blur-[100px] opacity-50"
+        className="absolute inset-0 rounded-full blur-[100px]"
         style={{
           background: "radial-gradient(circle, hsl(var(--gold) / 0.55), transparent 65%)",
           animation: "logo-pulse 5s ease-in-out infinite",
+          opacity: 0.5 + tilt.mag * 0.35,
+          transform: `translate(${shiftX * 0.6}px, ${shiftY * 0.6}px)`,
+          transition: "opacity 300ms ease, transform 300ms ease",
         }}
       />
       <div
@@ -29,6 +81,8 @@ const JusticeSeal = ({ size = 460 }: { size?: number }) => {
         style={{
           background: "radial-gradient(circle, hsl(var(--blue) / 0.5), transparent 70%)",
           animation: "logo-pulse 7s ease-in-out infinite reverse",
+          transform: `translate(${shiftX * -0.4}px, ${shiftY * -0.4}px)`,
+          transition: "transform 300ms ease",
         }}
       />
 
@@ -36,7 +90,11 @@ const JusticeSeal = ({ size = 460 }: { size?: number }) => {
       <svg
         viewBox="0 0 400 400"
         className="absolute inset-0 w-full h-full"
-        style={{ animation: "logo-spin 60s linear infinite" }}
+        style={{
+          animation: "logo-spin 60s linear infinite",
+          transform: `translate(${shiftX * 0.35}px, ${shiftY * 0.35}px)`,
+          transition: "transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+        }}
       >
         <defs>
           <path id="seal-arc" d="M 200,200 m -178,0 a 178,178 0 1,1 356,0 a 178,178 0 1,1 -356,0" />
@@ -49,9 +107,16 @@ const JusticeSeal = ({ size = 460 }: { size?: number }) => {
         <circle cx="200" cy="200" r="190" fill="none" stroke="url(#seal-gold)" strokeWidth="1.2" strokeDasharray="2 9" />
         <circle cx="200" cy="200" r="178" fill="none" stroke="hsl(var(--gold))" strokeOpacity="0.25" strokeWidth="0.6" />
         <circle cx="200" cy="200" r="166" fill="none" stroke="hsl(var(--gold))" strokeOpacity="0.18" strokeWidth="0.6" />
-        <text fill="hsl(var(--gold))" fillOpacity="0.55" fontSize="20" letterSpacing="14" style={{ fontFamily: "Reem Kufi, Amiri, serif" }}>
+        <text
+          fill="hsl(var(--gold))"
+          fillOpacity="0.85"
+          fontSize="26"
+          fontWeight={700}
+          letterSpacing="6"
+          style={{ fontFamily: "'Amiri', 'Scheherazade New', 'Noto Naskh Arabic', serif" }}
+        >
           <textPath href="#seal-arc" startOffset="0%">
-            {Array(8).fill(ARABIC.join(" ")).join("  •  ")}
+            {Array(8).fill(WORD).join("   ✦   ")}
           </textPath>
         </text>
       </svg>
@@ -60,7 +125,11 @@ const JusticeSeal = ({ size = 460 }: { size?: number }) => {
       <svg
         viewBox="0 0 400 400"
         className="absolute inset-16 w-[calc(100%-8rem)] h-[calc(100%-8rem)]"
-        style={{ animation: "logo-spin-rev 45s linear infinite" }}
+        style={{
+          animation: "logo-spin-rev 45s linear infinite",
+          transform: `translate(${shiftX * -0.5}px, ${shiftY * -0.5}px)`,
+          transition: "transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+        }}
       >
         <g fill="none" stroke="hsl(var(--gold))" strokeOpacity="0.45" strokeWidth="1.1">
           {/* 8-point star */}
@@ -108,7 +177,12 @@ const JusticeSeal = ({ size = 460 }: { size?: number }) => {
       {/* central balance */}
       <div
         className="relative h-36 w-36 rounded-full glass-strong border border-gold/40 shadow-gold flex items-center justify-center overflow-hidden"
-        style={{ animation: "float-y 6s ease-in-out infinite" }}
+        style={{
+          animation: "float-y 6s ease-in-out infinite",
+          transform: `translate(${shiftX * 0.9}px, ${shiftY * 0.9}px) scale(${1 + tilt.mag * 0.06})`,
+          transition: "transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+          boxShadow: `0 0 ${30 + tilt.mag * 40}px hsl(var(--gold) / ${0.35 + tilt.mag * 0.4})`,
+        }}
       >
         <div
           aria-hidden
@@ -123,8 +197,15 @@ const JusticeSeal = ({ size = 460 }: { size?: number }) => {
             {/* base */}
             <line x1="34" y1="80" x2="66" y2="80" />
             <line x1="40" y1="84" x2="60" y2="84" />
-            {/* beam — oscillates */}
-            <g style={{ transformOrigin: "50px 28px", animation: "balance-tilt 4s ease-in-out infinite" }}>
+            {/* beam — oscillates + reacts to cursor */}
+            <g
+              style={{
+                transformOrigin: "50px 28px",
+                animation: "balance-tilt 4s ease-in-out infinite",
+                transform: `rotate(${tilt.x * 8}deg)`,
+                transition: "transform 250ms ease",
+              }}
+            >
               <line x1="20" y1="28" x2="80" y2="28" />
               {/* left pan */}
               <line x1="22" y1="28" x2="22" y2="40" />
