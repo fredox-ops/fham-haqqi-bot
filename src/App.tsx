@@ -9,6 +9,9 @@ import NotFound from "./pages/NotFound.tsx";
 import Chat from "./pages/Chat.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import Categories from "./pages/Categories.tsx";
+import Login from "./pages/Login.tsx";
+import Register from "./pages/Register.tsx";
+import { AuthProvider, ProtectedRoute } from "@/lib/auth";
 
 const queryClient = new QueryClient();
 
@@ -18,15 +21,19 @@ const App = () => (
       <Toaster />
       <Sonner position="top-right" richColors closeButton />
       <BrowserRouter>
-        <RouteFade>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </RouteFade>
+        <AuthProvider>
+          <RouteFade>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </RouteFade>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
