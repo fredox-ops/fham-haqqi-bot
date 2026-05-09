@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft, Mic, Send, Loader2, Plus, Briefcase, Home as HomeIcon, FileSignature,
   Users, FileText, AlertTriangle, Menu, X, Trash2, ThumbsUp, ThumbsDown, Copy, Sparkles,
-  Building2, ShoppingBag, Phone,
+  Building2, ShoppingBag, Phone, LogOut,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -11,9 +11,10 @@ import BackgroundFX from "@/components/BackgroundFX";
 import LetterGenerator from "@/components/LetterGenerator";
 import MobileNav from "@/components/MobileNav";
 import VoiceCall from "@/components/VoiceCall";
+import { useAuth, loadConversations, upsertConversation, type StoredConversation } from "@/lib/auth";
+import { useNavigate } from "react-router-dom";
 
 type Msg = { role: "user" | "assistant"; content: string };
-type Conversation = { id: string; title: string; category: Category; date: string };
 type Category = "Travail" | "Logement" | "Famille" | "Contrats" | "Administratif" | "Consommateur";
 type Urgency = "normal" | "warning" | "urgent";
 
@@ -49,15 +50,6 @@ const CATEGORY_ICONS: Record<Category, typeof Briefcase> = {
   Contrats: FileSignature, Administratif: Building2, Consommateur: ShoppingBag,
 };
 
-const SAMPLE_HISTORY: Conversation[] = [
-  { id: "1", title: "Licenciement sans préavis",         category: "Travail",  date: "today" },
-  { id: "2", title: "Augmentation de loyer abusive",     category: "Logement", date: "today" },
-  { id: "3", title: "Procédure de divorce",              category: "Famille",  date: "week" },
-  { id: "4", title: "Restitution de la caution",         category: "Logement", date: "week" },
-  { id: "5", title: "Calcul indemnités de départ",       category: "Travail",  date: "older" },
-  { id: "6", title: "Résiliation contrat freelance",     category: "Contrats", date: "older" },
-];
-
 const SUGGESTIONS = [
   "Mon loyer n'est pas remboursé",
   "Licenciement abusif, que faire ?",
@@ -80,6 +72,8 @@ const Avatar = () => (
 );
 
 const Chat = () => {
+  const { user, logout } = useAuth();
+  const nav = useNavigate();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -90,12 +84,38 @@ const Chat = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [lang, setLang] = useState<"fr" | "ar">("fr");
   const [voiceOpen, setVoiceOpen] = useState(false);
+  const [history, setHistory] = useState<StoredConversation[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const convIdRef = useRef<string>(crypto.randomUUID());
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
+
+  useEffect(() => {
+    if (user) setHistory(loadConversations(user.email));
+  }, [user]);
+
+  // Persist current conversation after each AI response
+  useEffect(() => {
+    if (!user) return;
+    if (messages.length < 2) return;
+    const last = messages[messages.length - 1];
+    if (last.role !== "assistant" || loading) return;
+    const firstUser = messages.find((m) => m.role === "user");
+    if (!firstUser) return;
+    const conv: StoredConversation = {
+      id: convIdRef.current,
+      date: new Date().toISOString(),
+      domain: detectedCategory ?? "Autre",
+      summary: firstUser.content.slice(0, 120),
+      status: urgency === "urgent" ? "Urgent" : "En cours",
+      messages,
+    };
+    upsertConversation(user.email, conv);
+    setHistory(loadConversations(user.email));
+  }, [messages, loading, user, detectedCategory, urgency]);
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
@@ -174,14 +194,36 @@ const Chat = () => {
     setActiveConv(null);
     setDetectedCategory(null);
     setUrgency("normal");
+    convIdRef.current = crypto.randomUUID();
     inputRef.current?.focus();
   };
 
   const grouped = useMemo(() => {
-    const groups = { today: [] as Conversation[], week: [] as Conversation[], older: [] as Conversation[] };
-    SAMPLE_HISTORY.forEach((c) => groups[c.date as keyof typeof groups]?.push(c));
+    const groups = { today: [] as StoredConversation[], week: [] as StoredConversation[], older: [] as StoredConversation[] };
+    const now = Date.now();
+    history.forEach((c) => {
+      const d = new Date(c.date).getTime();
+      const diff = (now - d) / (1000 * 60 * 60 * 24);
+      if (diff < 1) groups.today.push(c);
+      else if (diff < 7) groups.week.push(c);
+      else groups.older.push(c);
+    });
     return groups;
-  }, []);
+  }, [history]);
+
+  const openConversation = (c: StoredConversation) => {
+    setActiveConv(c.id);
+    setMessages(c.messages);
+    setDetectedCategory((c.domain as Category) ?? null);
+    convIdRef.current = c.id;
+    setSidebarOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Déconnecté.");
+    nav("/login", { replace: true });
+  };
 
   return (
     <div className="h-screen w-full flex text-foreground overflow-hidden relative">
@@ -231,6 +273,11 @@ const Chat = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto px-3 pb-4 space-y-5">
+          {history.length === 0 && (
+            <div className="px-3 py-6 text-center text-xs text-muted-foreground">
+              Aucune consultation pour le moment.
+            </div>
+          )}
           {(["today","week","older"] as const).map((bucket) => {
             const items = grouped[bucket];
             if (!items.length) return null;
@@ -240,11 +287,11 @@ const Chat = () => {
                 <div className="px-3 py-2 text-[10px] uppercase tracking-widest text-muted-foreground">{labels[bucket]}</div>
                 <div className="space-y-1">
                   {items.map((c) => {
-                    const Icon = CATEGORY_ICONS[c.category];
+                    const Icon = CATEGORY_ICONS[(c.domain as Category)] ?? FileText;
                     return (
                       <button
                         key={c.id}
-                        onClick={() => setActiveConv(c.id)}
+                        onClick={() => openConversation(c)}
                         className={`w-full text-left text-sm px-3 py-2.5 rounded-2xl transition-all flex items-start gap-2.5 ${
                           activeConv === c.id
                             ? "bg-gold/10 text-foreground border border-gold/30"
@@ -252,7 +299,7 @@ const Chat = () => {
                         }`}
                       >
                         <Icon className="h-3.5 w-3.5 mt-0.5 shrink-0 text-gold" />
-                        <span className="truncate">{c.title}</span>
+                        <span className="truncate">{c.summary}</span>
                       </button>
                     );
                   })}
@@ -262,8 +309,24 @@ const Chat = () => {
           })}
         </div>
 
-        <div className="p-4 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
-          <span>Code juridique 2025</span>
+        <div className="p-4 border-t border-border/50 space-y-3">
+          {user && (
+            <div className="flex items-center gap-3 px-1">
+              <div className="h-9 w-9 rounded-full bg-gradient-gold text-primary-foreground text-sm font-bold flex items-center justify-center shrink-0">
+                {user.firstName.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm truncate">Bonjour, <span className="text-gold font-medium">{user.firstName}</span></div>
+                <div className="text-[10px] text-muted-foreground truncate">{user.email}</div>
+              </div>
+            </div>
+          )}
+          <button
+            onClick={handleLogout}
+            className="haptic-tap w-full inline-flex items-center justify-center gap-2 h-10 rounded-full border border-border hover:border-destructive/50 hover:text-destructive text-xs text-muted-foreground transition-colors"
+          >
+            <LogOut className="h-3.5 w-3.5" /> Déconnexion
+          </button>
         </div>
       </aside>
 
