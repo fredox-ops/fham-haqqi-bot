@@ -105,8 +105,8 @@ const LetterPreview = ({
       {/* Watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
         <span
-          className="text-[hsl(0_0%_50%)]/[0.08] font-bold tracking-widest"
-          style={{ fontSize: "clamp(2rem, 8vw, 5rem)", transform: "rotate(-25deg)" }}
+          className="font-bold tracking-widest"
+          style={{ fontSize: "clamp(2rem, 8vw, 5rem)", transform: "rotate(-25deg)", color: "#D3D3D3" }}
         >
           {t.kingdom}
         </span>
