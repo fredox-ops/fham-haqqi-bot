@@ -62,7 +62,7 @@ const CATEGORY_ICONS: Record<Category, typeof Briefcase> = {
   Contrats: FileSignature, Administratif: Building2, Consommateur: ShoppingBag,
 };
 
-const SUGGESTIONS = [
+const FALLBACK_SUGGESTIONS = [
   "Mon loyer n'est pas remboursé",
   "Licenciement abusif, que faire ?",
   "Contrat non respecté par mon client",
@@ -109,7 +109,30 @@ const Chat = () => {
   const audioChunksRef = useRef<Blob[]>([]);
   const recStreamRef = useRef<MediaStream | null>(null);
   const [transcribing, setTranscribing] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>(FALLBACK_SUGGESTIONS);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const convIdRef = useRef<string>(crypto.randomUUID());
+
+  const loadSuggestions = async () => {
+    setLoadingSuggestions(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("suggest-prompts", {
+        body: { lang },
+      });
+      if (error) throw error;
+      const s = (data as any)?.suggestions;
+      if (Array.isArray(s) && s.length) setSuggestions(s.slice(0, 3));
+    } catch (e) {
+      // keep current/fallback suggestions silently
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  useEffect(() => {
+    if (messages.length === 0) loadSuggestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
