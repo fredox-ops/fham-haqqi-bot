@@ -335,7 +335,7 @@ const Dashboard = () => {
                       className="h-full rounded-full"
                       style={{
                         width: `${d.pct}%`,
-                        background: `linear-gradient(90deg, ${DOMAIN_COLORS[d.name]}, ${DOMAIN_COLORS[d.name]}70)`,
+                        background: `linear-gradient(90deg, ${domainColor(d.name)}, ${domainColor(d.name, 0.45)})`,
                         animation: `bar-fill 1.2s cubic-bezier(0.22,1,0.36,1) ${i * 100}ms both`,
                       }}
                     />
