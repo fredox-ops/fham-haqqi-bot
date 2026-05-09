@@ -121,34 +121,107 @@ const JusticeSeal = ({ size = 460 }: { size?: number }) => {
         </text>
       </svg>
 
-      {/* inner zellige star, counter-rotating */}
+      {/* inner law-themed ring — articles of law floating in arc */}
       <svg
         viewBox="0 0 400 400"
         className="absolute inset-16 w-[calc(100%-8rem)] h-[calc(100%-8rem)]"
         style={{
-          animation: "logo-spin-rev 45s linear infinite",
+          animation: "logo-spin-rev 55s linear infinite",
           transform: `translate(${shiftX * -0.5}px, ${shiftY * -0.5}px)`,
           transition: "transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1)",
         }}
       >
-        <g fill="none" stroke="hsl(var(--gold))" strokeOpacity="0.45" strokeWidth="1.1">
-          {/* 8-point star */}
-          <polygon points="200,40 240,140 340,160 260,230 290,330 200,275 110,330 140,230 60,160 160,140" />
-          <polygon
-            points="200,40 240,140 340,160 260,230 290,330 200,275 110,330 140,230 60,160 160,140"
-            transform="rotate(36 200 200)"
-            strokeOpacity="0.25"
-          />
-          <circle cx="200" cy="200" r="120" />
-          <circle cx="200" cy="200" r="78" strokeOpacity="0.3" />
-        </g>
-        {/* notches */}
-        {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => {
-          const rad = (a * Math.PI) / 180;
-          const x = 200 + Math.cos(rad) * 120;
-          const y = 200 + Math.sin(rad) * 120;
-          return <circle key={a} cx={x} cy={y} r="2.5" fill="hsl(var(--gold))" />;
+        <defs>
+          <path id="law-arc" d="M 200,200 m -132,0 a 132,132 0 1,1 264,0 a 132,132 0 1,1 -264,0" />
+        </defs>
+        {/* concentric guide circles */}
+        <circle cx="200" cy="200" r="138" fill="none" stroke="hsl(var(--gold))" strokeOpacity="0.22" strokeWidth="0.8" />
+        <circle cx="200" cy="200" r="126" fill="none" stroke="hsl(var(--gold))" strokeOpacity="0.12" strokeWidth="0.5" strokeDasharray="1 5" />
+        {/* legal terms running along the inner arc */}
+        <text
+          fill="hsl(var(--gold-soft))"
+          fillOpacity="0.7"
+          fontSize="11"
+          letterSpacing="3"
+          style={{ fontFamily: "'DM Sans', system-ui, sans-serif", textTransform: "uppercase" }}
+        >
+          <textPath href="#law-arc" startOffset="0%">
+            {"  LEX  ·  العدل  ·  JUSTITIA  ·  الحق  ·  EQUITAS  ·  القانون  ·  VERITAS  ·  الإنصاف  "}
+          </textPath>
+        </text>
+
+        {/* 6 columns of justice arranged radially */}
+        {Array.from({ length: 6 }).map((_, i) => {
+          const a = (i * 60 - 90) * (Math.PI / 180);
+          const cx = 200 + Math.cos(a) * 102;
+          const cy = 200 + Math.sin(a) * 102;
+          const rot = (i * 60) + 90;
+          return (
+            <g key={i} transform={`translate(${cx} ${cy}) rotate(${rot})`} opacity="0.55">
+              {/* mini column */}
+              <rect x="-1.2" y="-12" width="2.4" height="24" fill="hsl(var(--gold))" opacity="0.55" />
+              <rect x="-4" y="-15" width="8" height="3" fill="hsl(var(--gold))" opacity="0.7" />
+              <rect x="-4" y="12" width="8" height="3" fill="hsl(var(--gold))" opacity="0.7" />
+              <circle r="1.8" fill="hsl(var(--gold))">
+                <animate attributeName="opacity" values="0.4;1;0.4" dur={`${3 + i * 0.4}s`} repeatCount="indefinite" />
+              </circle>
+            </g>
+          );
         })}
+
+        {/* gavel marks at cardinal points */}
+        {[0, 90, 180, 270].map((deg, i) => {
+          const a = (deg - 90) * (Math.PI / 180);
+          const x = 200 + Math.cos(a) * 138;
+          const y = 200 + Math.sin(a) * 138;
+          return (
+            <g key={deg} transform={`translate(${x} ${y})`}>
+              <circle r="3.5" fill="hsl(var(--gold))" opacity="0.85">
+                <animate attributeName="r" values="3;5;3" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.5;1;0.5" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />
+              </circle>
+              <circle r="6" fill="none" stroke="hsl(var(--gold))" strokeOpacity="0.4" strokeWidth="0.6" />
+            </g>
+          );
+        })}
+      </svg>
+
+      {/* laurel wreath of justice — two arching branches */}
+      <svg
+        viewBox="0 0 400 400"
+        className="absolute inset-20 w-[calc(100%-10rem)] h-[calc(100%-10rem)] pointer-events-none"
+        style={{ animation: "float-y 8s ease-in-out infinite" }}
+      >
+        <g fill="none" stroke="hsl(var(--gold))" strokeOpacity="0.45" strokeWidth="1.4" strokeLinecap="round">
+          {/* left branch */}
+          <path d="M 90 280 Q 70 200 130 110" />
+          {/* right branch */}
+          <path d="M 310 280 Q 330 200 270 110" />
+          {/* leaves left */}
+          {Array.from({ length: 7 }).map((_, i) => {
+            const t = i / 6;
+            const x = 90 + (130 - 90) * t * t + (-20) * (1 - t);
+            const y = 280 - 170 * t;
+            return (
+              <ellipse key={`l${i}`} cx={x} cy={y} rx="8" ry="3.5" transform={`rotate(${-50 + i * 10} ${x} ${y})`} fill="hsl(var(--gold) / 0.25)" stroke="hsl(var(--gold))" strokeOpacity="0.55">
+                <animate attributeName="fill-opacity" values="0.15;0.5;0.15" dur={`${3 + i * 0.2}s`} repeatCount="indefinite" />
+              </ellipse>
+            );
+          })}
+          {/* leaves right */}
+          {Array.from({ length: 7 }).map((_, i) => {
+            const t = i / 6;
+            const x = 310 - (310 - 270) * t * t - (-20) * (1 - t);
+            const y = 280 - 170 * t;
+            return (
+              <ellipse key={`r${i}`} cx={x} cy={y} rx="8" ry="3.5" transform={`rotate(${50 - i * 10} ${x} ${y})`} fill="hsl(var(--gold) / 0.25)" stroke="hsl(var(--gold))" strokeOpacity="0.55">
+                <animate attributeName="fill-opacity" values="0.15;0.5;0.15" dur={`${3.2 + i * 0.2}s`} repeatCount="indefinite" />
+              </ellipse>
+            );
+          })}
+          {/* tie at bottom */}
+          <path d="M 180 295 Q 200 305 220 295" stroke="hsl(var(--gold))" strokeOpacity="0.7" />
+        </g>
       </svg>
 
       {/* orbiting particles */}
