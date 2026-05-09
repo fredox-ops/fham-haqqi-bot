@@ -3,13 +3,14 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft, Mic, Send, Loader2, Plus, Briefcase, Home as HomeIcon, FileSignature,
   Users, FileText, AlertTriangle, Menu, X, Trash2, ThumbsUp, ThumbsDown, Copy, Sparkles,
-  Building2, ShoppingBag,
+  Building2, ShoppingBag, Phone,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import BackgroundFX from "@/components/BackgroundFX";
 import LetterGenerator from "@/components/LetterGenerator";
 import MobileNav from "@/components/MobileNav";
+import VoiceCall from "@/components/VoiceCall";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Conversation = { id: string; title: string; category: Category; date: string };
@@ -88,6 +89,7 @@ const Chat = () => {
   const [letterOpen, setLetterOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [lang, setLang] = useState<"fr" | "ar">("fr");
+  const [voiceOpen, setVoiceOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -431,6 +433,26 @@ const Chat = () => {
         conversation={messages}
         category={detectedCategory}
       />
+
+      {/* Floating voice call button */}
+      <button
+        onClick={() => setVoiceOpen(true)}
+        className="voice-ring fixed bottom-24 md:bottom-28 right-5 md:right-8 z-40 group h-14 w-14 md:h-16 md:w-16 rounded-full bg-gradient-gold text-primary-foreground shadow-gold flex items-center justify-center transition-all hover:scale-110"
+        aria-label="Démarrer un appel vocal"
+      >
+        <Phone className="h-5 w-5 md:h-6 md:w-6" />
+        <span className="pointer-events-none absolute right-full mr-3 whitespace-nowrap glass px-3 py-1.5 rounded-full text-xs text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+          Appel vocal en darija
+        </span>
+      </button>
+
+      <VoiceCall
+        open={voiceOpen}
+        onClose={() => setVoiceOpen(false)}
+        history={messages}
+        onSaveTranscript={(t) => setMessages((prev) => [...prev, ...t])}
+      />
+
       <MobileNav />
     </div>
   );
