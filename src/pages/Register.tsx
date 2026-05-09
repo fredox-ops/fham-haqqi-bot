@@ -49,7 +49,12 @@ const Register = () => {
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
     setLoading(true);
     try {
-      await register(parsed.data.firstName, parsed.data.email, parsed.data.password);
+      const { needsConfirmation } = await register(parsed.data.firstName, parsed.data.email, parsed.data.password);
+      if (needsConfirmation) {
+        toast.success("Compte créé. Vérifiez votre email pour confirmer.");
+        setTimeout(() => nav("/login", { replace: true }), 1500);
+        return;
+      }
       setSuccess(true);
       setTimeout(() => nav("/chat", { replace: true }), 1100);
     } catch (err: any) {
