@@ -216,9 +216,36 @@ const Dashboard = () => {
 
           {/* TABLE */}
           <div className="glass rounded-3xl overflow-hidden mb-10 animate-fade-up">
-            <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between flex-wrap gap-3">
               <h2 className="font-display text-xl">{t("Mes consultations")}</h2>
               <Link to="/chat" className="text-xs text-gold hover:underline">{t("Nouvelle →")}</Link>
+            </div>
+            <div className="px-6 py-3 border-b border-border/40 flex flex-wrap gap-2">
+              <button
+                onClick={() => setDomainFilter("all")}
+                className={`text-[11px] px-3 py-1.5 rounded-full border transition ${domainFilter === "all" ? "bg-gold/15 text-gold border-gold/40" : "border-border/50 text-muted-foreground hover:text-foreground"}`}
+              >
+                {t("Tous")} ({rows.length})
+              </button>
+              {ALL_DOMAINS.map((d) => {
+                const count = rows.filter((r) => r.domain === d).length;
+                if (count === 0) return null;
+                const active = domainFilter === d;
+                return (
+                  <button
+                    key={d}
+                    onClick={() => setDomainFilter(d)}
+                    className={`text-[11px] px-3 py-1.5 rounded-full border transition ${active ? "border-transparent" : "border-border/50 hover:text-foreground"}`}
+                    style={active ? {
+                      background: `${DOMAIN_COLORS[d] ?? "hsl(var(--gold))"}20`,
+                      color: DOMAIN_COLORS[d] ?? "hsl(var(--gold))",
+                      borderColor: `${DOMAIN_COLORS[d] ?? "hsl(var(--gold))"}60`,
+                    } : undefined}
+                  >
+                    {t(d)} ({count})
+                  </button>
+                );
+              })}
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -226,13 +253,14 @@ const Dashboard = () => {
                   <tr className="text-left text-[11px] uppercase tracking-widest text-muted-foreground">
                     <th className="px-6 py-3 font-medium">{t("Date")}</th>
                     <th className="px-4 py-3 font-medium">{t("Domaine")}</th>
-                    <th className="px-4 py-3 font-medium">{t("Résumé")}</th>
+                    <th className="px-4 py-3 font-medium">{t("Sujet")}</th>
+                    <th className="px-4 py-3 font-medium">{t("Urgence")}</th>
                     <th className="px-4 py-3 font-medium">{t("Statut")}</th>
                     <th className="px-4 py-3 font-medium text-right">{t("Actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((r) => (
+                  {filteredRows.map((r) => (
                     <tr
                       key={r.id}
                       className="border-t border-border/40 group hover:bg-muted/20 transition-colors relative"
@@ -252,7 +280,25 @@ const Dashboard = () => {
                           {t(r.domain)}
                         </span>
                       </td>
-                      <td className="px-4 py-4 max-w-md truncate">{r.summary}</td>
+                      <td className="px-4 py-4 max-w-md">
+                        <div className="truncate font-medium">{r.title || r.summary}</div>
+                        {r.tags && r.tags.length > 0 && (
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {r.tags.slice(0, 3).map((tag) => (
+                              <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-muted/50 text-muted-foreground">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-4">
+                        {r.urgency && (
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full border ${URGENCY_STYLES[r.urgency]}`}>
+                            {t(r.urgency)}
+                          </span>
+                        )}
+                      </td>
                       <td className="px-4 py-4"><StatusBadge s={r.status} t={t} /></td>
                       <td className="px-4 py-4 text-right whitespace-nowrap">
                         <Link to="/chat" className="haptic-tap inline-flex items-center gap-1 text-xs text-gold hover:underline mr-3">
