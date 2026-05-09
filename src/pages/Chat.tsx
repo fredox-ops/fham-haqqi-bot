@@ -15,6 +15,8 @@ import LegalRadar from "@/components/LegalRadar";
 import { useAuth, fetchConversations, upsertConversation, type StoredConversation } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
+import LangToggle from "@/components/LangToggle";
+import { useT } from "@/lib/i18n";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Category = "Travail" | "Logement" | "Famille" | "Contrats" | "Administratif" | "Consommateur";
@@ -76,6 +78,7 @@ const Avatar = () => (
 const Chat = () => {
   const { user, logout } = useAuth();
   const nav = useNavigate();
+  const t = useT();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -278,7 +281,7 @@ const Chat = () => {
 
   const handleLogout = () => {
     logout();
-    toast.success("Déconnecté.");
+    toast.success(t("Déconnecté."));
     nav("/login", { replace: true });
   };
 
