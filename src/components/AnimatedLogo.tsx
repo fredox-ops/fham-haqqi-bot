@@ -1,7 +1,7 @@
 import { Scale } from "lucide-react";
 
 /**
- * Animated DarjaLex emblem:
+ * Animated Mizani emblem:
  *  - Pulsing gold radial halo
  *  - Rotating dashed orbital ring (slow)
  *  - Counter-rotating inner ring with arabic glyph "حق"
@@ -151,7 +151,7 @@ const AnimatedLogo = () => (
         <span className="absolute inset-0 rounded-full bg-emerald animate-ping opacity-75" />
         <span className="relative rounded-full h-1.5 w-1.5 bg-emerald" />
       </span>
-      <span className="text-muted-foreground">DarjaLex Agent</span>
+      <span className="text-muted-foreground">Mizani Agent</span>
     </div>
   </div>
 );

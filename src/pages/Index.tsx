@@ -20,7 +20,7 @@ const DOMAINS = [
 
 const STEPS = [
   { Icon: Mic,      title: "Décrivez votre situation", desc: "En français ou en darija. À l'écrit ou bientôt à l'oral." },
-  { Icon: Brain,    title: "L'agent analyse",          desc: "DarjaLex identifie le droit applicable et la jurisprudence." },
+  { Icon: Brain,    title: "L'agent analyse",          desc: "Mizani identifie le droit applicable et la jurisprudence." },
   { Icon: FileText, title: "Recevez une explication",  desc: "Articles cités, démarches détaillées, langage clair." },
   { Icon: Download, title: "Téléchargez votre lettre", desc: "Mise en demeure, recours, plainte — prête à signer." },
 ];
@@ -78,7 +78,7 @@ const Index = () => (
 
             <p className="text-lg text-muted-foreground max-w-xl mb-9 animate-fade-up" style={{ animationDelay: "0.45s" }}>
               Des millions de Marocains ignorent leurs droits faute d'accès.{" "}
-              <span className="text-foreground">DarjaLex change ça.</span>
+              <span className="text-foreground">Mizani change ça.</span>
             </p>
 
             <div className="flex flex-wrap items-center gap-3 mb-7 animate-fade-up" style={{ animationDelay: "0.55s" }}>
@@ -108,7 +108,7 @@ const Index = () => (
             </div>
           </div>
 
-          {/* Right: animated DarjaLex logo */}
+          {/* Right: animated Mizani logo */}
           <div className="hidden lg:flex items-center justify-center relative animate-fade-up" style={{ animationDelay: "0.4s" }}>
             <AnimatedLogo />
           </div>
@@ -242,7 +242,7 @@ const Index = () => (
     </main>
 
     <footer className="relative z-10 border-t border-border/40 py-8 px-6 text-center text-xs text-muted-foreground">
-      © 2026 DarjaLex — Information juridique générale. Ne remplace pas un avocat agréé.
+      © 2026 Mizani — Information juridique générale. Ne remplace pas un avocat agréé.
     </footer>
 
     <MobileNav />

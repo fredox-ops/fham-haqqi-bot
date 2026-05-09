@@ -488,7 +488,7 @@ const Chat = () => {
               </button>
             </form>
             <p className="text-[11px] text-muted-foreground/70 text-center mt-3">
-              DarjaLex peut faire des erreurs. Pour les cas sérieux, consultez un avocat agréé.
+              Mizani peut faire des erreurs. Pour les cas sérieux, consultez un avocat agréé.
             </p>
           </div>
         </div>
