@@ -389,7 +389,7 @@ const Chat = () => {
 
       {/* Main */}
       <main className="flex-1 flex flex-col min-w-0">
-        <header className="h-14 border-b border-border/40 px-5 flex items-center gap-3 bg-card/30 backdrop-blur-md">
+        <header className="h-14 border-b border-border/40 px-3 md:px-5 flex items-center gap-2 md:gap-3 bg-card/30 backdrop-blur-md">
           <button
             onClick={() => setSidebarOpen(true)}
             className="md:hidden haptic-tap flex items-center justify-center h-9 w-9 rounded-full glass"
