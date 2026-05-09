@@ -1,123 +1,97 @@
-## Vision
+## Goal
 
-Refonte de Mizani comme un objet éditorial digital — à la croisée du **patrimoine marocain** (zellige, calligraphie arabe, ocre, indigo de Chefchaouen, vert émeraude des médinas) et de la **gravité de la justice** (typographie sérif noble, balance, colonnes, sceau). Un site qui inspire confiance, beauté et autorité, tout en restant chaleureux et accessible.
-
-Direction: « Maison de Justice » — sobre, doré, lumineux. Inspirations: Apple éditorial, Stripe, Aesop, Rijksmuseum, manuscrits Quaraouiyine.
+Faire fonctionner le chat sans clé API à fournir, et **classer automatiquement** chaque conversation par domaine juridique marocain pour filtrer l'historique.
 
 ---
 
-## 1. Système de design (light + dark raffinés)
+## 1. Quelle API ? Quel dataset ?
 
-**Palette dark (raffinée)**
-- Fond: indigo nuit profond (au lieu du violet actuel) — `230 35% 5%`
-- Or impérial: `42 78% 60%` (conservé)
-- Bleu Majorelle: `220 80% 55%`
-- Vert médina: `158 65% 42%`
-- Terracotta sceau: `14 70% 52%` (nouvel accent justice)
+**API → Lovable AI Gateway** (intégré, sans clé à gérer, facturé en crédits Lovable).
+- Modèle conversation : `google/gemini-2.5-pro` — excellent en français, arabe et darija, gros contexte (citations longues, mémoire de conversation).
+- Modèle classification : `google/gemini-2.5-flash-lite` — rapide et bon marché, parfait pour étiqueter et résumer.
+- On remplace l'edge function actuelle qui dépend de `ANTHROPIC_API_KEY` (qu'il faudrait remplacer après remix). Plus de clé à entretenir.
 
-**Palette light (raffinée)**
-- Fond papier ivoire: `42 30% 96%`
-- Encre noire: `30 30% 10%`
-- Or bruni: `38 70% 45%`
-- Bleu Chefchaouen: `210 60% 45%`
+**Dataset → aucun dataset à entraîner.**
+Trois options possibles, du plus simple au plus complet :
 
-**Typographie**
-- Display: Cormorant Garamond (conservé) → ajout de **Fraunl** pour les chiffres et capitales (sérif justice)
-- Body: DM Sans (conservé)
-- Arabe: Amiri + ajout de **Reem Kufi** pour titres arabes
-- Mono pour articles de loi: JetBrains Mono
+1. **LLM seul (recommandé maintenant)** — Gemini 2.5 Pro connaît déjà le Code du travail, la Moudawana, le DOC, etc. Zéro setup. Risque modéré d'erreur sur des numéros d'articles précis.
+2. **RAG léger (étape suivante, optionnel)** — stocker ~200-500 chunks des codes marocains clés (Travail, Famille, DOC, Logement 67-12, Pénal) dans une table avec embeddings (`pgvector` + embeddings via Lovable AI), et injecter les 5 articles les plus pertinents dans le prompt. Améliore beaucoup la fiabilité des citations.
+3. Scrape complet du Bulletin Officiel (sgg.gov.ma) — surdimensionné, à éviter pour l'instant.
 
-**Tokens additionnels**: ombres papier (light), halos lumineux (dark), gradients zellige.
+Pour la **classification**, pas de dataset nécessaire : on utilise le LLM en zero-shot avec une taxonomie fixe.
+
+**Taxonomie utilisée partout** (UI, BD, IA) :
+`Travail`, `Famille`, `Logement`, `Contrats`, `Administratif`, `Pénal`, `Consommation`, `Commercial`, `Fiscal`, `Autre`.
 
 ---
 
-## 2. Pages refondues
+## 2. Ce qu'on construit
 
-### Landing (`/`)
-- **Hero**: Grande calligraphie arabe « العدالة » (justice) en filigrane animé. Titre sérif énorme. Sous-titre. Deux CTA. Sur la droite, un **sceau de justice animé** (SVG: balance + étoile à 5 branches + cercle calligraphié) qui tourne lentement.
-- **Bandeau de confiance**: 4 chiffres + logo "Code Marocain 2025"
-- **Domaines**: cartes en grille avec motif zellige subtil au survol, icône dans cartouche doré
-- **Comment ça marche**: 4 étapes reliées par une ligne dorée animée (dash-draw amélioré)
-- **Section "Articles cités"**: aperçu d'un article de loi stylisé comme un parchemin
-- **Témoignages**: carousel de 3 cartes "papier" (mode clair) / verre (mode sombre)
-- **CTA final**: bandeau zellige plein largeur
+### A. Réécriture de `supabase/functions/chat/index.ts`
+- Appel à Lovable AI Gateway (`https://ai.gateway.lovable.dev/v1/chat/completions`) avec `google/gemini-2.5-pro` et `stream: true`.
+- Conserver le system prompt (assistant juridique marocain, FR/AR/Darija, markdown).
+- Envoyer les 10 derniers messages comme mémoire.
+- Gestion explicite des erreurs 429 / 402 → toast côté client.
+- Le format SSE renvoyé reste OpenAI-compatible → le parseur frontend ne change pas.
 
-### Chat (`/chat`)
-- En-tête épuré, bulles raffinées (bot = papier ivoire avec bordure or, user = indigo)
-- Indicateur de typing en 3 points dorés
-- Citations d'articles inline en cartouches
+### B. Nouvelle edge function `supabase/functions/classify-conversation/index.ts`
+- Entrée : `{ conversation_id }`.
+- Charge les messages (service role) via la base.
+- Appelle `google/gemini-2.5-flash-lite` avec **structured output** pour produire :
+  ```
+  { domain, summary (≤120 car), tags[], urgency: low|medium|high, language: fr|ar|darija, title }
+  ```
+- Met à jour `conversations` : `domain`, `summary` + nouvelles colonnes `tags`, `urgency`, `language`, `title`.
+- Déclenchée depuis le client après chaque réponse de l'assistant (debounce 1s).
 
-### Categories, Login, Register, Dashboard
-- Mêmes principes: cartes papier/verre, sérif pour titres, accents or
+### C. Migration base de données
+Ajouter à `conversations` :
+- `tags text[] default '{}'`
+- `urgency text default 'low'` (low/medium/high)
+- `language text default 'fr'`
+- `title text`
 
----
+Le champ `domain` reste `text`, contraint dans l'app à la taxonomie.
 
-## 3. Animations signature
+### D. Frontend
+- **`src/pages/Chat.tsx`** : persister les messages (déjà partiellement câblé), puis appeler `classify-conversation` après chaque tour assistant.
+- **`src/pages/Dashboard.tsx`** : historique groupé/filtrable par `domain`, badges `urgency` et `tags`, affichage du `title` au lieu du brut.
+- Tous les libellés via `i18n.tsx` existant (FR/AR).
 
-- **Sceau de justice rotatif**: SVG animé (balance qui oscille, anneau extérieur tournant 30s)
-- **Calligraphie tracée**: animation `stroke-dasharray` sur lettres arabes
-- **Zellige révélé**: motif géométrique qui apparaît au scroll (IntersectionObserver)
-- **Compteurs animés**: déjà présents, conservés
-- **Parallaxe douce** sur le hero (motifs en arrière-plan)
-- **Hover cards**: élévation + glow coloré + bord zellige qui s'illumine
-- **Transitions de route**: fondu + léger blur (amélioration de RouteFade)
-- **Curseur magnétique** sur les CTA principaux (desktop)
-- **Theme toggle**: animation circulaire de transition (clip-path) au lieu d'un fade simple
-
----
-
-## 4. Composants nouveaux
-
-- `JusticeSeal.tsx` — sceau SVG animé (balance + étoile + cercle calligraphique)
-- `ZelligePattern.tsx` — motif géométrique paramétrable (couleur, densité)
-- `ArticleCard.tsx` — carte article de loi style parchemin
-- `Testimonial.tsx` — carte témoignage
-- `MagneticButton.tsx` — wrapper CTA avec effet magnétique
-- `RevealOnScroll.tsx` — utilitaire d'apparition au scroll
-- `ThemeToggle` amélioré — transition clip-path circulaire
+### E. Mémoire conversation
+La mémoire = derniers 10 messages envoyés au gateway. Pour des fils plus longs, le `summary` produit par le classifier est ajouté en system note pour conserver le contexte sans payer un gros historique.
 
 ---
 
-## 5. Détails techniques
+## 3. Flux technique
 
 ```text
-src/
-  components/
-    JusticeSeal.tsx          (nouveau)
-    ZelligePattern.tsx       (nouveau)
-    ArticleCard.tsx          (nouveau)
-    Testimonial.tsx          (nouveau)
-    MagneticButton.tsx       (nouveau)
-    RevealOnScroll.tsx       (nouveau)
-    ThemeToggle.tsx          (refondu — clip-path)
-    Header.tsx               (raffiné)
-    BackgroundFX.tsx         (raffiné — zellige + parallaxe)
-  pages/
-    Index.tsx                (refondu)
-    Chat.tsx                 (raffiné)
-    Categories.tsx           (raffiné)
-    Login.tsx / Register.tsx (raffinés)
-    Dashboard.tsx            (raffiné)
-  index.css                  (palette + tokens + keyframes)
-  tailwind.config.ts         (nouvelles couleurs sémantiques)
+Client (Chat.tsx)
+   │  stream  ┌──────────────────────────┐
+   ├────────► │ /functions/v1/chat       │ → Lovable AI (gemini-2.5-pro, SSE)
+   │ ◄────────┤ tokens                   │
+   │ insère user+assistant en BD
+   │
+   │ après réponse complète
+   ├────────► │ /functions/v1/classify-  │ → Lovable AI (flash-lite, structured)
+   │          │ conversation             │ → UPDATE conversations SET domain,
+   │          └──────────────────────────┘                            summary,
+   │                                                                  tags,
+   │                                                                  urgency,
+   │                                                                  language,
+   │                                                                  title
+   ▼
+Dashboard.tsx lit conversations, filtre par domaine, affiche badges.
 ```
 
-Pas de changement de stack, pas de nouvelle dépendance majeure (juste `react-intersection-observer` éventuellement).
+Erreurs : 429 → toast « Trop de requêtes ». 402 → toast « Crédits Lovable AI épuisés, ajoutez des fonds ».
+
+Secrets : seulement `LOVABLE_API_KEY` (déjà présent). `ANTHROPIC_API_KEY` n'est plus utilisé.
 
 ---
 
-## 6. Livraison en 3 phases
+## 4. Hors scope (étapes futures)
 
-1. **Fondations** — palette light/dark raffinée, tokens, typographie, ThemeToggle clip-path
-2. **Composants signature** — JusticeSeal, ZelligePattern, MagneticButton, RevealOnScroll, ArticleCard
-3. **Pages** — Index refondu en priorité (hero + sceau + zellige + témoignages), puis Chat, puis le reste
-
-Chaque phase est testée en mode clair ET sombre, desktop ET mobile.
-
----
-
-## Hors scope
-
-- Pas de changement de logique métier (auth, chat, Supabase restent identiques)
-- Pas de nouvelles routes
-- Pas de refonte du backend
+- RAG avec `pgvector` sur les codes marocains (option 2 ci-dessus).
+- Génération de lettres officielles ancrée sur les articles récupérés.
+- Dashboard de modération admin.
