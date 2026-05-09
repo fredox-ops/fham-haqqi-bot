@@ -241,9 +241,9 @@ const Dashboard = () => {
                     onClick={() => setDomainFilter(d)}
                     className={`text-[11px] px-3 py-1.5 rounded-full border transition ${active ? "border-transparent" : "border-border/50 hover:text-foreground"}`}
                     style={active ? {
-                      background: `${DOMAIN_COLORS[d] ?? "hsl(var(--gold))"}20`,
-                      color: DOMAIN_COLORS[d] ?? "hsl(var(--gold))",
-                      borderColor: `${DOMAIN_COLORS[d] ?? "hsl(var(--gold))"}60`,
+                      background: domainColor(d, 0.12),
+                      color: domainColor(d),
+                      borderColor: domainColor(d, 0.4),
                     } : undefined}
                   >
                     {t(d)} ({count})
