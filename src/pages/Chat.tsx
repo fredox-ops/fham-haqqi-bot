@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, Mic, Send, Loader2, Plus, Briefcase, Home as HomeIcon, FileSignature,
+  ArrowLeft, Mic, MicOff, Phone, Send, Loader2, Plus, Briefcase, Home as HomeIcon, FileSignature,
   Users, FileText, AlertTriangle, Menu, X, Trash2, ThumbsUp, ThumbsDown, Copy, Sparkles,
-  Building2, ShoppingBag, LogOut,
+  Building2, ShoppingBag, LogOut, Radar,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ import BackgroundFX from "@/components/BackgroundFX";
 import LetterGenerator from "@/components/LetterGenerator";
 import MobileNav from "@/components/MobileNav";
 import VoiceCall from "@/components/VoiceCall";
+import LegalRadar from "@/components/LegalRadar";
 import { useAuth, loadConversations, upsertConversation, type StoredConversation } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -85,10 +86,14 @@ const Chat = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [lang, setLang] = useState<"fr" | "ar">("fr");
   const [voiceOpen, setVoiceOpen] = useState(false);
+  const [dictating, setDictating] = useState(false);
+  const [radarOpen, setRadarOpen] = useState(true);
   const [history, setHistory] = useState<StoredConversation[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const micBtnRef = useRef<HTMLButtonElement>(null);
+  const callBtnRef = useRef<HTMLButtonElement>(null);
+  const recogRef = useRef<any>(null);
   const convIdRef = useRef<string>(crypto.randomUUID());
 
   useEffect(() => {
@@ -118,6 +123,57 @@ const Chat = () => {
     upsertConversation(user.email, conv);
     setHistory(loadConversations(user.email));
   }, [messages, loading, user, detectedCategory, urgency]);
+
+  // === Topic radar counts (per-category keyword hits across user messages) ===
+  const topicCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    const userText = messages.filter((m) => m.role === "user").map((m) => m.content.toLowerCase()).join(" ");
+    (Object.keys(CATEGORY_KEYWORDS) as Category[]).forEach((c) => {
+      counts[c] = CATEGORY_KEYWORDS[c].reduce((acc, k) => (userText.includes(k) ? acc + 1 : acc), 0);
+    });
+    return counts;
+  }, [messages]);
+
+  const detectedTopics = useMemo(
+    () => Object.entries(topicCounts).filter(([, v]) => v > 0).length,
+    [topicCounts]
+  );
+
+  // === Mic dictation (Web Speech API) — fills input, does NOT open call ===
+  const toggleDictation = () => {
+    if (dictating) {
+      try { recogRef.current?.stop?.(); } catch {}
+      setDictating(false);
+      return;
+    }
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) {
+      toast.error("La dictée vocale n'est pas supportée par ce navigateur.");
+      return;
+    }
+    const r = new SR();
+    r.lang = lang === "ar" ? "ar-MA" : "fr-FR";
+    r.continuous = false;
+    r.interimResults = true;
+    let finalText = "";
+    r.onresult = (e: any) => {
+      let interim = "";
+      finalText = "";
+      for (let i = 0; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finalText += t;
+        else interim += t;
+      }
+      setInput((prev) => {
+        // Replace nothing — append live to current input via ref of last submission
+        return (finalText || interim).trim();
+      });
+    };
+    r.onerror = () => setDictating(false);
+    r.onend = () => setDictating(false);
+    recogRef.current = r;
+    try { r.start(); setDictating(true); } catch { setDictating(false); }
+  };
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
@@ -351,6 +407,21 @@ const Chat = () => {
           <div className="flex-1" />
           {messages.length > 0 && (
             <button
+              onClick={() => setRadarOpen((v) => !v)}
+              className={`haptic-tap text-xs inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full glass border transition-colors ${
+                radarOpen ? "border-gold/40 text-gold" : "border-border text-muted-foreground hover:text-foreground"
+              }`}
+              aria-label="Afficher le radar des sujets"
+            >
+              <Radar className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Radar</span>
+              {detectedTopics > 0 && (
+                <span className="text-[10px] bg-gold/20 text-gold rounded-full px-1.5">{detectedTopics}</span>
+              )}
+            </button>
+          )}
+          {messages.length > 0 && (
+            <button
               onClick={newChat}
               className="haptic-tap text-xs text-muted-foreground hover:text-destructive transition-colors inline-flex items-center gap-1.5"
             >
@@ -359,6 +430,43 @@ const Chat = () => {
           )}
           <ThemeToggle />
         </header>
+
+        {/* Topic radar panel */}
+        {radarOpen && messages.length > 0 && (
+          <div className="px-4 md:px-10 pt-4 animate-fade-in">
+            <div className="max-w-3xl mx-auto glass rounded-2xl p-4 flex items-center gap-5">
+              <div className="shrink-0">
+                <LegalRadar counts={topicCounts} size={180} compact />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] uppercase tracking-widest text-gold mb-1.5 flex items-center gap-1.5">
+                  <Radar className="h-3 w-3" /> Radar des sujets détectés
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Les domaines juridiques évoqués dans cette conversation.
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {Object.entries(topicCounts)
+                    .filter(([, v]) => v > 0)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([name, v]) => (
+                      <span
+                        key={name}
+                        className="text-[10px] px-2.5 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold"
+                      >
+                        {name} · {v}
+                      </span>
+                    ))}
+                  {detectedTopics === 0 && (
+                    <span className="text-[11px] text-muted-foreground italic">
+                      Aucun sujet identifié pour l'instant.
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Urgency banner */}
         {urgency !== "normal" && (
@@ -471,11 +579,26 @@ const Chat = () => {
               <button
                 type="button"
                 ref={micBtnRef}
+                onClick={toggleDictation}
+                aria-label={dictating ? "Arrêter la dictée" : "Dicter votre message"}
+                title={dictating ? "Arrêter la dictée" : "Dicter votre message"}
+                className={`haptic-tap h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all ${
+                  dictating
+                    ? "bg-destructive/15 text-destructive border border-destructive/40 animate-pulse"
+                    : "hover:bg-muted/40 text-muted-foreground hover:text-gold"
+                }`}
+              >
+                {dictating ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </button>
+              <button
+                type="button"
+                ref={callBtnRef}
                 onClick={() => setVoiceOpen(true)}
                 aria-label="Lancer un appel vocal"
-                className="haptic-tap h-11 w-11 shrink-0 rounded-full hover:bg-muted/40 flex items-center justify-center text-muted-foreground hover:text-gold transition-all"
+                title="Appel vocal avec Mizani"
+                className="haptic-tap h-11 w-11 shrink-0 rounded-full bg-emerald/15 hover:bg-emerald/25 border border-emerald/40 text-emerald flex items-center justify-center transition-all hover:scale-105"
               >
-                <Mic className="h-4 w-4" />
+                <Phone className="h-4 w-4" />
               </button>
               <button
                 type="submit"
@@ -505,7 +628,7 @@ const Chat = () => {
         open={voiceOpen}
         onClose={() => setVoiceOpen(false)}
         history={messages}
-        sourceRef={micBtnRef}
+        sourceRef={callBtnRef}
         onSaveTranscript={(t) => setMessages((prev) => [...prev, ...t])}
       />
 
