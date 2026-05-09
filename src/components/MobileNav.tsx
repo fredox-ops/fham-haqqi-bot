@@ -1,21 +1,24 @@
 import { NavLink } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { Home, MessageCircle, LayoutGrid, User } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
-const items = [
-  { to: "/", label: "Accueil", icon: Home },
-  { to: "/categories", label: "Domaines", icon: LayoutGrid },
-  { to: "/chat", label: "Chat", icon: MessageCircle },
-  { to: "/dashboard", label: "Profil", icon: User },
-];
+const baseItems = [
+  { to: "/", key: "Accueil", icon: Home },
+  { to: "/categories", key: "Domaines", icon: LayoutGrid },
+  { to: "/chat", key: "Chat", icon: MessageCircle },
+  { to: "/dashboard", key: "Profil", icon: User },
+] as const;
 
-const MobileNav = () => createPortal(
+const MobileNav = () => {
+  const t = useT();
+  return createPortal(
   <nav
     aria-label="Navigation principale"
     className="md:hidden fixed bottom-0 inset-x-0 z-50 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-2"
   >
     <div className="glass-strong rounded-full flex items-center justify-around px-2 py-1.5">
-      {items.map((item) => (
+      {baseItems.map((item) => (
         <NavLink
           key={item.to}
           to={item.to}
@@ -29,12 +32,13 @@ const MobileNav = () => createPortal(
           }
         >
           <item.icon className="h-5 w-5" />
-          <span>{item.label}</span>
+          <span>{t(item.key)}</span>
         </NavLink>
       ))}
     </div>
   </nav>,
   document.body,
 );
+};
 
 export default MobileNav;
