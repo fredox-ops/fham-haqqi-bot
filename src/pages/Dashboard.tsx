@@ -32,17 +32,21 @@ const DEMO: Row[] = [
 ];
 
 const DOMAIN_COLORS: Record<string, string> = {
-  Travail: "hsl(var(--blue))",
-  Logement: "hsl(var(--gold))",
-  Famille: "hsl(var(--emerald))",
-  Contrats: "hsl(var(--violet))",
-  Administratif: "hsl(var(--orange))",
-  Consommation: "hsl(var(--pink))",
-  Consommateur: "hsl(var(--pink))",
-  Pénal: "hsl(var(--destructive))",
-  Commercial: "hsl(var(--blue))",
-  Fiscal: "hsl(var(--gold))",
-  Autre: "hsl(var(--muted-foreground))",
+  Travail: "var(--blue)",
+  Logement: "var(--gold)",
+  Famille: "var(--emerald)",
+  Contrats: "var(--violet)",
+  Administratif: "var(--orange)",
+  Consommation: "var(--pink)",
+  Consommateur: "var(--pink)",
+  Pénal: "var(--destructive)",
+  Commercial: "var(--blue)",
+  Fiscal: "var(--gold)",
+  Autre: "var(--muted-foreground)",
+};
+const domainColor = (name: string, alpha = 1) => {
+  const v = DOMAIN_COLORS[name] ?? "var(--gold)";
+  return alpha >= 1 ? `hsl(${v})` : `hsl(${v} / ${alpha})`;
 };
 
 const ALL_DOMAINS = ["Travail","Famille","Logement","Contrats","Administratif","Pénal","Consommation","Commercial","Fiscal","Autre"];
