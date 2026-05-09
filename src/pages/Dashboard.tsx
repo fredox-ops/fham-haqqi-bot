@@ -96,6 +96,7 @@ const Dashboard = () => {
   const t = useT();
   const [rows, setRows] = useState<Row[]>([]);
   const [resolved, setResolved] = useState(0);
+  const [domainFilter, setDomainFilter] = useState<string>("all");
 
   useEffect(() => {
     if (!user) return;
@@ -107,10 +108,18 @@ const Dashboard = () => {
           domain: c.domain || "Autre",
           summary: c.summary,
           status: c.status,
+          title: c.title,
+          tags: c.tags,
+          urgency: c.urgency,
         }))
       );
     });
   }, [user]);
+
+  const filteredRows = useMemo(
+    () => (domainFilter === "all" ? rows : rows.filter((r) => r.domain === domainFilter)),
+    [rows, domainFilter]
+  );
 
   useEffect(() => {
     if (!rows.length) { setResolved(0); return; }
