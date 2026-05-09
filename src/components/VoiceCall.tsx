@@ -212,7 +212,7 @@ const VoiceCall = ({ open, onClose, onSaveTranscript, history, sourceRef }: Prop
   const statusMeta = {
     listening:  { label: "En écoute...",        dot: "bg-blue",   modifier: "orb--listening"  },
     processing: { label: "Analyse en cours...", dot: "bg-violet", modifier: "orb--processing" },
-    speaking:   { label: "DarjaLex répond...",  dot: "bg-gold",   modifier: "orb--speaking"   },
+    speaking:   { label: "Mizani répond...",  dot: "bg-gold",   modifier: "orb--speaking"   },
   }[status];
 
   return (
@@ -265,7 +265,7 @@ const VoiceCall = ({ open, onClose, onSaveTranscript, history, sourceRef }: Prop
           {transcript.map((m, i) => (
             <div key={i} className={m.role === "user" ? "text-gold" : "text-foreground/90"}>
               <span className="text-[10px] uppercase tracking-wider mr-2 opacity-60">
-                {m.role === "user" ? "Vous" : "DarjaLex"}
+                {m.role === "user" ? "Vous" : "Mizani"}
               </span>
               {m.content}
             </div>

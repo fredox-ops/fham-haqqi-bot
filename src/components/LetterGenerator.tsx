@@ -186,7 +186,7 @@ const LetterPreview = ({
                 boxShadow: "inset 0 0 0 2px hsl(0 70% 45% / 0.3)",
               }}
             >
-              <span className="text-[10px]">DarjaLex</span>
+              <span className="text-[10px]">Mizani</span>
               <span className="text-base leading-tight my-0.5">CERTIFIÉ</span>
               <span className="text-[8px]">{fields.date}</span>
             </div>
