@@ -4,7 +4,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const SYSTEM_PROMPT = `You are DarjaLex, an autonomous AI legal assistant specialized in Moroccan law. You help Moroccan citizens understand their legal rights in simple French or Moroccan Darija (Arabic dialect). You have deep knowledge of: Code du Travail Marocain, Moudawana (Code de la Famille), Code des Obligations et Contrats (DOC), loi 67-12 sur le bail d'habitation, Code Pénal et procédures administratives marocaines.
+const SYSTEM_PROMPT = `You are Mizani, an autonomous AI legal assistant specialized in Moroccan law. You help Moroccan citizens understand their legal rights in simple French or Moroccan Darija (Arabic dialect). You have deep knowledge of: Code du Travail Marocain, Moudawana (Code de la Famille), Code des Obligations et Contrats (DOC), loi 67-12 sur le bail d'habitation, Code Pénal et procédures administratives marocaines.
 
 Always:
 1) Identify the legal problem clearly

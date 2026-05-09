@@ -369,7 +369,7 @@ const Chat = () => {
           <Link to="/" className="flex items-center gap-2.5 group">
             <ArrowLeft className="h-4 w-4 text-muted-foreground group-hover:-translate-x-0.5 transition-transform" />
             <span className="font-display text-xl">
-              Darja<span className="text-gradient-gold italic">Lex</span>
+              <span className="text-gradient-gold italic">Mizani</span>
             </span>
           </Link>
           <button className="md:hidden" onClick={() => setSidebarOpen(false)}>
@@ -638,7 +638,6 @@ const Chat = () => {
                 placeholder={lang === "fr"
                   ? "Décrivez votre situation en français ou en darija…"
                   : "وصف وضعيتك بالدارجة أو الفرنسية…"}
-                disabled={loading}
                 dir={lang === "ar" ? "rtl" : "ltr"}
                 className="flex-1 min-w-0 bg-transparent resize-none text-sm md:text-base placeholder:text-muted-foreground/70 focus:outline-none py-2.5 max-h-32"
               />
