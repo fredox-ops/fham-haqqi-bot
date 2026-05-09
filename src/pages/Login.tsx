@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Scale, Loader2, ArrowRight, ArrowLeft } from "lucide-react";
+import { Scale, Loader2, ArrowRight, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import BackgroundFX from "@/components/BackgroundFX";
 import { useAuth } from "@/lib/auth";
 import { useT } from "@/lib/i18n";
 import LangToggle from "@/components/LangToggle";
+import { supabase } from "@/integrations/supabase/client";
 
 const schema = z.object({
   email: z.string().trim().email({ message: "Email invalide" }).max(255),
@@ -31,7 +32,11 @@ const Login = () => {
   const t = useT();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +50,23 @@ const Login = () => {
     } catch (err: any) {
       toast.error(err?.message ?? "Connexion impossible.");
     } finally { setLoading(false); }
+  };
+
+  const sendReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = z.string().trim().email().safeParse(forgotEmail);
+    if (!parsed.success) { toast.error("Email invalide"); return; }
+    setForgotLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(parsed.data, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Un lien de réinitialisation a été envoyé.");
+      setForgotMode(false);
+    } catch (err: any) {
+      toast.error(err?.message ?? "Échec de l'envoi.");
+    } finally { setForgotLoading(false); }
   };
 
   return (
@@ -73,27 +95,81 @@ const Login = () => {
           </span>
         </Link>
 
-        <h1 className="relative z-10 font-display text-4xl mb-1.5">{t("Bon retour.")}</h1>
-        <p className="relative z-10 text-muted-foreground text-sm mb-7">{t("Vos droits vous attendent.")}</p>
+        {!forgotMode ? (
+          <>
+            <h1 className="relative z-10 font-display text-4xl mb-1.5">{t("Bon retour.")}</h1>
+            <p className="relative z-10 text-muted-foreground text-sm mb-7">{t("Vos droits vous attendent.")}</p>
 
-        <form onSubmit={submit} className="relative z-10 space-y-4">
-          <Field label={t("Email")} type="email" value={email} onChange={setEmail} placeholder="vous@exemple.ma" autoComplete="email" />
-          <Field label={t("Mot de passe")} type="password" value={password} onChange={setPassword} placeholder="••••••••" autoComplete="current-password" />
+            <form onSubmit={submit} className="relative z-10 space-y-4">
+              <Field label={t("Email")} type="email" value={email} onChange={setEmail} placeholder="vous@exemple.ma" autoComplete="email" />
+              <Field
+                label={t("Mot de passe")}
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={setPassword}
+                placeholder="••••••••"
+                autoComplete="current-password"
+                rightElement={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                }
+              />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="haptic-tap w-full h-12 rounded-full bg-gradient-gold text-primary-foreground font-semibold shadow-gold inline-flex items-center justify-center gap-2 disabled:opacity-60 hover:scale-[1.01] transition-transform"
-          >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("Se connecter")}
-          </button>
-        </form>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setForgotMode(true)}
+                  className="text-xs text-gold hover:underline"
+                >
+                  Mot de passe oublié ?
+                </button>
+              </div>
 
-        <div className="relative z-10 mt-6 text-center text-sm">
-          <Link to="/register" className="text-gold hover:underline inline-flex items-center gap-1">
-            {t("Pas encore de compte ? S'inscrire")} <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="haptic-tap w-full h-12 rounded-full bg-gradient-gold text-primary-foreground font-semibold shadow-gold inline-flex items-center justify-center gap-2 disabled:opacity-60 hover:scale-[1.01] transition-transform"
+              >
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("Se connecter")}
+              </button>
+            </form>
+
+            <div className="relative z-10 mt-6 text-center text-sm">
+              <Link to="/register" className="text-gold hover:underline inline-flex items-center gap-1">
+                {t("Pas encore de compte ? S'inscrire")} <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          </>
+        ) : (
+          <>
+            <h1 className="relative z-10 font-display text-3xl mb-1.5">Réinitialiser le mot de passe</h1>
+            <p className="relative z-10 text-muted-foreground text-sm mb-7">Entrez votre email pour recevoir un lien.</p>
+
+            <form onSubmit={sendReset} className="relative z-10 space-y-4">
+              <Field label={t("Email")} type="email" value={forgotEmail} onChange={setForgotEmail} placeholder="vous@exemple.ma" autoComplete="email" />
+              <button
+                type="submit"
+                disabled={forgotLoading}
+                className="haptic-tap w-full h-12 rounded-full bg-gradient-gold text-primary-foreground font-semibold shadow-gold inline-flex items-center justify-center gap-2 disabled:opacity-60 hover:scale-[1.01] transition-transform"
+              >
+                {forgotLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Envoyer le lien"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setForgotMode(false)}
+                className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Retour à la connexion
+              </button>
+            </form>
+          </>
+        )}
 
       </div>
     </div>
@@ -101,12 +177,12 @@ const Login = () => {
 };
 
 export const Field = ({
-  label, type = "text", value, onChange, placeholder, autoComplete, children,
+  label, type = "text", value, onChange, placeholder, autoComplete, children, rightElement,
 }: {
   label: string; type?: string; value: string; onChange: (v: string) => void;
-  placeholder?: string; autoComplete?: string; children?: React.ReactNode;
+  placeholder?: string; autoComplete?: string; children?: React.ReactNode; rightElement?: React.ReactNode;
 }) => (
-  <label className="block">
+  <label className="block relative">
     <span className="block text-[11px] uppercase tracking-widest text-muted-foreground mb-1.5">{label}</span>
     <input
       type={type}
@@ -114,8 +190,9 @@ export const Field = ({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       autoComplete={autoComplete}
-      className="w-full h-12 px-4 rounded-2xl bg-input/80 border border-border focus:border-gold focus:bg-input outline-none text-sm transition-colors placeholder:text-muted-foreground/60"
+      className="w-full h-12 px-4 pr-10 rounded-2xl bg-input/80 border border-border focus:border-gold focus:bg-input outline-none text-sm transition-colors placeholder:text-muted-foreground/60"
     />
+    {rightElement}
     {children}
   </label>
 );

@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import Categories from "./pages/Categories.tsx";
 import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import { AuthProvider, ProtectedRoute } from "@/lib/auth";
 import { LanguageProvider } from "@/lib/i18n";
 
