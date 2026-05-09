@@ -117,12 +117,12 @@ const LetterPreview = ({
       <div className="absolute bottom-0 left-0 w-20 h-20 border-b-2 border-l-2 border-[hsl(36_91%_55%)]" />
       <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-[hsl(36_91%_55%)]" />
 
-      {/* Gold header bar */}
-      <div className="relative bg-gradient-to-r from-[hsl(36_91%_55%)] via-[hsl(42_100%_65%)] to-[hsl(36_91%_55%)] px-8 py-3 text-center">
-        <div className="text-[hsl(225_56%_8%)] font-bold tracking-[0.25em] text-sm uppercase">
+      {/* Light gray header bar */}
+      <div className="relative bg-gradient-to-r from-[hsl(0_0%_92%)] via-[hsl(0_0%_96%)] to-[hsl(0_0%_92%)] border-b border-[hsl(0_0%_85%)] px-8 py-3 text-center">
+        <div className="text-[hsl(225_30%_25%)] font-bold tracking-[0.25em] text-sm uppercase">
           {t.kingdom}
         </div>
-        <div className="text-[hsl(225_56%_8%)]/70 text-[10px] tracking-widest mt-0.5">{t.ministry}</div>
+        <div className="text-[hsl(225_30%_45%)] text-[10px] tracking-widest mt-0.5">{t.ministry}</div>
       </div>
 
       {/* Body */}
