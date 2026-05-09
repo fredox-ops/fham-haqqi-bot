@@ -84,13 +84,17 @@ export type StoredConversation = {
   domain: string;
   summary: string;
   status: "Résolu" | "En cours" | "Urgent";
+  title?: string | null;
+  tags?: string[];
+  urgency?: "low" | "medium" | "high";
+  language?: "fr" | "ar" | "darija";
   messages: { role: "user" | "assistant"; content: string }[];
 };
 
 export const fetchConversations = async (): Promise<StoredConversation[]> => {
   const { data: convs, error } = await supabase
     .from("conversations")
-    .select("id, domain, summary, status, created_at")
+    .select("id, domain, summary, status, created_at, title, tags, urgency, language")
     .order("created_at", { ascending: false })
     .limit(50);
   if (error || !convs) return [];
@@ -110,6 +114,10 @@ export const fetchConversations = async (): Promise<StoredConversation[]> => {
     domain: c.domain,
     summary: c.summary,
     status: c.status as StoredConversation["status"],
+    title: c.title,
+    tags: c.tags ?? [],
+    urgency: c.urgency,
+    language: c.language,
     messages: byConv.get(c.id) || [],
   }));
 };
