@@ -200,6 +200,13 @@
     50%     { box-shadow: 0 0 0 10px hsl(var(--destructive) / 0); }
   }
 
+  @keyframes radar-draw {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes fade-in {
+    to { opacity: 1; }
+  }
+
   /* === Voice call orb === */
   @keyframes orb-morph {
     0%   { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
