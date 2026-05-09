@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import BackgroundFX from "@/components/BackgroundFX";
 import { useAuth } from "@/lib/auth";
 import { Field } from "./Login";
+import { useT } from "@/lib/i18n";
+import LangToggle from "@/components/LangToggle";
 
 const schema = z.object({
   firstName: z.string().trim().min(2, { message: "Prénom trop court" }).max(50),
@@ -26,6 +28,7 @@ const scorePassword = (pw: string) => {
 const Register = () => {
   const nav = useNavigate();
   const { register } = useAuth();
+  const t = useT();
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,11 +38,11 @@ const Register = () => {
 
   const strength = useMemo(() => scorePassword(password), [password]);
   const strengthMeta = [
-    { label: "Très faible", color: "hsl(var(--destructive))" },
-    { label: "Faible",      color: "hsl(var(--destructive))" },
-    { label: "Moyen",       color: "hsl(var(--orange))" },
-    { label: "Bon",         color: "hsl(var(--gold))" },
-    { label: "Excellent",   color: "hsl(var(--emerald))" },
+    { label: t("Très faible"), color: "hsl(var(--destructive))" },
+    { label: t("Faible"),      color: "hsl(var(--destructive))" },
+    { label: t("Moyen"),       color: "hsl(var(--orange))" },
+    { label: t("Bon"),         color: "hsl(var(--gold))" },
+    { label: t("Excellent"),   color: "hsl(var(--emerald))" },
   ][strength];
 
   const submit = async (e: React.FormEvent) => {
@@ -65,6 +68,7 @@ const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-5 py-10 relative">
       <BackgroundFX />
+      <div className="absolute top-4 right-4 z-20"><LangToggle /></div>
       <div
         className="relative w-full max-w-[480px] glass rounded-3xl p-8 md:p-10 overflow-hidden border border-gold/30"
         style={{ boxShadow: "0 30px 80px -20px hsl(42 78% 60% / 0.35)", animation: "spring-in 0.6s cubic-bezier(0.34,1.56,0.64,1)" }}
@@ -86,18 +90,18 @@ const Register = () => {
             >
               <Check className="h-10 w-10" strokeWidth={3} />
             </div>
-            <h2 className="font-display text-3xl mt-5">Compte créé.</h2>
-            <p className="text-muted-foreground text-sm mt-2">Redirection vers votre espace…</p>
+            <h2 className="font-display text-3xl mt-5">{t("Compte créé.")}</h2>
+            <p className="text-muted-foreground text-sm mt-2">{t("Redirection vers votre espace…")}</p>
           </div>
         ) : (
           <>
-            <h1 className="font-display text-4xl mb-1.5">Créer un compte.</h1>
-            <p className="text-muted-foreground text-sm mb-7">Vos consultations seront sauvegardées en privé.</p>
+            <h1 className="font-display text-4xl mb-1.5">{t("Créer un compte.")}</h1>
+            <p className="text-muted-foreground text-sm mb-7">{t("Vos consultations seront sauvegardées en privé.")}</p>
 
             <form onSubmit={submit} className="space-y-4">
-              <Field label="Prénom" value={firstName} onChange={setFirstName} placeholder="Yasmine" autoComplete="given-name" />
-              <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="vous@exemple.ma" autoComplete="email" />
-              <Field label="Mot de passe" type="password" value={password} onChange={setPassword} placeholder="••••••••" autoComplete="new-password">
+              <Field label={t("Prénom")} value={firstName} onChange={setFirstName} placeholder="Yasmine" autoComplete="given-name" />
+              <Field label={t("Email")} type="email" value={email} onChange={setEmail} placeholder="vous@exemple.ma" autoComplete="email" />
+              <Field label={t("Mot de passe")} type="password" value={password} onChange={setPassword} placeholder="••••••••" autoComplete="new-password">
                 {password && (
                   <div className="mt-2 flex items-center gap-2">
                     <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden flex gap-0.5">
@@ -115,20 +119,20 @@ const Register = () => {
                   </div>
                 )}
               </Field>
-              <Field label="Confirmer le mot de passe" type="password" value={confirm} onChange={setConfirm} placeholder="••••••••" autoComplete="new-password" />
+              <Field label={t("Confirmer le mot de passe")} type="password" value={confirm} onChange={setConfirm} placeholder="••••••••" autoComplete="new-password" />
 
               <button
                 type="submit"
                 disabled={loading}
                 className="haptic-tap w-full h-12 rounded-full bg-gradient-gold text-primary-foreground font-semibold shadow-gold inline-flex items-center justify-center gap-2 disabled:opacity-60 hover:scale-[1.01] transition-transform"
               >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Créer mon compte"}
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("Créer mon compte")}
               </button>
             </form>
 
             <div className="mt-6 text-center text-sm">
               <Link to="/login" className="text-gold hover:underline inline-flex items-center gap-1">
-                Déjà un compte ? Se connecter <ArrowRight className="h-3.5 w-3.5" />
+                {t("Déjà un compte ? Se connecter")} <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           </>
