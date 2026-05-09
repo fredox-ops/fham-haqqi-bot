@@ -626,7 +626,7 @@ const Chat = () => {
             {messages.length === 0 && (
               <div className="text-center py-16 animate-fade-up">
                 <div className="inline-flex h-16 w-16 rounded-full bg-gradient-mixed items-center justify-center text-white font-bold text-lg mb-6 animate-pulse-dot">
-                  DL
+                  MZ
                 </div>
                 <h2 className="font-display text-3xl md:text-4xl mb-2">
                   {t("Bonjour.")} <span className="italic text-gradient-gold">{t("Décrivez votre situation.")}</span>
@@ -703,9 +703,8 @@ const Chat = () => {
                 type="button"
                 ref={micBtnRef}
                 onClick={toggleDictation}
-                disabled={transcribing}
-                aria-label={dictating ? "Arrêter l'enregistrement" : "Enregistrer un message vocal"}
-                title={dictating ? "Arrêter l'enregistrement" : "Enregistrer un message vocal"}
+                aria-label={dictating ? "Arrêter l'enregistrement" : transcribing ? "Transcription en cours" : "Enregistrer un message vocal"}
+                title={dictating ? "Arrêter l'enregistrement" : transcribing ? "Transcription en cours" : "Enregistrer un message vocal"}
                 className={`haptic-tap h-10 w-10 md:h-11 md:w-11 shrink-0 rounded-full flex items-center justify-center transition-all ${
                   dictating
                     ? "bg-destructive/15 text-destructive border border-destructive/40 animate-pulse"
@@ -739,7 +738,7 @@ const Chat = () => {
               </button>
               <button
                 type="submit"
-                disabled={loading || !input.trim()}
+                disabled={!input.trim()}
                 className="haptic-tap h-10 w-10 md:h-11 md:w-11 shrink-0 rounded-full bg-gradient-gold text-primary-foreground shadow-gold hover:scale-[1.06] disabled:opacity-50 disabled:scale-100 transition-all group inline-flex items-center justify-center"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
