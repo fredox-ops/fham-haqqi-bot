@@ -671,7 +671,7 @@ const Chat = () => {
         </div>
 
         {/* Input */}
-        <div className="px-3 md:px-10 pb-24 md:pb-6 pt-2">
+        <div className="relative z-10 px-3 md:px-10 pb-24 md:pb-6 pt-2">
           <div className="max-w-3xl mx-auto">
             <form
               onSubmit={(e) => { e.preventDefault(); send(input); }}
@@ -697,7 +697,7 @@ const Chat = () => {
                   ? "Décrivez votre situation en français ou en darija…"
                   : "وصف وضعيتك بالدارجة أو الفرنسية…"}
                 dir={lang === "ar" ? "rtl" : "ltr"}
-                className="flex-1 min-w-0 bg-transparent resize-none text-sm md:text-base placeholder:text-muted-foreground/70 focus:outline-none py-2.5 max-h-32"
+                className="relative z-10 flex-1 min-w-0 bg-transparent resize-none text-sm md:text-base placeholder:text-muted-foreground/70 focus:outline-none py-2.5 max-h-32 pointer-events-auto"
               />
               <button
                 type="button"
