@@ -16,7 +16,7 @@ const LoadingScreen = ({ label = "Chargement…" }: { label?: string }) => (
       </foreignObject>
     </svg>
     <div className="font-display text-3xl">
-      Darja<span className="text-gradient-gold italic">Lex</span>
+      <span className="text-gradient-gold italic">Mizani</span>
     </div>
     <div className="mt-3 text-xs text-muted-foreground tracking-widest uppercase">{label}</div>
     <style>{`@keyframes dash-draw { to { stroke-dashoffset: 0; } }`}</style>
