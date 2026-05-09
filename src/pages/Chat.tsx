@@ -3,8 +3,15 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft, Mic, MicOff, Phone, Send, Loader2, Plus, Briefcase, Home as HomeIcon, FileSignature,
   Users, FileText, AlertTriangle, Menu, X, Trash2, ThumbsUp, ThumbsDown, Copy, Sparkles,
-  Building2, ShoppingBag, LogOut, Radar,
+  Building2, ShoppingBag, LogOut, Radar, Volume2, Square,
 } from "lucide-react";
+
+// Detect if a string is predominantly Arabic script
+const isArabic = (s: string) => {
+  const arabic = (s.match(/[\u0600-\u06FF]/g) || []).length;
+  const letters = (s.match(/[A-Za-z\u0600-\u06FF]/g) || []).length || 1;
+  return arabic / letters > 0.3;
+};
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import BackgroundFX from "@/components/BackgroundFX";
