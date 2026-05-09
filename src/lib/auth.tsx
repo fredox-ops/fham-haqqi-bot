@@ -21,14 +21,14 @@ const readUsers = (): StoredUser[] => {
 const writeUsers = (u: StoredUser[]) => localStorage.setItem(USERS_KEY, JSON.stringify(u));
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
+  const [user, setUser] = useState<User | null>(() => {
     try {
       const s = localStorage.getItem(SESSION_KEY);
-      if (s) setUser(JSON.parse(s));
-    } catch {}
-  }, []);
+      return s ? (JSON.parse(s) as User) : null;
+    } catch {
+      return null;
+    }
+  });
 
   const login = async (email: string, password: string) => {
     const users = readUsers();
