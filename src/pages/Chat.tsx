@@ -13,6 +13,7 @@ import MobileNav from "@/components/MobileNav";
 import VoiceCall from "@/components/VoiceCall";
 import LegalRadar from "@/components/LegalRadar";
 import { useAuth, fetchConversations, upsertConversation, type StoredConversation } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import LangToggle from "@/components/LangToggle";
@@ -123,7 +124,17 @@ const Chat = () => {
       status: urgency === "urgent" ? "Urgent" : "En cours",
       messages,
     };
-    upsertConversation(user.id, conv).then(() => fetchConversations().then(setHistory));
+    upsertConversation(user.id, conv).then(async () => {
+      // Auto-classify (domain, title, summary, tags, urgency, language) via edge function
+      try {
+        await supabase.functions.invoke("classify-conversation", {
+          body: { conversation_id: conv.id },
+        });
+      } catch (e) {
+        console.warn("classify failed", e);
+      }
+      fetchConversations().then(setHistory);
+    });
   }, [messages, loading, user, detectedCategory, urgency]);
 
   // === Topic radar counts (per-category keyword hits across user messages) ===
