@@ -324,6 +324,36 @@ const LetterGenerator = ({ open, onOpenChange, conversation, category }: Props) 
   const [lang, setLang] = useState<Lang>("fr");
   const [stamped, setStamped] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const lastGenLangRef = useRef<Lang | null>(null);
+
+  const arabicDate = () =>
+    new Date().toLocaleDateString("ar-MA", { day: "numeric", month: "long", year: "numeric" });
+
+  const generateWithAI = async (targetLang: Lang) => {
+    if (!conversation || conversation.length === 0) return;
+    setAiLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-letter", {
+        body: { messages: conversation, lang: targetLang, category: category ?? null },
+      });
+      if (error) throw error;
+      setFields((prev) => ({
+        ...prev,
+        recipient: data?.recipient || prev.recipient,
+        subject: data?.subject || prev.subject,
+        body: data?.body || prev.body,
+        city: targetLang === "ar" ? "الدار البيضاء" : (prev.city || "Casablanca"),
+        date: targetLang === "ar" ? arabicDate() : new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }),
+      }));
+      lastGenLangRef.current = targetLang;
+    } catch (e) {
+      console.error(e);
+      toast.error(targetLang === "ar" ? "فشل توليد الرسالة" : "Échec de la génération IA");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   // Auto-fill on open
   useEffect(() => {
@@ -331,8 +361,20 @@ const LetterGenerator = ({ open, onOpenChange, conversation, category }: Props) 
       const auto = autofillFromConversation(conversation);
       setFields((prev) => ({ ...prev, ...DEFAULTS_FR, ...auto }));
       setStamped(false);
+      lastGenLangRef.current = null;
+      // Fire AI generation for current language
+      generateWithAI(lang);
     }
-  }, [open, conversation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  // Regenerate when language changes while open
+  useEffect(() => {
+    if (open && lastGenLangRef.current && lastGenLangRef.current !== lang) {
+      generateWithAI(lang);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
 
   const update = (k: keyof LetterFields, v: string) => setFields((p) => ({ ...p, [k]: v }));
 
@@ -341,7 +383,7 @@ const LetterGenerator = ({ open, onOpenChange, conversation, category }: Props) 
     await new Promise((r) => setTimeout(r, 700));
     setStamped(true);
     setGenerating(false);
-    toast.success("Lettre certifiée et prête.");
+    toast.success(lang === "ar" ? "تم اعتماد الرسالة." : "Lettre certifiée et prête.");
   };
 
   const onCopy = async () => {
