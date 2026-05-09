@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Scale, Loader2, ArrowRight } from "lucide-react";
+import { Scale, Loader2, ArrowRight, ArrowLeft } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import BackgroundFX from "@/components/BackgroundFX";
@@ -51,6 +51,13 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center px-5 relative">
       <BackgroundFX />
       <div className="absolute top-4 right-4 z-20"><LangToggle /></div>
+      <Link
+        to="/"
+        className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 h-10 px-4 rounded-full bg-background/60 backdrop-blur border border-border hover:border-gold text-sm text-muted-foreground hover:text-foreground transition-all"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        {t("Accueil")}
+      </Link>
       <div
         className="relative w-full max-w-[480px] glass rounded-3xl p-8 md:p-10 overflow-hidden border border-gold/30"
         style={{ boxShadow: "0 30px 80px -20px hsl(42 78% 60% / 0.35), inset 0 1px 0 hsl(0 0% 100% / 0.05)", animation: "spring-in 0.6s cubic-bezier(0.34,1.56,0.64,1)" }}
@@ -62,7 +69,7 @@ const Login = () => {
             <Scale className="h-4 w-4 text-primary-foreground" />
           </span>
           <span className="font-display text-2xl">
-            Darja<span className="text-gradient-gold italic">Lex</span>
+            Miz<span className="text-gradient-gold italic">ani</span>
           </span>
         </Link>
 
