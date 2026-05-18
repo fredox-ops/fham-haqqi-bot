@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { useLang } from "@/lib/i18n";
+
 
 /**
  * Mizani Justice Seal — animated SVG emblem.
@@ -10,10 +12,16 @@ import { useEffect, useRef, useState } from "react";
  * Cursor-interactive: parallax tilt + ring nudge follow the mouse.
  */
 const JusticeSeal = ({ size = 460 }: { size?: number }) => {
-  // Full word, properly connected glyphs (Amiri renders the ligatures cleanly)
-  // Continuous Arabic legal maxims — no single-word repetition
+  const { lang } = useLang();
+  // Outer ring maxims — Arabic in AR mode, French/Latin in FR mode
   const ARABIC_MAXIM =
     "العدل أساس الملك   ✦   بالعدل قامت السماوات والأرض   ✦   الحق يعلو ولا يُعلى عليه   ✦   ";
+  const FRENCH_MAXIM =
+    "LA JUSTICE EST LE FONDEMENT DU ROYAUME   ✦   NUL N'EST AU-DESSUS DE LA LOI   ✦   ÉQUITÉ · VÉRITÉ · HONNEUR   ✦   ";
+  const OUTER_TEXT = lang === "ar" ? ARABIC_MAXIM : FRENCH_MAXIM;
+  const INNER_TEXT = lang === "ar"
+    ? "  ميزان  ·  العدل  ·  الحق  ·  الإنصاف  ·  ميزان  ·  العدل  ·  الحق  ·  الإنصاف  "
+    : "  MIZANI  ·  BALANCE  ·  EQUITY  ·  JUSTICE  ·  MIZANI  ·  BALANCE  ·  EQUITY  ·  JUSTICE  ";
   const ringRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0, mag: 0 });
 
@@ -118,7 +126,7 @@ const JusticeSeal = ({ size = 460 }: { size?: number }) => {
           style={{ fontFamily: "'Amiri', 'Scheherazade New', 'Noto Naskh Arabic', serif" }}
         >
           <textPath href="#seal-arc" startOffset="0%">
-            {ARABIC_MAXIM.repeat(2)}
+            {OUTER_TEXT.repeat(2)}
           </textPath>
         </text>
       </svg>
@@ -148,7 +156,7 @@ const JusticeSeal = ({ size = 460 }: { size?: number }) => {
           style={{ fontFamily: "'DM Sans', system-ui, sans-serif", textTransform: "uppercase" }}
         >
           <textPath href="#law-arc" startOffset="0%">
-            {"  MIZANI  ·  ميزان  ·  BALANCE  ·  العدل  ·  EQUITY  ·  الحق  ·  MIZANI  ·  ميزان  "}
+            {INNER_TEXT}
           </textPath>
         </text>
 
