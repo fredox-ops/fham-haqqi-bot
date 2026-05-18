@@ -126,7 +126,7 @@ const JusticeSeal = ({ size = 460 }: { size?: number }) => {
           style={{ fontFamily: "'Amiri', 'Scheherazade New', 'Noto Naskh Arabic', serif" }}
         >
           <textPath href="#seal-arc" startOffset="0%">
-            {ARABIC_MAXIM.repeat(2)}
+            {OUTER_TEXT.repeat(2)}
           </textPath>
         </text>
       </svg>
