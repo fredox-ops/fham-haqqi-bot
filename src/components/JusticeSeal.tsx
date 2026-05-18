@@ -11,7 +11,9 @@ import { useEffect, useRef, useState } from "react";
  */
 const JusticeSeal = ({ size = 460 }: { size?: number }) => {
   // Full word, properly connected glyphs (Amiri renders the ligatures cleanly)
-  const WORD = "العدالة";
+  // Continuous Arabic legal maxims — no single-word repetition
+  const ARABIC_MAXIM =
+    "العدل أساس الملك   ✦   بالعدل قامت السماوات والأرض   ✦   الحق يعلو ولا يُعلى عليه   ✦   ";
   const ringRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0, mag: 0 });
 
