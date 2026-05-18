@@ -30,12 +30,27 @@ const ResetPassword = () => {
   const [valid, setValid] = useState(false);
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash.includes("type=recovery")) {
-      setValid(true);
-    } else {
+    (async () => {
+      const hash = window.location.hash;
+      const search = window.location.search;
+      // PKCE flow: ?code=...
+      const code = new URLSearchParams(search).get("code");
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) { toast.error("Lien de récupération invalide ou expiré."); return; }
+        setValid(true);
+        return;
+      }
+      // Implicit/hash flow: #access_token=...&type=recovery
+      if (hash.includes("type=recovery") || hash.includes("access_token")) {
+        setValid(true);
+        return;
+      }
+      // Already in a recovery session (Supabase auto-parsed the hash)
+      const { data } = await supabase.auth.getSession();
+      if (data.session) { setValid(true); return; }
       toast.error("Lien de récupération invalide ou expiré.");
-    }
+    })();
   }, []);
 
   const submit = async (e: React.FormEvent) => {
