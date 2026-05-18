@@ -11,7 +11,9 @@ import { useEffect, useRef, useState } from "react";
  */
 const JusticeSeal = ({ size = 460 }: { size?: number }) => {
   // Full word, properly connected glyphs (Amiri renders the ligatures cleanly)
-  const WORD = "العدالة";
+  // Continuous Arabic legal maxims — no single-word repetition
+  const ARABIC_MAXIM =
+    "العدل أساس الملك   ✦   بالعدل قامت السماوات والأرض   ✦   الحق يعلو ولا يُعلى عليه   ✦   ";
   const ringRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0, mag: 0 });
 
@@ -116,7 +118,7 @@ const JusticeSeal = ({ size = 460 }: { size?: number }) => {
           style={{ fontFamily: "'Amiri', 'Scheherazade New', 'Noto Naskh Arabic', serif" }}
         >
           <textPath href="#seal-arc" startOffset="0%">
-            {Array(8).fill(WORD).join("   ✦   ")}
+            {ARABIC_MAXIM.repeat(2)}
           </textPath>
         </text>
       </svg>
