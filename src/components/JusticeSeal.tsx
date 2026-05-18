@@ -156,7 +156,7 @@ const JusticeSeal = ({ size = 460 }: { size?: number }) => {
           style={{ fontFamily: "'DM Sans', system-ui, sans-serif", textTransform: "uppercase" }}
         >
           <textPath href="#law-arc" startOffset="0%">
-            {"  MIZANI  ·  ميزان  ·  BALANCE  ·  العدل  ·  EQUITY  ·  الحق  ·  MIZANI  ·  ميزان  "}
+            {INNER_TEXT}
           </textPath>
         </text>
 
