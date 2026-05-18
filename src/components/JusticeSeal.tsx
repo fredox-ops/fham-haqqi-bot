@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { useLang } from "@/lib/i18n";
+
 
 /**
  * Mizani Justice Seal — animated SVG emblem.
